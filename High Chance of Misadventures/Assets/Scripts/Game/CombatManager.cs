@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using DG.Tweening;
+using UnityEngine.Events;
 
 public class CombatManager : MonoBehaviour
 {
@@ -27,6 +28,9 @@ public class CombatManager : MonoBehaviour
     [SerializeField] private GameObject player;
     [SerializeField] private Enemy currentEnemy;
 
+    public UnityEvent StartCombatEvent;
+    public UnityEvent EndCombatEvent;
+
     public List<Enemy> enemyList = new List<Enemy>();
 
     //numbers
@@ -49,6 +53,8 @@ public class CombatManager : MonoBehaviour
 
     public void EnemyPreCombat()
     {
+        StartCombatEvent?.Invoke();
+
         currentEnemy = enemyList[queueCount];
 
         enemyAction = currentEnemy.probabilityManager.RollProbability();
@@ -56,7 +62,7 @@ public class CombatManager : MonoBehaviour
 
     }
 
-    public void StartComabat(ActionType playerAction)
+    public void StartCombat(ActionType playerAction)
     {
         Vector3 playerStartPos;
         Vector3 enemyStartPos;
@@ -146,6 +152,9 @@ public class CombatManager : MonoBehaviour
             }
 
             EnemyPreCombat();
+        }
+        else{
+            EndCombatEvent?.Invoke();
         }
     }
 

@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
     [SerializeField] private ActionType playerAction;
-
+    [SerializeField] private GameObject JournalUI;
     public void PlayerAction(int type)
     {
         switch (type)
@@ -25,5 +26,9 @@ public class PlayerManager : MonoBehaviour
 
         CombatManager.Instance.StartComabat(playerAction);
         playerAction = ActionType.None;
+    }
+    
+    public void ToggleJournal(){
+        JournalUI.SetActive(!JournalUI.activeSelf);
     }
 }

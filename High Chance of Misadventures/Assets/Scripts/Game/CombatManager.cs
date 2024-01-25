@@ -33,6 +33,9 @@ public class CombatManager : MonoBehaviour
     int queueCount = 0;
     float offsetMultiplier = 0.5f;
     
+    public Enemy GetCurrentEnemy(){
+        return currentEnemy;
+    }
 
     private void Start()
     {

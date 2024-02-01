@@ -6,46 +6,34 @@ using DG.Tweening;
 
 public class CombatManager : MonoBehaviour
 {
-    #region singleton
-    public static CombatManager Instance { get; private set; }
 
-    private void Awake()
-    {
+    [Header("Player")]
+    [SerializeField] private GameObject player;
+   
 
-        if (Instance != null && Instance != this)
-        {
-            Destroy(Instance);
-        }
-
-        Instance = this;
-
-    }
-    #endregion
-
+    [Header("Enemy")]
+    [SerializeField] private Enemy currentEnemy;
     [SerializeField] private ActionType enemyAction;
 
-    [SerializeField] private GameObject player;
-    [SerializeField] private Enemy currentEnemy;
-
+    [Space(10)]
     public List<Enemy> enemyList = new List<Enemy>();
 
     //numbers
     int queueCount = 0;
     float offsetMultiplier = 0.5f;
-    
 
     private void Start()
+    {
+        
+    }
+
+    public void EnemyPreCombat()
     {
         for (int i = 0; i < enemyList.Count; i++)
         {
             enemyList[i].probabilityBoard.SetActive(false);
         }
 
-        EnemyPreCombat();
-    }
-
-    public void EnemyPreCombat()
-    {
         currentEnemy = enemyList[queueCount];
 
         enemyAction = currentEnemy.probabilityManager.RollProbability();
@@ -143,7 +131,15 @@ public class CombatManager : MonoBehaviour
             }
 
             EnemyPreCombat();
+
         }
+        else if (enemyList.Count == 0)
+        {
+            //Exit Room
+            GameFlow.Instance.EndRoom();
+           
+        }
+
     }
 
     private void PlayerAnimation(ActionType action)

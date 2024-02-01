@@ -22,6 +22,11 @@ public class AnimationHandler : MonoBehaviour
         }
     }
 
+    public void ToggleMove()
+    {
+        animator.SetBool("Move", !animator.GetBool("Move"));
+    }
+
     public void PlayDeathAnimation()
     {
         animator.SetTrigger("Death");

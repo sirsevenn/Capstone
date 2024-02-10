@@ -35,6 +35,7 @@ public class GameFlow : MonoBehaviour
     [Header("Player")]
     [SerializeField] private GameObject player;
     [SerializeField] private Transform playerPosition;
+    [SerializeField] private Transform startTransform;
     [SerializeField] private Transform exitTransform;
     [SerializeField] private AnimationHandler playerAnimationHandler;
 
@@ -44,6 +45,15 @@ public class GameFlow : MonoBehaviour
     [Header("Camera")]
     public CinemachineVirtualCamera camera1;
     public CinemachineVirtualCamera camera2;
+
+    [Header("Fog Settings")]
+    [SerializeField] private float nearFog;
+    [SerializeField] private float farFog;
+    [SerializeField] private float fogStartDuration;
+    [SerializeField] private float fogExitDuration;
+
+    //Delegate
+    public delegate void DelayDelegate();
 
     enum GameState
     {
@@ -58,11 +68,20 @@ public class GameFlow : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+       
         StartRoom();
+    }
+
+    private void StartFogEffect(float value)
+    {
+        RenderSettings.fogDensity = value;
     }
 
     public void StartRoom()
     {
+
+        Debug.Log("Start Room");
+        DOVirtual.Float(nearFog, farFog, fogStartDuration, StartFogEffect);
         gameState = GameState.Start;
 
         camera1.Priority = 0;
@@ -112,16 +131,57 @@ public class GameFlow : MonoBehaviour
     {
         gameState = GameState.Exit;
 
-        playerAnimationHandler.ToggleMove();
-
         camera1.Priority = 0;
         camera2.Priority = 1;
 
-        player.transform.DOMove(exitTransform.position, 10).SetDelay(2);
+        playerAnimationHandler.ToggleMove();
+        player.transform.DOMove(exitTransform.position, 20).OnComplete(playerAnimationHandler.ToggleMove);
+
+        StartCoroutine(DelayFunction(ResetRoom, 1.0f));
 
         //Turn off combat
         //Exit Room
         //Play Animation
+    }
+
+    public IEnumerator DelayFunction(DelayDelegate function, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        function();
+    }
+
+    public IEnumerator WaitForPlayerInput(DelayDelegate function)
+    {
+        bool inputReceived = false;
+        while (!inputReceived)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                inputReceived = true;
+            }
+            yield return null; // Wait for the next frame
+        }
+
+        // Code continues here after input is received
+        function();
+    }
+
+    public void ResetRoom()
+    {
+        DOVirtual.Float(farFog, nearFog, fogExitDuration, StartFogEffect);
+        ObjectPool.Instance.ResetObjectPools();
+        combatManager.ResetCombatManager();
+
+        StartCoroutine(DelayFunction(PlayerReset, 3.0f));
+
+        StartCoroutine(DelayFunction(StartRoom, 5.0f));
+
+    }
+
+    private void PlayerReset()
+    {
+        player.transform.DOKill();
+        player.transform.position = startTransform.position;
     }
 
    
@@ -131,13 +191,13 @@ public class GameFlow : MonoBehaviour
         switch (type)
         {
             case 0:
-                playerAction = ActionType.Attack;
+                playerAction = ActionType.Heavy;
                 break;
             case 1:
-                playerAction = ActionType.Defend;
+                playerAction = ActionType.Parry;
                 break;
             case 2:
-                playerAction = ActionType.Skill;
+                playerAction = ActionType.Light;
                 break;
         }
 

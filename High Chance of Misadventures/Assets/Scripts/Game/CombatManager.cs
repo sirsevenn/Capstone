@@ -7,6 +7,7 @@ using DG.Tweening;
 public class CombatManager : MonoBehaviour
 {
 
+
     [Header("Player")]
     [SerializeField] private GameObject player;
    
@@ -14,6 +15,10 @@ public class CombatManager : MonoBehaviour
     [Header("Enemy")]
     [SerializeField] private Enemy currentEnemy;
     [SerializeField] private ActionType enemyAction;
+
+    [Header("Game Components")]
+    [SerializeField] private CombatBar combatBar;
+    [SerializeField] private DialogueManager dialogueManager;
 
     [Space(10)]
     public List<Enemy> enemyList = new List<Enemy>();
@@ -67,47 +72,68 @@ public class CombatManager : MonoBehaviour
         switch (playerAction)
         {
 
-            case ActionType.Attack:
+            case ActionType.Heavy:
 
-                if (enemyAction == ActionType.Attack || enemyAction == ActionType.Defend)
+                if (enemyAction == ActionType.Heavy)
                 {
                     currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
+                    dialogueManager.ChangeDialogue(CombatResult.PlayerHeavyTie);
+                }
+                else if (enemyAction == ActionType.Light)
+                {
+                    currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
+                    dialogueManager.ChangeDialogue(CombatResult.PlayerHeavyLose);
                 }
                 else
                 {
                     queueCount--;
                     currentEnemy.GetComponent<AnimationHandler>().PlayDeathAnimation();
                     enemyList.Remove(currentEnemy);
+                    dialogueManager.ChangeDialogue(CombatResult.PlayerHeavyWin);
                 }
 
                 break;
 
-            case ActionType.Defend:
+            case ActionType.Parry:
 
-                if (enemyAction == ActionType.Skill || enemyAction == ActionType.Defend)
+                if (enemyAction == ActionType.Parry)
                 {
                     currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
+                    dialogueManager.ChangeDialogue(CombatResult.PlayerParryTie);
+                }
+                else if (enemyAction == ActionType.Heavy)
+                {
+                    currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
+                    dialogueManager.ChangeDialogue(CombatResult.PlayerParryLose);
                 }
                 else
                 {
                     queueCount--;
                     currentEnemy.GetComponent<AnimationHandler>().PlayDeathAnimation();
                     enemyList.Remove(currentEnemy);
+                    dialogueManager.ChangeDialogue(CombatResult.PlayerParryWin);
                 }
 
                 break;
 
-            case ActionType.Skill:
+            case ActionType.Light:
 
-                if (enemyAction == ActionType.Attack || enemyAction == ActionType.Skill)
+                if (enemyAction == ActionType.Light)
                 {
                     currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
+                    dialogueManager.ChangeDialogue(CombatResult.PlayerLightTie);
+                }
+                else if (enemyAction == ActionType.Parry)
+                {
+                    currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
+                    dialogueManager.ChangeDialogue(CombatResult.PlayerLightLose);
                 }
                 else
                 {
                     queueCount--;
                     currentEnemy.GetComponent<AnimationHandler>().PlayDeathAnimation();
                     enemyList.Remove(currentEnemy);
+                    dialogueManager.ChangeDialogue(CombatResult.PlayerLightWin);
                 }
 
                 break;
@@ -119,6 +145,7 @@ public class CombatManager : MonoBehaviour
     {
         //Check For Enemies
         currentEnemy.probabilityBoard.SetActive(false);
+        StartCoroutine(GameFlow.Instance.WaitForPlayerInput(dialogueManager.OpenPlayerButtons));
        
         //If there are more go next combat
         if (enemyList.Count > 0)
@@ -139,6 +166,14 @@ public class CombatManager : MonoBehaviour
             GameFlow.Instance.EndRoom();
            
         }
+
+    }
+
+    public void ResetCombatManager()
+    {
+        queueCount = 0;
+        currentEnemy = null;
+        enemyList.Clear();
 
     }
 

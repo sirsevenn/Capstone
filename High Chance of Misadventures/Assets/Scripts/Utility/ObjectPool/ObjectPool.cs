@@ -79,26 +79,22 @@ public class ObjectPool : MonoBehaviour
         return clone;
     }
 
-    public void RemoveObject(GameObject clone, EnemyType type)
+    public void ResetObjectPools()
     {
-
-        switch (type)
+        int index = activePool_Goblin.Count;
+        for (int i = 0; i < index; i++)
         {
-            case EnemyType.None:
-                break;
-            case EnemyType.Goblin:
+            
+            GameObject clone = activePool_Goblin[0];
+            clone.GetComponent<Poolable>().ResetPoolableObject();
+            clone.transform.parent = this.transform;
 
-                activePool_Goblin.Remove(clone);
-                inactivePool_Goblin.Add(clone);
-
-                break;
-            case EnemyType.GoblinKing:
-                break;
+            inactivePool_Goblin.Add(clone);
+            activePool_Goblin.Remove(clone);
+      
         }
 
-        //reset clone
 
-        clone.GetComponent<Poolable>().ResetPoolableObject();
 
     }
     

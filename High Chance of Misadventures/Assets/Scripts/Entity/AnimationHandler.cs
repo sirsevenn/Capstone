@@ -10,14 +10,14 @@ public class AnimationHandler : MonoBehaviour
     {
         switch (action)
         {
-            case ActionType.Attack:
-                animator.SetTrigger("Attack");
+            case ActionType.Heavy:
+                animator.SetTrigger("Heavy");
                 break;
-            case ActionType.Defend:
-                animator.SetTrigger("Defend");
+            case ActionType.Parry:
+                animator.SetTrigger("Parry");
                 break;
-            case ActionType.Skill:
-                animator.SetTrigger("Skill");
+            case ActionType.Light:
+                animator.SetTrigger("Light");
                 break;
         }
     }
@@ -30,5 +30,11 @@ public class AnimationHandler : MonoBehaviour
     public void PlayDeathAnimation()
     {
         animator.SetTrigger("Death");
+    }
+
+    public void ResetAnimation()
+    {
+        animator.Rebind();
+        animator.Update(0f);
     }
 }

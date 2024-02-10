@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class ProbabilityManager : MonoBehaviour
 {
@@ -9,37 +10,46 @@ public class ProbabilityManager : MonoBehaviour
     [SerializeField] private TMP_Text defenseText;
     [SerializeField] private TMP_Text skillText;
 
-    private void Start()
-    {
-        
-    }
+    [Space(20)]
+    [SerializeField] private Image attackCircle;
+    [SerializeField] private Image defendCircle;
+    [SerializeField] private Image skillCircle;
 
     public ActionType RollProbability()
     {
-        int attackValue = Random.Range(0, 100);
-        attackText.text = attackValue.ToString() + "%";
+        int heavyValue = Random.Range(0, 100);
+        attackText.text = heavyValue.ToString() + "%";
 
-        int defenseValue = Random.Range(0, 100 - attackValue);
-        defenseText.text = defenseValue.ToString() + "%";
+        int lightValue = Random.Range(0, 100 - heavyValue);
+        defenseText.text = lightValue.ToString() + "%";
 
-        int skillValue = 100 - attackValue - defenseValue;
-        skillText.text = skillValue.ToString() + "%";
+        int parryValue = 100 - heavyValue - lightValue;
+        skillText.text = parryValue.ToString() + "%";
+
+        attackCircle.fillAmount = 1.0f;
+        defendCircle.fillAmount = (lightValue * 0.01f) + (parryValue * 0.01f);
+        skillCircle.fillAmount = parryValue * 0.01f;
+
+       
 
         int random = Random.Range(0, 100);
-        if (random > 0 && random < attackValue)
+
+        Debug.Log("random value: " + random + ", heavy value: " + heavyValue + " parry Value: " + parryValue + " light Value: " + lightValue);
+        if (random >= 0 && random < heavyValue)
         {
-            return ActionType.Attack;
+            return ActionType.Heavy;
         }
-        else if (random > attackValue && random < (attackValue + defenseValue))
+        else if (random >= heavyValue && random < (heavyValue + lightValue))
         {
-            return ActionType.Defend;
+            return ActionType.Light;
         }
-        else if (random > (attackValue + defenseValue) && random < 100)
+        else if (random >= (heavyValue + lightValue) && random < 100)
         {
-            return ActionType.Skill;
+            return ActionType.Parry;
         }
 
         return ActionType.None;
 
     }
+
 }

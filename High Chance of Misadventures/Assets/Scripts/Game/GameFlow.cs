@@ -23,6 +23,9 @@ public class GameFlow : MonoBehaviour
     }
     #endregion
 
+    [Header("Game Settings")]
+    [SerializeField] private GameType gameType;
+
     [Header("Spawn Points per Room")]
     public int maxEnemyCountPerRoom = 5;
 
@@ -139,9 +142,6 @@ public class GameFlow : MonoBehaviour
 
         StartCoroutine(DelayFunction(ResetRoom, 1.0f));
 
-        //Turn off combat
-        //Exit Room
-        //Play Animation
     }
 
     public IEnumerator DelayFunction(DelayDelegate function, float delay)
@@ -159,10 +159,9 @@ public class GameFlow : MonoBehaviour
             {
                 inputReceived = true;
             }
-            yield return null; // Wait for the next frame
+            yield return null; 
         }
-
-        // Code continues here after input is received
+     
         function();
     }
 
@@ -175,7 +174,6 @@ public class GameFlow : MonoBehaviour
         StartCoroutine(DelayFunction(PlayerReset, 3.0f));
 
         StartCoroutine(DelayFunction(StartRoom, 5.0f));
-
     }
 
     private void PlayerReset()
@@ -183,8 +181,6 @@ public class GameFlow : MonoBehaviour
         player.transform.DOKill();
         player.transform.position = startTransform.position;
     }
-
-   
 
     public void PlayerAction(int type)
     {
@@ -202,7 +198,6 @@ public class GameFlow : MonoBehaviour
         }
 
         //Start Combat
-
         combatManager.StartComabat(playerAction);
         playerAction = ActionType.None;
     }

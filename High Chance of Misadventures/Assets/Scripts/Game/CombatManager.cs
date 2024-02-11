@@ -67,7 +67,7 @@ public class CombatManager : MonoBehaviour
         PlayerAnimation(playerAction);
         EnemyAnimation(enemyAction);
 
-        player.transform.DOJump(playerStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2).OnComplete(EndCombat);
+        player.transform.DOJump(playerStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
 
         switch (playerAction)
         {
@@ -139,14 +139,18 @@ public class CombatManager : MonoBehaviour
                 break;
 
         }
+
+        StartCoroutine(GameFlow.Instance.WaitForPlayerInput(EndCombat));
     }
 
     private void EndCombat()
     {
+
         //Check For Enemies
         currentEnemy.probabilityBoard.SetActive(false);
-        StartCoroutine(GameFlow.Instance.WaitForPlayerInput(dialogueManager.OpenPlayerButtons));
-       
+        dialogueManager.OpenPlayerButtons();
+      
+
         //If there are more go next combat
         if (enemyList.Count > 0)
         {

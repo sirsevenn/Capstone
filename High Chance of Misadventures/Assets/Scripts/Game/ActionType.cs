@@ -21,3 +21,9 @@ public enum CombatResult
     PlayerParryTie,
     PlayerParryLose
 }
+
+public enum GameType
+{
+    LO,
+    HO
+}

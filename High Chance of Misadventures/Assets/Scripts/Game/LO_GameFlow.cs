@@ -3,12 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using Cinemachine;
+using UnityEngine.Playables;
 
-public class GameFlow : MonoBehaviour
+public class LO_GameFlow : MonoBehaviour
 {
 
     #region singleton
-    public static GameFlow Instance { get; private set; }
+    public static LO_GameFlow Instance { get; private set; }
 
     private void Awake()
     {
@@ -22,9 +23,16 @@ public class GameFlow : MonoBehaviour
 
     }
     #endregion
+    enum GameState
+    {
+        Start,
+        Combat,
+        Exit
+    }
 
     [Header("Game Settings")]
     [SerializeField] private GameType gameType;
+    public LayerMask enemyMask;
 
     [Header("Spawn Points per Room")]
     public int maxEnemyCountPerRoom = 5;
@@ -33,7 +41,8 @@ public class GameFlow : MonoBehaviour
     public List<Transform> spawnPoints = new List<Transform>();
 
     [Header("Other Components")]
-    public CombatManager combatManager;
+    public LO_CombatManager combatManager;
+    public LO_UIManager uiManager;
 
     [Header("Player")]
     [SerializeField] private GameObject player;
@@ -41,9 +50,7 @@ public class GameFlow : MonoBehaviour
     [SerializeField] private Transform startTransform;
     [SerializeField] private Transform exitTransform;
     [SerializeField] private AnimationHandler playerAnimationHandler;
-
-    [Space(10)]
-    [SerializeField] private ActionType playerAction;
+    [SerializeField] private PlayerManager playerManager;
 
     [Header("Camera")]
     public CinemachineVirtualCamera camera1;
@@ -55,24 +62,48 @@ public class GameFlow : MonoBehaviour
     [SerializeField] private float fogStartDuration;
     [SerializeField] private float fogExitDuration;
 
-    //Delegate
-    public delegate void DelayDelegate();
-
-    enum GameState
-    {
-        Start,
-        Combat,
-        Exit
-    }
-
     [SerializeField]
     private GameState gameState;
+
+    [Header("Spinners")]
+    [SerializeField] private Spinner enemySpinner;
 
     // Start is called before the first frame update
     void Start()
     {
-       
         StartRoom();
+    }
+
+    private void Update()
+    {
+       
+        if (Input.GetMouseButtonDown(0))
+        {
+            
+            // Perform a raycast from the mouse position
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
+
+            // Check if the ray hits any collider
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, enemyMask))
+            {
+                // You can do something with the hit information here
+                Debug.Log("Hit Object: " + hit.transform.name);
+                Enemy enemy = hit.transform.gameObject.GetComponent<Enemy>();
+
+                if (combatManager.currentEnemy != null)
+                {
+                    combatManager.currentEnemy.DeselectEnemy();
+                }
+
+                combatManager.currentEnemy = enemy;
+                combatManager.currentEnemy.SelectEnemy();
+                enemySpinner.ChangeWheel(enemy.enemyProbability);
+
+            }
+
+        }
+
     }
 
     private void StartFogEffect(float value)
@@ -84,13 +115,11 @@ public class GameFlow : MonoBehaviour
     {
 
         Debug.Log("Start Room");
-        DOVirtual.Float(nearFog, farFog, fogStartDuration, StartFogEffect);
         gameState = GameState.Start;
 
-        camera1.Priority = 0;
-        camera2.Priority = 1;
+        DOVirtual.Float(nearFog, farFog, fogStartDuration, StartFogEffect);
 
-        int enemyCount = Random.Range(1, maxEnemyCountPerRoom);
+        int enemyCount = Random.Range(1, maxEnemyCountPerRoom + 1);
 
         for (int i = 0; i < enemyCount; i++)
         {
@@ -110,16 +139,15 @@ public class GameFlow : MonoBehaviour
 
         }
 
-        
-        player.transform.DOMove(playerPosition.position, 2).OnComplete(StartCombat);
+        player.transform.DOMove(playerPosition.position, 2).OnComplete(StartCombatState);
 
-        //Player do tween go to start point
-        //Play animation
     }
 
-    public void StartCombat()
+    public void StartCombatState()
     {
         gameState = GameState.Combat;
+
+        StartCoroutine(GameUtilities.DelayFunction(uiManager.ActivatePlayerUI, 2.0f));
 
         playerAnimationHandler.ToggleMove();
 
@@ -140,30 +168,11 @@ public class GameFlow : MonoBehaviour
         playerAnimationHandler.ToggleMove();
         player.transform.DOMove(exitTransform.position, 20).OnComplete(playerAnimationHandler.ToggleMove);
 
-        StartCoroutine(DelayFunction(ResetRoom, 1.0f));
+        StartCoroutine(GameUtilities.DelayFunction(ResetRoom, 1.0f));
 
     }
 
-    public IEnumerator DelayFunction(DelayDelegate function, float delay)
-    {
-        yield return new WaitForSeconds(delay);
-        function();
-    }
-
-    public IEnumerator WaitForPlayerInput(DelayDelegate function)
-    {
-        bool inputReceived = false;
-        while (!inputReceived)
-        {
-            if (Input.GetMouseButtonDown(0))
-            {
-                inputReceived = true;
-            }
-            yield return null; 
-        }
-     
-        function();
-    }
+    
 
     public void ResetRoom()
     {
@@ -171,9 +180,9 @@ public class GameFlow : MonoBehaviour
         ObjectPool.Instance.ResetObjectPools();
         combatManager.ResetCombatManager();
 
-        StartCoroutine(DelayFunction(PlayerReset, 3.0f));
+        StartCoroutine(GameUtilities.DelayFunction(PlayerReset, 3.0f));
+        StartCoroutine(GameUtilities.DelayFunction(StartRoom, 5.0f));
 
-        StartCoroutine(DelayFunction(StartRoom, 5.0f));
     }
 
     private void PlayerReset()
@@ -182,6 +191,37 @@ public class GameFlow : MonoBehaviour
         player.transform.position = startTransform.position;
     }
 
+
+    public void SwitchPieces()
+    {
+        if (!combatManager.readyCombat)
+        {
+            return;
+        }
+
+        uiManager.ChangeSlice();
+    }
+
+    public void SetActions(ActionType action, bool isPlayer)
+    {
+        if (isPlayer)
+        {
+            combatManager.playerAction = action;
+        }
+        else if (!isPlayer)
+        {
+            combatManager.enemyAction = action;
+        }
+
+    }
+
+    public void StartCombat()
+    {
+        
+    }
+
+    //Used in Prototype 1
+    /*
     public void PlayerAction(int type)
     {
         switch (type)
@@ -198,7 +238,8 @@ public class GameFlow : MonoBehaviour
         }
 
         //Start Combat
-        combatManager.StartComabat(playerAction);
+        combatManager.StartCombat(playerAction);
         playerAction = ActionType.None;
     }
+    */
 }

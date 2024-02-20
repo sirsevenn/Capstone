@@ -5,20 +5,20 @@ using UnityEngine;
 public class Enemy : Entity
 {
 
-    public GameObject probabilityBoard;
-    public ProbabilityManager probabilityManager;
-    public EnemyType enemyType;
-    
+    //public GameObject probabilityBoard;
+    //public ProbabilityManager probabilityManager;
+    //public EnemyType enemyType;
+    public EnemyProbability enemyProbability;
+    public GameObject highlight;
 
-    // Start is called before the first frame update
-    void Start()
+    public void SelectEnemy()
     {
-        probabilityManager = GetComponent<ProbabilityManager>();
+        highlight.SetActive(true);
     }
 
-    // Update is called once per frame
-    void Update()
+    public void DeselectEnemy()
     {
-        
+        highlight.SetActive(false);
     }
+
 }

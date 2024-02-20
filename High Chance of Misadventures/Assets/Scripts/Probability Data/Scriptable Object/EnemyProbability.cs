@@ -6,7 +6,7 @@ using UnityEngine;
 public class EnemyProbability : ScriptableObject
 {
         public EnemyType type;
-        public float heavyAttackProbability;
-        public float lightAttackProbability;
-        public float parryAttackProbability;
+        public int heavyAttackProbability;
+        public int lightAttackProbability;
+        public int parryAttackProbability;
 }

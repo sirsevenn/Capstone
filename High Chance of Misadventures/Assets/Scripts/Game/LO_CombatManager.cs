@@ -4,21 +4,30 @@ using UnityEngine;
 using System;
 using DG.Tweening;
 
-public class CombatManager : MonoBehaviour
+public class LO_CombatManager : MonoBehaviour
 {
 
 
     [Header("Player")]
     [SerializeField] private GameObject player;
-   
 
-    [Header("Enemy")]
-    [SerializeField] private Enemy currentEnemy;
-    [SerializeField] private ActionType enemyAction;
+    [Header("Spinners")]
+    [SerializeField] private float spinDuration;
+    [SerializeField] private Spinner playerSpinner;
+    [SerializeField] private Spinner enemySpinner;
+
+    [Header("Actions")]
+    public ActionType playerAction;
+    public ActionType enemyAction;
+
+    [Header("Enemy Settings")]
+    public Enemy currentEnemy = null;
 
     [Header("Game Components")]
-    [SerializeField] private CombatBar combatBar;
     [SerializeField] private DialogueManager dialogueManager;
+
+    [Header("Settings")]
+    public bool readyCombat = false;
 
     [Space(10)]
     public List<Enemy> enemyList = new List<Enemy>();
@@ -27,26 +36,30 @@ public class CombatManager : MonoBehaviour
     int queueCount = 0;
     float offsetMultiplier = 0.5f;
 
-    private void Start()
-    {
-        
-    }
-
     public void EnemyPreCombat()
     {
-        for (int i = 0; i < enemyList.Count; i++)
-        {
-            enemyList[i].probabilityBoard.SetActive(false);
-        }
-
-        currentEnemy = enemyList[queueCount];
-
-        enemyAction = currentEnemy.probabilityManager.RollProbability();
-        currentEnemy.probabilityBoard.SetActive(true);
+        readyCombat = true;
+        LO_UIManager.Instance.GenerateInventoryPieces();
 
     }
 
-    public void StartComabat(ActionType playerAction)
+    public void SpinWheels()
+    {
+        //
+        if (!readyCombat && currentEnemy != null)
+        {
+            return;
+        }
+
+        readyCombat = false;
+        playerSpinner.Spin(spinDuration * 0.5f, true);
+        enemySpinner.Spin(spinDuration, false);
+        StartCoroutine(GameUtilities.DelayFunction(StartCombat, spinDuration + 1.0f));
+        //Enemy Spin
+        //Delay Start Combat
+    }
+
+    public void StartCombat()
     {
         Vector3 playerStartPos;
         Vector3 enemyStartPos;
@@ -77,19 +90,20 @@ public class CombatManager : MonoBehaviour
                 if (enemyAction == ActionType.Heavy)
                 {
                     currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                    dialogueManager.ChangeDialogue(CombatResult.PlayerHeavyTie);
+                    //dialogueManager.ChangeDialogue(CombatResult.PlayerHeavyTie);
                 }
                 else if (enemyAction == ActionType.Light)
                 {
                     currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                    dialogueManager.ChangeDialogue(CombatResult.PlayerHeavyLose);
+                    //dialogueManager.ChangeDialogue(CombatResult.PlayerHeavyLose);
                 }
                 else
                 {
-                    queueCount--;
+                    //queueCount--;
                     currentEnemy.GetComponent<AnimationHandler>().PlayDeathAnimation();
                     enemyList.Remove(currentEnemy);
-                    dialogueManager.ChangeDialogue(CombatResult.PlayerHeavyWin);
+                    currentEnemy.DeselectEnemy();
+                    //dialogueManager.ChangeDialogue(CombatResult.PlayerHeavyWin);
                 }
 
                 break;
@@ -99,19 +113,20 @@ public class CombatManager : MonoBehaviour
                 if (enemyAction == ActionType.Parry)
                 {
                     currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                    dialogueManager.ChangeDialogue(CombatResult.PlayerParryTie);
+                    //dialogueManager.ChangeDialogue(CombatResult.PlayerParryTie);
                 }
                 else if (enemyAction == ActionType.Heavy)
                 {
                     currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                    dialogueManager.ChangeDialogue(CombatResult.PlayerParryLose);
+                    //dialogueManager.ChangeDialogue(CombatResult.PlayerParryLose);
                 }
                 else
                 {
-                    queueCount--;
+                    //queueCount--;
                     currentEnemy.GetComponent<AnimationHandler>().PlayDeathAnimation();
                     enemyList.Remove(currentEnemy);
-                    dialogueManager.ChangeDialogue(CombatResult.PlayerParryWin);
+                    currentEnemy.DeselectEnemy();
+                    //dialogueManager.ChangeDialogue(CombatResult.PlayerParryWin);
                 }
 
                 break;
@@ -121,53 +136,46 @@ public class CombatManager : MonoBehaviour
                 if (enemyAction == ActionType.Light)
                 {
                     currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                    dialogueManager.ChangeDialogue(CombatResult.PlayerLightTie);
+                    //dialogueManager.ChangeDialogue(CombatResult.PlayerLightTie);
                 }
                 else if (enemyAction == ActionType.Parry)
                 {
                     currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                    dialogueManager.ChangeDialogue(CombatResult.PlayerLightLose);
+                    //dialogueManager.ChangeDialogue(CombatResult.PlayerLightLose);
                 }
                 else
                 {
-                    queueCount--;
+                    //queueCount--;
                     currentEnemy.GetComponent<AnimationHandler>().PlayDeathAnimation();
                     enemyList.Remove(currentEnemy);
-                    dialogueManager.ChangeDialogue(CombatResult.PlayerLightWin);
+                    currentEnemy.DeselectEnemy();
+                    //dialogueManager.ChangeDialogue(CombatResult.PlayerLightWin);
                 }
 
                 break;
 
         }
 
-        StartCoroutine(GameFlow.Instance.WaitForPlayerInput(EndCombat));
+        StartCoroutine(GameUtilities.WaitForPlayerInput(EndCombat));
     }
 
     private void EndCombat()
     {
 
         //Check For Enemies
-        currentEnemy.probabilityBoard.SetActive(false);
-        dialogueManager.OpenPlayerButtons();
+        //currentEnemy.probabilityBoard.SetActive(false);
+        //dialogueManager.OpenPlayerButtons();
       
 
         //If there are more go next combat
         if (enemyList.Count > 0)
         {
-            queueCount++;
-
-            if (queueCount == enemyList.Count)
-            {
-                queueCount = 0;
-            }
-
             EnemyPreCombat();
-
         }
         else if (enemyList.Count == 0)
         {
             //Exit Room
-            GameFlow.Instance.EndRoom();
+            LO_GameFlow.Instance.EndRoom();
            
         }
 

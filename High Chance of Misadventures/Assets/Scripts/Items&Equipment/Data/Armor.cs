@@ -20,4 +20,16 @@ public class Armor
     public int GetArmorLevel() => armorLevel;
 
     public int GetBonusDEF() => bonusDEF;
+
+    public int GetTotalDEF() => (armorData.GetDefenseValue() + bonusDEF);
+
+    public void IncreaseArmorLevel(int increase = 1)
+    {
+        armorLevel += increase;
+    }
+
+    public void IncreaseBonusDEF(int increase)
+    {
+        bonusDEF += increase;
+    }
 }

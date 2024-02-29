@@ -1,18 +1,52 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
+using System.Linq;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class WeaponStoreScript : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] private Image weaponImage;
+    [SerializeField] private TMP_Text ATK_text;
+    [SerializeField] private TMP_Dropdown specialSkilllDropdown;
+    [SerializeField] private TMP_Text skillDescriptionText;
+    [SerializeField] private Button upgradeButton;
+
+    public void SetupWeaponStoreTemplate(Weapon weapon)
     {
-        
+        weaponImage.sprite = weapon.GetWeaponData().GetWeaponIcon();
+        ATK_text.text = weapon.GetTotalATK().ToString();
+
+        var specialSkillTypes = Enum.GetNames(typeof(ETempSkillTypes));
+        specialSkilllDropdown.ClearOptions();
+        specialSkilllDropdown.AddOptions(specialSkillTypes.OfType<string>().ToList());
+
+        if (weapon.GetSpecialSkillData() != null)
+        {
+            specialSkilllDropdown.value = (int)weapon.GetSpecialSkillData().GetSkillType();
+            skillDescriptionText.text = weapon.GetSpecialSkillData().GetSkillDescription();
+        }
+        else
+        {
+            specialSkilllDropdown.value = 0;
+            skillDescriptionText.text = "";
+        }
+
+        upgradeButton.onClick.AddListener(() => StoreManager.Instance.OnUpgradeWeapon(weapon.GetWeaponData().GetWeaponName()));
+        specialSkilllDropdown.onValueChanged.AddListener((int value) => {
+            StoreManager.Instance.OnSwitchSpecialSkill(weapon.GetWeaponData().GetWeaponName(), value, this);
+        });
     }
 
-    // Update is called once per frame
-    void Update()
+    public void UpdateDescription(TempSpecialSkillDataSO skillData)
     {
-        
+        if (skillData != null)
+        {
+            skillDescriptionText.text = skillData.GetSkillDescription();
+        }
+        else
+        {
+            skillDescriptionText.text = "";
+        }
     }
 }

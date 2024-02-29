@@ -1,5 +1,6 @@
 public enum ETempSkillTypes 
 {
+    Unknown,
     Uno,
     Dos,
     Tres,

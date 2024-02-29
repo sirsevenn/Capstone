@@ -5,13 +5,13 @@ using UnityEngine.UI;
 public class ArmorStoreScript : MonoBehaviour
 {
     [SerializeField] private Image armorImage;
-    [SerializeField] private TMP_Text armorName;
+    [SerializeField] private TMP_Text armorNameText;
+    [SerializeField] private Button upgradeButton;
 
-
-    // TODO: replace SO to class
-    public void InitializeArmorStoreTemplate(ArmorDataSO data)
+    public void SetupArmorStoreTemplate(Armor armor)
     {
-        armorImage.sprite = data.GetArmorIcon();
-        armorName.text = data.GetArmorName();
+        armorImage.sprite = armor.GetArmorData().GetArmorIcon();
+        armorNameText.text = armor.GetArmorData().GetArmorName();
+        upgradeButton.onClick.AddListener(() => StoreManager.Instance.OnUpgradeArmor(armor.GetArmorData().GetArmorName()));
     }
 }

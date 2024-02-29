@@ -1,5 +1,6 @@
 public enum EItemTypes
 { 
+    Unknown,
     Uno,
     Dos,
     Tres,

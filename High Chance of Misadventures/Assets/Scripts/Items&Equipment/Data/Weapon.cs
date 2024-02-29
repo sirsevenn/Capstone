@@ -23,5 +23,22 @@ public class Weapon
 
     public int GetBonusATK() => bonusATK;
 
+    public int GetTotalATK() => (weaponData.GetAttackValue() + bonusATK);
+
     public TempSpecialSkillDataSO GetSpecialSkillData() => specialSkillData;
+
+    public void IncreaseWeaponLevel(int increase = 1)
+    {
+        weaponLevel += increase;
+    }
+
+    public void IncreaseBonusATK(int increase)
+    {
+        bonusATK += increase;
+    }
+
+    public void SwitchSpecialSkill(TempSpecialSkillDataSO newSpecialSkill)
+    {
+        specialSkillData = newSpecialSkill;
+    }
 }

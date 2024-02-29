@@ -16,4 +16,9 @@ public class Item
     public ItemDataSO GetItemData() => itemData;
 
     public int GetItemQuantity() => itemQuantity;
+
+    public void UpdateQuantity(int amount)
+    {
+        itemQuantity += amount;
+    }
 }

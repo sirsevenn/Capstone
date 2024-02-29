@@ -7,6 +7,7 @@ public class ItemDataSO : ScriptableObject
     [SerializeField] private EItemTypes itemType;
     [SerializeField] private string itemName;
     [TextArea(4, 10)][SerializeField] private string itemDescription;
+    [SerializeField] private int buyPrice;
 
     public Sprite GetItemIcon() => itemIcon;
 
@@ -15,4 +16,6 @@ public class ItemDataSO : ScriptableObject
     public string GetItemName() => itemName;
 
     public string GetItemDescription() => itemDescription;
+
+    public int GetBuyPrice() => buyPrice;
 }

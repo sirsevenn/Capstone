@@ -215,20 +215,34 @@ public class StoreManager : MonoBehaviour
     #region OtherUIInteractions
     public void OnUpgradeArmor(string armorName)
     {
-        // CHECK GOLD FOR PURCHASE
-
         Armor selectedArmor = Inventory.Instance.GetArmor(armorName);
+        int price = selectedArmor.GetArmorData().GetUpgradePrice();
+
+        if (!Inventory.Instance.HasEnoughPlayerGold(price))
+        {
+            Debug.Log("Not enough money!");
+            return;
+        }
+
         selectedArmor.IncreaseArmorLevel();
         //selectedArmor.IncreaseBonusDEF();
+        Inventory.Instance.UpdatePlayerGold(-price);
     }
 
     public void OnUpgradeWeapon(string weaponName)
     {
-        // CHECK GOLD FOR PURCHASE
-
         Weapon selectedWeapon = Inventory.Instance.GetWeapon(weaponName);
+        int price = selectedWeapon.GetWeaponData().GetUpgradePrice();
+
+        if (!Inventory.Instance.HasEnoughPlayerGold(price))
+        {
+            Debug.Log("Not enough money!");
+            return;
+        }
+
         selectedWeapon.IncreaseWeaponLevel();
         //selectedWeapon.IncreaseBonusATK();
+        Inventory.Instance.UpdatePlayerGold(-price);
     }
 
     public void OnSwitchSpecialSkill(string weaponName, int newSkillType, WeaponStoreScript weaponScript)
@@ -242,7 +256,14 @@ public class StoreManager : MonoBehaviour
 
     public void OnBuyItem(EItemTypes itemType, ItemStoreScript itemScript)
     {
-        // CHECK GOLD FOR PURCHASE
+        ItemDataSO itemData = itemDataList.Find(x => x.GetItemType() == itemType);
+        int price = itemData.GetBuyPrice();
+
+        if (!Inventory.Instance.HasEnoughPlayerGold(price))
+        {
+            Debug.Log("Not enough money!");
+            return;
+        }
 
         Item selectedItem = Inventory.Instance.GetItem(itemType);
         if (selectedItem != null)
@@ -251,13 +272,12 @@ public class StoreManager : MonoBehaviour
         }
         else
         {
-            selectedItem = new Item(itemDataList.Find(x => x.GetItemType() == itemType), 1);
+            selectedItem = new Item(itemData, 1);
             Inventory.Instance.AddItem(selectedItem);
         }
 
-        Debug.Log(itemType.ToString());
-
         itemScript.UpdateQuantity(selectedItem.GetItemQuantity());
+        Inventory.Instance.UpdatePlayerGold(-price);
     }
     #endregion
 }

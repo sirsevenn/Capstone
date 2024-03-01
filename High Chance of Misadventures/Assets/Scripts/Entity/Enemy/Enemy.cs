@@ -4,12 +4,11 @@ using UnityEngine;
 
 public class Enemy : Entity
 {
-
-    //public GameObject probabilityBoard;
-    //public ProbabilityManager probabilityManager;
-    //public EnemyType enemyType;
-    public EnemyProbability enemyProbability;
+    public EnemyType enemyType;
+    public EnemyData data;
     public GameObject highlight;
+    public Health hp;
+    public Collider col;
 
     public void SelectEnemy()
     {
@@ -19,6 +18,19 @@ public class Enemy : Entity
     public void DeselectEnemy()
     {
         highlight.SetActive(false);
+    }
+
+    public void Die()
+    {
+        DeselectEnemy();
+        hp.CloseHpBar();
+        col.enabled = false;
+        GetComponent<AnimationHandler>().PlayDeathAnimation();
+    }
+
+    public virtual EnemyData GetEnemyData()
+    {
+        return data;
     }
 
 }

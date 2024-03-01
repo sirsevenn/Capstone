@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class LO_UIManager : UIManager
+public class LO_UIManager_PVP : UIManager
 {
     #region singleton
-    public static LO_UIManager Instance { get; private set; }
+    public static LO_UIManager_PVP Instance { get; private set; }
 
     private void Awake()
     {

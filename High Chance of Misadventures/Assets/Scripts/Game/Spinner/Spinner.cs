@@ -60,11 +60,11 @@ public class Spinner : MonoBehaviour
             }
         }
 
-        LO_GameFlow.Instance.SetActions(spinnerPieces[index].actionType, isPlayer);
+        LO_GameFlow_PVP.Instance.SetActions(spinnerPieces[index].actionType, isPlayer);
 
     }
 
-    public void ChangeWheel(EnemyProbability probability)
+    public void ChangeWheel(EnemyData probability)
     {
         int heavy = probability.heavyAttackProbability;
         int light = probability.lightAttackProbability;
@@ -78,19 +78,19 @@ public class Spinner : MonoBehaviour
             if (counter == 0 && heavy > 0)
             {
                 heavy--;
-                spinnerPieces[i].ChangePiece(ActionType.Heavy, LO_UIManager.Instance.GetHeavyIcon(), LO_UIManager.Instance.GetHeavyColor());
+                spinnerPieces[i].ChangePiece(ActionType.Heavy, LO_UIManager_PVP.Instance.GetHeavyIcon(), LO_UIManager_PVP.Instance.GetHeavyColor());
        
             }
             else if (counter == 1 && light > 0)
             {
                 light--;
-                spinnerPieces[i].ChangePiece(ActionType.Light, LO_UIManager.Instance.GetLightIcon(), LO_UIManager.Instance.GetLightColor());
+                spinnerPieces[i].ChangePiece(ActionType.Light, LO_UIManager_PVP.Instance.GetLightIcon(), LO_UIManager_PVP.Instance.GetLightColor());
          
             }
             else if (counter == 2 && parry > 0)
             {
                 parry--;
-                spinnerPieces[i].ChangePiece(ActionType.Parry, LO_UIManager.Instance.GetParryIcon(), LO_UIManager.Instance.GetParryColor());
+                spinnerPieces[i].ChangePiece(ActionType.Parry, LO_UIManager_PVP.Instance.GetParryIcon(), LO_UIManager_PVP.Instance.GetParryColor());
 
             }
             else

@@ -4,17 +4,13 @@ using UnityEngine;
 using System;
 using DG.Tweening;
 
-public class LO_CombatManager : MonoBehaviour
+public class BaseCombatManager : MonoBehaviour
 {
-
+    [Header("Debug")]
+    [SerializeField] private int testDamage = 10;
 
     [Header("Player")]
-    [SerializeField] private GameObject player;
-
-    [Header("Spinners")]
-    [SerializeField] private float spinDuration;
-    [SerializeField] private Spinner playerSpinner;
-    [SerializeField] private Spinner enemySpinner;
+    [SerializeField] protected GameObject player;
 
     [Header("Actions")]
     public ActionType playerAction;
@@ -33,34 +29,23 @@ public class LO_CombatManager : MonoBehaviour
     public List<Enemy> enemyList = new List<Enemy>();
 
     //numbers
-    int queueCount = 0;
-    float offsetMultiplier = 0.5f;
+    protected int queueCount = 0;
+    protected float offsetMultiplier = 0.5f;
 
     public void EnemyPreCombat()
     {
         readyCombat = true;
-        LO_UIManager.Instance.GenerateInventoryPieces();
-
+        
     }
 
-    public void SpinWheels()
+    protected virtual void OnEnemyPreCombat()
     {
-        //
-        if (!readyCombat && currentEnemy != null)
-        {
-            return;
-        }
 
-        readyCombat = false;
-        playerSpinner.Spin(spinDuration * 0.5f, true);
-        enemySpinner.Spin(spinDuration, false);
-        StartCoroutine(GameUtilities.DelayFunction(StartCombat, spinDuration + 1.0f));
-        //Enemy Spin
-        //Delay Start Combat
     }
 
     public void StartCombat()
     {
+
         Vector3 playerStartPos;
         Vector3 enemyStartPos;
 
@@ -89,8 +74,20 @@ public class LO_CombatManager : MonoBehaviour
 
                 if (enemyAction == ActionType.Heavy)
                 {
-                    currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                    //dialogueManager.ChangeDialogue(CombatResult.PlayerHeavyTie);
+                    Health health = currentEnemy.GetComponent<Health>();
+                    health.ApplyDamage(testDamage);
+
+                    if (health.GetHP() <= 0)
+                    {
+                        currentEnemy.Die();
+                        enemyList.Remove(currentEnemy);
+                        currentEnemy.DeselectEnemy();
+                    }
+                    else
+                    {
+                        Debug.Log("Go Back");
+                        currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
+                    }
                 }
                 else if (enemyAction == ActionType.Light)
                 {
@@ -99,11 +96,8 @@ public class LO_CombatManager : MonoBehaviour
                 }
                 else
                 {
-                    //queueCount--;
-                    currentEnemy.GetComponent<AnimationHandler>().PlayDeathAnimation();
-                    enemyList.Remove(currentEnemy);
-                    currentEnemy.DeselectEnemy();
-                    //dialogueManager.ChangeDialogue(CombatResult.PlayerHeavyWin);
+                    currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
+                    //dialogueManager.ChangeDialogue(CombatResult.PlayerHeavyTie);
                 }
 
                 break;
@@ -112,8 +106,21 @@ public class LO_CombatManager : MonoBehaviour
 
                 if (enemyAction == ActionType.Parry)
                 {
-                    currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                    //dialogueManager.ChangeDialogue(CombatResult.PlayerParryTie);
+                    Health health = currentEnemy.GetComponent<Health>();
+                    health.ApplyDamage(testDamage);
+
+                    if (health.GetHP() <= 0)
+                    {
+                        currentEnemy.Die();
+                        enemyList.Remove(currentEnemy);
+                        currentEnemy.DeselectEnemy();
+                    }
+                    else
+                    {
+                        Debug.Log("Go Back");
+                        currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
+                    }
+                   
                 }
                 else if (enemyAction == ActionType.Heavy)
                 {
@@ -122,11 +129,8 @@ public class LO_CombatManager : MonoBehaviour
                 }
                 else
                 {
-                    //queueCount--;
-                    currentEnemy.GetComponent<AnimationHandler>().PlayDeathAnimation();
-                    enemyList.Remove(currentEnemy);
-                    currentEnemy.DeselectEnemy();
-                    //dialogueManager.ChangeDialogue(CombatResult.PlayerParryWin);
+                    currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
+                    //dialogueManager.ChangeDialogue(CombatResult.PlayerParryTie);
                 }
 
                 break;
@@ -135,8 +139,21 @@ public class LO_CombatManager : MonoBehaviour
 
                 if (enemyAction == ActionType.Light)
                 {
-                    currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                    //dialogueManager.ChangeDialogue(CombatResult.PlayerLightTie);
+                    Health health = currentEnemy.GetComponent<Health>();
+                    health.ApplyDamage(testDamage);
+
+                    if (health.GetHP() <= 0)
+                    {
+                        currentEnemy.Die();
+                        enemyList.Remove(currentEnemy);
+                        currentEnemy.DeselectEnemy();
+                    }
+                    else
+                    {
+                        Debug.Log("Go Back");
+                        currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
+                    }
+                   
                 }
                 else if (enemyAction == ActionType.Parry)
                 {
@@ -145,27 +162,31 @@ public class LO_CombatManager : MonoBehaviour
                 }
                 else
                 {
-                    //queueCount--;
-                    currentEnemy.GetComponent<AnimationHandler>().PlayDeathAnimation();
-                    enemyList.Remove(currentEnemy);
-                    currentEnemy.DeselectEnemy();
-                    //dialogueManager.ChangeDialogue(CombatResult.PlayerLightWin);
+                    currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
+                    //dialogueManager.ChangeDialogue(CombatResult.PlayerLightTie);
                 }
 
                 break;
 
         }
 
+        OnStartCombat();
+
         StartCoroutine(GameUtilities.WaitForPlayerInput(EndCombat));
     }
 
-    private void EndCombat()
+    protected virtual void OnStartCombat()
+    {
+
+    }
+
+    protected void EndCombat()
     {
 
         //Check For Enemies
         //currentEnemy.probabilityBoard.SetActive(false);
         //dialogueManager.OpenPlayerButtons();
-      
+
 
         //If there are more go next combat
         if (enemyList.Count > 0)
@@ -175,9 +196,13 @@ public class LO_CombatManager : MonoBehaviour
         else if (enemyList.Count == 0)
         {
             //Exit Room
-            LO_GameFlow.Instance.EndRoom();
-           
+            TriggerEndRoom();
         }
+
+    }
+
+    protected virtual void TriggerEndRoom()
+    {
 
     }
 
@@ -186,16 +211,15 @@ public class LO_CombatManager : MonoBehaviour
         queueCount = 0;
         currentEnemy = null;
         enemyList.Clear();
-
     }
 
-    private void PlayerAnimation(ActionType action)
+    protected void PlayerAnimation(ActionType action)
     {
         AnimationHandler handler = player.gameObject.GetComponent<AnimationHandler>();
         handler.PlayAnimation(action);
     }
 
-    private void EnemyAnimation(ActionType action)
+    protected void EnemyAnimation(ActionType action)
     {
         AnimationHandler handler = currentEnemy.gameObject.GetComponent<AnimationHandler>();
         handler.PlayAnimation(action);

@@ -2,8 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "EnemyProbability", menuName = "ScriptableObjects/EnemyProbability")]
-public class EnemyProbability : ScriptableObject
+[CreateAssetMenu(fileName = "EnemyData", menuName = "ScriptableObjects/EnemyData")]
+public class EnemyData : ScriptableObject
 {
         public EnemyType type;
         public int heavyAttackProbability;

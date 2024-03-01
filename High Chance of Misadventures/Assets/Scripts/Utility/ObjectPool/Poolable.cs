@@ -23,6 +23,12 @@ public class Poolable : MonoBehaviour
         {
             animHandler.ResetAnimation();
         }
+
+        Health health = GetComponent<Health>();
+        if (health)
+        {
+            health.ResetHp();
+        }
     }
 
 }

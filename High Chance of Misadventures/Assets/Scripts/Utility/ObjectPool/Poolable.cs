@@ -27,7 +27,14 @@ public class Poolable : MonoBehaviour
         Health health = GetComponent<Health>();
         if (health)
         {
+            Debug.Log("Reset HP");
             health.ResetHp();
+        }
+
+        Collider col = GetComponent<Collider>();
+        if (col)
+        {
+            col.enabled = true;
         }
     }
 

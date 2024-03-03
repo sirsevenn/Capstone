@@ -6,7 +6,8 @@ public enum EnemyType
 {
     None,
     Goblin,
-    GoblinKing
+    Minotaur,
+    Boss
 }
 
 public class ObjectPool : MonoBehaviour
@@ -36,11 +37,19 @@ public class ObjectPool : MonoBehaviour
     //Prefabs
     [Header("Prefabs")]
     public GameObject goblinPrefab;
+    public GameObject minotaurPrefab;
+    public GameObject bossPrefab;
 
     [Space(20)]
 
     public List<GameObject> inactivePool_Goblin = new List<GameObject>();
     public List<GameObject> activePool_Goblin = new List<GameObject>();
+
+    public List<GameObject> inactivePool_Minotaur = new List<GameObject>();
+    public List<GameObject> activePool_Minotaur = new List<GameObject>();
+
+    public List<GameObject> inactivePool_Boss = new List<GameObject>();
+    public List<GameObject> activePool_Boss = new List<GameObject>();
 
     private void Start()
     {
@@ -50,6 +59,17 @@ public class ObjectPool : MonoBehaviour
             inactivePool_Goblin.Add(clone);
             clone.GetComponent<Poolable>().ResetPoolableObject();
         }
+
+        for (int i = 0; i < maxEnemyCountPerType; i++)
+        {
+            GameObject clone = Instantiate(minotaurPrefab, poolLocation, Quaternion.identity, this.transform);
+            inactivePool_Minotaur.Add(clone);
+            clone.GetComponent<Poolable>().ResetPoolableObject();
+        }
+
+        GameObject bossClone = Instantiate(bossPrefab, poolLocation, Quaternion.identity, this.transform);
+        inactivePool_Boss.Add(bossClone);
+        bossClone.GetComponent<Poolable>().ResetPoolableObject();
     }
 
     
@@ -61,6 +81,7 @@ public class ObjectPool : MonoBehaviour
         {
             case EnemyType.None:
                 break;
+
             case EnemyType.Goblin:
 
                 clone = inactivePool_Goblin[0];
@@ -68,7 +89,18 @@ public class ObjectPool : MonoBehaviour
                 inactivePool_Goblin.Remove(clone);
                 break;
 
-            case EnemyType.GoblinKing:
+            case EnemyType.Minotaur:
+
+                clone = inactivePool_Minotaur[0];
+                activePool_Minotaur.Add(clone);
+                inactivePool_Minotaur.Remove(clone);
+                break;
+
+            case EnemyType.Boss:
+
+                clone = inactivePool_Boss[0];
+                activePool_Goblin.Add(clone);
+                inactivePool_Goblin.Remove(clone);
                 break;
         }
 
@@ -92,6 +124,32 @@ public class ObjectPool : MonoBehaviour
             inactivePool_Goblin.Add(clone);
             activePool_Goblin.Remove(clone);
       
+        }
+
+        index = activePool_Minotaur.Count;
+        for (int i = 0; i < index; i++)
+        {
+
+            GameObject clone = activePool_Minotaur[0];
+            clone.GetComponent<Poolable>().ResetPoolableObject();
+            clone.transform.parent = this.transform;
+
+            inactivePool_Minotaur.Add(clone);
+            activePool_Minotaur.Remove(clone);
+
+        }
+
+        index = activePool_Boss.Count;
+        for (int i = 0; i < index; i++)
+        {
+
+            GameObject clone = activePool_Boss[0];
+            clone.GetComponent<Poolable>().ResetPoolableObject();
+            clone.transform.parent = this.transform;
+
+            inactivePool_Boss.Add(clone);
+            activePool_Boss.Remove(clone);
+
         }
 
 

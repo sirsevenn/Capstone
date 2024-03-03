@@ -5,7 +5,11 @@ using UnityEngine;
 public class AnimationHandler : MonoBehaviour
 {
     [SerializeField] private Animator animator;
-    
+    public Animator GetAnimator()
+    {
+        return animator;
+    }
+
     public void PlayAnimation(ActionType action)
     {
         switch (action)
@@ -30,6 +34,11 @@ public class AnimationHandler : MonoBehaviour
     public void PlayDeathAnimation()
     {
         animator.SetTrigger("Death");
+    }
+
+    public void PlayVictoryAnimation()
+    {
+        animator.SetTrigger("Victory");
     }
 
     public void ResetAnimation()

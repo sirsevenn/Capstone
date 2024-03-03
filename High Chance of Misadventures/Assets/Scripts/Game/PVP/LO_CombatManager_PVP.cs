@@ -14,12 +14,12 @@ public class LO_CombatManager_PVP : BaseCombatManager
 
     public void SpinWheels()
     {
-        //
-        if (!readyCombat && currentEnemy != null)
+        if (!readyCombat || currentEnemy == null)
         {
             return;
         }
 
+        LO_UIManager_PVP.Instance.ResetInventory();
         readyCombat = false;
         playerSpinner.Spin(spinDuration * 0.5f, true);
         enemySpinner.Spin(spinDuration, false);

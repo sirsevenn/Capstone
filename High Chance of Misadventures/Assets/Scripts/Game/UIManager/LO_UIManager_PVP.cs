@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+using TMPro;
 
 public class LO_UIManager_PVP : UIManager
 {
@@ -23,6 +24,9 @@ public class LO_UIManager_PVP : UIManager
 
     [Header("UI GameObjects")]
     [SerializeField] private GameObject playerUI;
+    [SerializeField] private GameObject enemyUI;
+    [SerializeField] private GameObject playerHPUI;
+    [SerializeField] private GameObject endScreen;
 
     [Header("TransformLocations")]
     [SerializeField] private Transform playerUIStartTransform;
@@ -41,11 +45,32 @@ public class LO_UIManager_PVP : UIManager
     public SpinnerPiece selectedPieceFromInventory;
     public SpinnerPiece selectedPieceFromSpinner;
 
+    [Header("End Screen Dialogue")]
+    public List<string> endScreenDialogue = new List<string>();
+    [SerializeField] private TMP_Text endScreenText;
+
     public void ActivatePlayerUI()
     {
         playerUI.SetActive(true);
         playerUI.transform.DOMoveY(playerUIEndTransform.position.y, tweenDuration, true).SetEase(fastOutBounce);
 
+    }
+
+    public void EndGame(bool victory)
+    {
+        playerUI.SetActive(false);
+        enemyUI.SetActive(false);
+        playerHPUI.SetActive(false);
+        endScreen.SetActive(true);
+        if (victory)
+        {
+            endScreenText.text = endScreenDialogue[0];
+        }
+        else
+        {
+            endScreenText.text = endScreenDialogue[1];
+        }
+       
     }
 
     public void SelectInventoryPiece(SpinnerPiece piece)

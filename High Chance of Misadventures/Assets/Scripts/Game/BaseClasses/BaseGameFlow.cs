@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using DG.Tweening;
 using Cinemachine;
 using UnityEngine.Playables;
@@ -61,17 +63,20 @@ public class BaseGameFlow : MonoBehaviour
 
     [SerializeField] protected GameState gameState;
 
+ 
+   
+
     protected virtual void Start()
     {
         health.InitializaHealth(playerMaxHP);
     }
 
+    
+
     protected virtual void Update()
     {
-
         if (Input.GetMouseButtonDown(0))
         {
-
             // Perform a raycast from the mouse position
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -83,12 +88,9 @@ public class BaseGameFlow : MonoBehaviour
                 Debug.Log("Hit Object: " + hit.transform.name);
                 selectedEnemy = hit.transform.gameObject;
                 Enemy enemy = selectedEnemy.GetComponent<Enemy>();
-                
 
                 OnSelectedEnemy(enemy);
-
             }
-
         }
 
     }

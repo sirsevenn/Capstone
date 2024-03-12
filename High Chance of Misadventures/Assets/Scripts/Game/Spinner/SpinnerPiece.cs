@@ -9,8 +9,11 @@ public class SpinnerPiece : MonoBehaviour
     public Image icon;
     public Image pieceImage;
     public GameObject highlight;
+    public Image lockImage;
+    public Image lockOverlay;
 
     public bool isActive = true;
+    public bool isLocked = true;
 
     public void ChangePiece(ActionType newType, Sprite newIcon, Color newColor)
     {
@@ -29,13 +32,55 @@ public class SpinnerPiece : MonoBehaviour
         highlight.SetActive(false);
     }
 
+    public void ToggleLock()
+    {
+        if (isLocked)
+        {
+            UnlockPiece();
+        }
+        else if (!isLocked)
+        {
+            LockPiece();
+        }
+    }
+
+    private void LockPiece()
+    {
+        if (lockImage != null)
+        {
+            lockImage.gameObject.SetActive(true);
+        }
+
+        if (lockOverlay != null)
+        {
+            lockOverlay.gameObject.SetActive(true);
+        }
+
+        isLocked = true;
+    }
+
+    private void UnlockPiece()
+    {
+        if (lockImage != null)
+        {
+            lockImage.gameObject.SetActive(false);
+        }
+
+        if (lockOverlay != null)
+        {
+            lockOverlay.gameObject.SetActive(false);
+        }
+
+        isLocked = false;
+    }
+
     public void DeactivatePiece()
     {
         //icon.gameObject.SetActive(false);
         //pieceImage.gameObject.SetActive(false);
         highlight.SetActive(false);
-        icon.color = new Color(icon.color.r, icon.color.g, icon.color.b, 0.4f);
-        pieceImage.color = new Color(pieceImage.color.r, pieceImage.color.g, pieceImage.color.b, 0.4f);
+        icon.gameObject.SetActive(false);
+        pieceImage.gameObject.SetActive(false);
         isActive = false;
     }
 
@@ -45,16 +90,9 @@ public class SpinnerPiece : MonoBehaviour
         isActive = true;
         icon.gameObject.SetActive(true);
         pieceImage.gameObject.SetActive(true);
-        highlight.SetActive(true);
-        
-    }
+        UnlockPiece();
 
-    public void ResetPiece()
-    {
-        highlight.SetActive(false);
-        icon.color = new Color(icon.color.r, icon.color.g, icon.color.b, 1.0f);
-        pieceImage.color = new Color(pieceImage.color.r, pieceImage.color.g, pieceImage.color.b, 1.0f);
-        isActive = true;
+
     }
 
 }

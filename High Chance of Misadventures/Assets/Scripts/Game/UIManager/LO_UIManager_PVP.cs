@@ -1,6 +1,8 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
+using UnityEngine.EventSystems;
 using DG.Tweening;
 using TMPro;
 
@@ -49,6 +51,189 @@ public class LO_UIManager_PVP : UIManager
     public List<string> endScreenDialogue = new List<string>();
     [SerializeField] private TMP_Text endScreenText;
 
+    [Header("UI Raycast")]
+    [SerializeField] protected GraphicRaycaster m_Raycaster;
+    [SerializeField] protected PointerEventData m_PointerEventData;
+    [SerializeField] protected EventSystem m_EventSystem;
+    [SerializeField] protected SpinnerPiece pieceDisplay;
+    [SerializeField] protected SpinnerPiece swapPiece;
+    protected SpinnerPiece inventoryPiece;
+
+    [Header("Touch Controls")]
+    [SerializeField] protected Vector2 touchStartPos;
+    [SerializeField] protected Vector2 touchEndPos;
+    [Space(10)]
+    [SerializeField] protected float touchTime = 0;
+    [SerializeField] protected float minHoldDuration = 0.3f;
+
+    [SerializeField] protected bool isDragging = false;
+    [SerializeField] protected bool startedTouch = false;
+    [SerializeField] protected bool triggerHold = false;
+    [SerializeField] protected bool swapped = false;
+
+    protected virtual void Tap(Vector2 position)
+    {
+        //Lock Piece
+        //Debug.Log("Tap!");
+
+        SpinnerPiece inventoryPiece = RaycastUI();
+        if (inventoryPiece != null)
+        {
+            if (inventoryPiece.isActive && inventoryPiece.CompareTag("InventoryPiece"))
+            {
+                inventoryPiece.ToggleLock();
+            }
+            
+        }
+
+    }
+
+    protected virtual void Hold(Vector2 position)
+    {
+        //Debug.Log("Hold!");
+
+        // Draggable Piece
+        inventoryPiece = RaycastUI();
+        if (inventoryPiece != null)
+        {
+            if (!inventoryPiece.isLocked && inventoryPiece.CompareTag("InventoryPiece"))
+            {
+                inventoryPiece.DeactivatePiece();
+                pieceDisplay.ChangePiece(inventoryPiece.actionType, inventoryPiece.icon.sprite, inventoryPiece.pieceImage.color);
+                pieceDisplay.transform.position = new Vector3(position.x, position.y, 0);
+                pieceDisplay.gameObject.SetActive(true);
+                isDragging = true;
+            }
+        }
+    }
+
+    protected void TrySwap()
+    {
+        //Debug.Log("Try Swap!");
+        swapPiece = RaycastUI();
+        if (swapPiece != null && inventoryPiece != null)
+        {
+            if (swapPiece.CompareTag("PlayerPiece"))
+            {
+                swapPiece.actionType = inventoryPiece.actionType;
+                swapPiece.icon.sprite = inventoryPiece.icon.sprite;
+                swapPiece.pieceImage.color = inventoryPiece.pieceImage.color;
+                swapPiece.DeselectPiece();
+                swapped = true;
+            }
+            
+        }
+    }
+
+    protected void Drag()
+    {
+        SpinnerPiece raycastPiece = RaycastUI();
+        if (raycastPiece != null)
+        {
+
+            if (raycastPiece.CompareTag("PlayerPiece"))
+            {
+                if (swapPiece == null)
+                {
+                    swapPiece = raycastPiece;
+                    swapPiece.SelectPiece();
+                }
+            }
+           
+        }
+        else if (raycastPiece == null)
+        {
+            if (swapPiece != null)
+            {
+                swapPiece.DeselectPiece();
+            }
+            
+            swapPiece = null;
+        }
+    }
+
+    protected SpinnerPiece RaycastUI()
+    {
+        m_PointerEventData = new PointerEventData(m_EventSystem);
+
+        m_PointerEventData.position = Input.mousePosition;
+
+        List<RaycastResult> results = new List<RaycastResult>();
+
+        m_Raycaster.Raycast(m_PointerEventData, results);
+        if (results.Count > 0)
+        {
+            //Debug.Log("Hit " + results[0].gameObject.name);
+            SpinnerPiece inventoryPiece = null;
+            results[0].gameObject.TryGetComponent<SpinnerPiece>(out inventoryPiece);
+            return inventoryPiece;
+        }
+
+        Debug.Log("Returned Null");
+        return null;
+    }
+
+    protected void Update()
+    {
+        if (Input.GetMouseButtonDown(0))
+        {
+            startedTouch = true;
+            inventoryPiece = null;
+            swapPiece = null;
+        }
+        else if (Input.GetMouseButtonUp(0))
+        {
+            if (touchTime < minHoldDuration)
+            {
+                Tap(Input.mousePosition);
+            }
+
+            if (triggerHold && inventoryPiece != null)
+            {
+                //Try Swap Piece
+                TrySwap();
+            }
+
+            if (!swapped)
+            {
+                if (inventoryPiece != null)
+                {
+                    inventoryPiece.ActivatePiece();
+                }
+
+            }
+
+            pieceDisplay.gameObject.SetActive(false);
+
+            touchTime = 0;
+            startedTouch = false;
+            swapped = false;
+            triggerHold = false;
+            isDragging = false;
+            inventoryPiece = null;
+            swapPiece = null;
+            
+        }
+
+        if (startedTouch)
+        {
+            touchTime += Time.deltaTime;
+
+            if (touchTime > minHoldDuration && !triggerHold)
+            {
+                Hold(Input.mousePosition);
+                triggerHold = true;
+            }
+
+        }
+
+        if (isDragging)
+        {
+            Drag();
+            pieceDisplay.transform.position = new Vector3(Input.mousePosition.x, Input.mousePosition.y, 0);
+        }
+    }
+
     public void ActivatePlayerUI()
     {
         playerUI.SetActive(true);
@@ -61,7 +246,9 @@ public class LO_UIManager_PVP : UIManager
         playerUI.SetActive(false);
         enemyUI.SetActive(false);
         playerHPUI.SetActive(false);
+
         endScreen.SetActive(true);
+
         if (victory)
         {
             endScreenText.text = endScreenDialogue[0];
@@ -112,6 +299,7 @@ public class LO_UIManager_PVP : UIManager
         {
             selectedPieceFromSpinner = null;
         }
+
     }
 
     public void ChangeSlice()
@@ -131,51 +319,57 @@ public class LO_UIManager_PVP : UIManager
 
             selectedPieceFromSpinner = null;
             selectedPieceFromInventory = null;
+
         }
 
     }
 
     public void GenerateInventoryPieces()
     {
-        ResetInventory();
-
-        int nPieces = Random.Range(1, 4);
+        ResetSelectedPieces();
 
         for (int i = 0; i < inventoryPieces.Count; i++)
         {
-            inventoryPieces[i].gameObject.SetActive(false);
-            inventoryPieces[i].ResetPiece();
+            inventoryPieces[i].DeactivatePiece();
         }
 
-        for (int i = 0; i < nPieces; i++)
+        for (int i = 0; i < inventoryPieces.Count; i++)
         {
-            int randomAction = Random.Range(0, 3);
-            switch (randomAction)
+            if (!inventoryPieces[i].isLocked)
             {
-                case 0:
-                    inventoryPieces[i].gameObject.SetActive(true);
-                    inventoryPieces[i].actionType = ActionType.Heavy;
-                    inventoryPieces[i].icon.sprite = heavyIcon;
-                    inventoryPieces[i].pieceImage.color = heavyColor;
-                    break;
-                case 1:
-                    inventoryPieces[i].gameObject.SetActive(true);
-                    inventoryPieces[i].actionType = ActionType.Light;
-                    inventoryPieces[i].icon.sprite = lightIcon;
-                    inventoryPieces[i].pieceImage.color = lightColor;
-                    break;
-                case 2:
-                    inventoryPieces[i].gameObject.SetActive(true);
-                    inventoryPieces[i].actionType = ActionType.Parry;
-                    inventoryPieces[i].icon.sprite = parryIcon;
-                    inventoryPieces[i].pieceImage.color = parryColor;
-                    break;
+                int randomAction = Random.Range(0, 3);
+                switch (randomAction)
+                {
+                    case 0:
+                        inventoryPieces[i].ActivatePiece();
+                        inventoryPieces[i].actionType = ActionType.Heavy;
+                        inventoryPieces[i].icon.sprite = heavyIcon;
+                        inventoryPieces[i].pieceImage.color = heavyColor;
+                        break;
+                    case 1:
+                        inventoryPieces[i].ActivatePiece();
+                        inventoryPieces[i].actionType = ActionType.Light;
+                        inventoryPieces[i].icon.sprite = lightIcon;
+                        inventoryPieces[i].pieceImage.color = lightColor;
+                        break;
+                    case 2:
+                        inventoryPieces[i].ActivatePiece();
+                        inventoryPieces[i].actionType = ActionType.Parry;
+                        inventoryPieces[i].icon.sprite = parryIcon;
+                        inventoryPieces[i].pieceImage.color = parryColor;
+                        break;
+                }
             }
+            else if (inventoryPieces[i].isLocked)
+            {
+                inventoryPieces[i].ActivatePiece();
+            }
+            
         }
         
     }
 
-    public void ResetInventory()
+    public void ResetSelectedPieces()
     {
         if (selectedPieceFromInventory)
         {

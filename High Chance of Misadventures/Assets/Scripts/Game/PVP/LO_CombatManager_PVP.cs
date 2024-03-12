@@ -19,7 +19,7 @@ public class LO_CombatManager_PVP : BaseCombatManager
             return;
         }
 
-        LO_UIManager_PVP.Instance.ResetInventory();
+        LO_UIManager_PVP.Instance.ResetSelectedPieces();
         readyCombat = false;
         playerSpinner.Spin(spinDuration * 0.5f, true);
         enemySpinner.Spin(spinDuration, false);

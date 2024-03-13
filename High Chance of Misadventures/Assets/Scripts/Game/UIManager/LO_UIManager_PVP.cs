@@ -175,6 +175,11 @@ public class LO_UIManager_PVP : UIManager
 
     protected void Update()
     {
+        if (!LO_GameFlow_PVP.Instance.combatManager.readyCombat)
+        {
+            return;
+        }
+
         if (Input.GetMouseButtonDown(0))
         {
             startedTouch = true;

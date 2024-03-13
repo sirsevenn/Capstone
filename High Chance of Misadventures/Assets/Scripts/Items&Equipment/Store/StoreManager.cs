@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -56,8 +57,13 @@ public class StoreManager : MonoBehaviour
     
     [Space(10)] [Header("Store Buttons")]
     [SerializeField] private Image armorButtonImage;
+    [SerializeField] private TMP_Text armorButtonText;
     [SerializeField] private Image weaponsButtonImage;
+    [SerializeField] private TMP_Text weaponsButtonText;
     [SerializeField] private Image itemsButtonImage;
+    [SerializeField] private TMP_Text itemsButtonText;
+    [SerializeField] private Color normalButtonColor;
+    [SerializeField] private Color pressedButtonColor;
     #endregion
 
     #region Initialization
@@ -150,14 +156,8 @@ public class StoreManager : MonoBehaviour
             if (itemScript != null)
             {
                 Item itemInInventory = Inventory.Instance.GetItem(itemData.GetItemType());
-                if (itemInInventory != null)
-                {
-                    itemScript.SetupItemStoreTemplate(itemData, itemInInventory.GetItemQuantity());
-                }
-                else
-                {
-                    itemScript.SetupItemStoreTemplate(itemData, 0);
-                }
+                int quantity = itemInInventory != null ? itemInInventory.GetItemQuantity() : 0;
+                itemScript.SetupItemStoreTemplate(itemData, quantity);
             }
             else
             {
@@ -172,27 +172,24 @@ public class StoreManager : MonoBehaviour
     {
         CloseAllStorePanels();
         armorInfoPanel.SetActive(true);
-
-        //armorButtonImage.color = new Color(1, 1, 1, 1);
-        armorButtonImage.color = new Color(0.3f, 0.3f, 0.3f, 1);
+        armorButtonImage.color = pressedButtonColor;
+        armorButtonText.color = Color.black;
     }
 
     public void OnWeaponsButton()
     {
         CloseAllStorePanels();
         weaponsInfoPanel.SetActive(true);
-
-        //weaponsButtonImage.color = new Color(1, 1, 1, 1);
-        weaponsButtonImage.color = new Color(0.3f, 0.3f, 0.3f, 1);
+        weaponsButtonImage.color = pressedButtonColor;
+        weaponsButtonText.color = Color.black;
     }
 
     public void OnItemsButton()
     {
         CloseAllStorePanels();
         itemsInfoPanel.SetActive(true);
-
-        //itemsButtonImage.color = new Color(1, 1, 1, 1);
-        itemsButtonImage.color = new Color(0.3f, 0.3f, 0.3f, 1);
+        itemsButtonImage.color = pressedButtonColor;
+        itemsButtonText.color = Color.black;
     }
 
     private void CloseAllStorePanels()
@@ -201,14 +198,12 @@ public class StoreManager : MonoBehaviour
         weaponsInfoPanel.SetActive(false);
         itemsInfoPanel.SetActive(false);
 
-        // UNCOMMENT ONCE BUTTON IMAGES ARE REPLACED
-        //armorButtonImage.color = new Color(1, 1, 1, 0);
-        //weaponsButtonImage.color = new Color(1, 1, 1, 0);
-        //itemsButtonImage.color = new Color(1, 1, 1, 0);
-
-        armorButtonImage.color = new Color(0.3f, 0.3f, 0.3f, 0);
-        weaponsButtonImage.color = new Color(0.3f, 0.3f, 0.3f, 0);
-        itemsButtonImage.color = new Color(0.3f, 0.3f, 0.3f, 0);
+        armorButtonImage.color = normalButtonColor;
+        armorButtonText.color = Color.white;
+        weaponsButtonImage.color = normalButtonColor;
+        weaponsButtonText.color = Color.white;
+        itemsButtonImage.color = normalButtonColor;
+        itemsButtonText.color = Color.white;
     }
     #endregion
 

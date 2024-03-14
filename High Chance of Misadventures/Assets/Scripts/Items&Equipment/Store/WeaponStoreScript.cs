@@ -40,13 +40,6 @@ public class WeaponStoreScript : MonoBehaviour
 
     public void UpdateDescription(TempSpecialSkillDataSO skillData)
     {
-        if (skillData != null)
-        {
-            skillDescriptionText.text = skillData.GetSkillDescription();
-        }
-        else
-        {
-            skillDescriptionText.text = "";
-        }
+        skillDescriptionText.text = (skillData != null) ? skillData.GetSkillDescription() : "";
     }
 }

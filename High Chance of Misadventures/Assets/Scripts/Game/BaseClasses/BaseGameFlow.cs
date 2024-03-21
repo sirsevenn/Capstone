@@ -200,6 +200,11 @@ public class BaseGameFlow : MonoBehaviour
 
     }
 
+    protected virtual void OnEndGame()
+    {
+
+    }
+
     public void EndRoom()
     {
         gameState = GameState.Exit;
@@ -221,7 +226,7 @@ public class BaseGameFlow : MonoBehaviour
             camera2.Priority = 0;
             camera3.Priority = 1;
 
-            LO_UIManager_PVP.Instance.EndGame(true);
+            OnEndGame();  //LO_UIManager_PVP.Instance.EndGame(true);
             playerAnimationHandler.PlayVictoryAnimation();
             
         }
@@ -255,6 +260,6 @@ public class BaseGameFlow : MonoBehaviour
 
     public void ReturnToGuild(int sceneIndex)
     {
-        SceneLoader.ChangeScene(0);
+        SceneLoader.ChangeScene(sceneIndex);
     }
 }

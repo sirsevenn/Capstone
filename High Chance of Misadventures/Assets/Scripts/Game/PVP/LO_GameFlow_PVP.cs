@@ -30,6 +30,7 @@ public class LO_GameFlow_PVP : BaseGameFlow
     [Header("Other Components")]
     public LO_CombatManager_PVP combatManager;
     public LO_UIManager_PVP uiManager;
+    public SideBarManager sideBar;
 
     // Start is called before the first frame update
     protected override void Start()
@@ -103,5 +104,11 @@ public class LO_GameFlow_PVP : BaseGameFlow
 
     }
 
-    
+    protected override void OnEndGame()
+    {
+        base.OnEndGame();
+        LO_UIManager_PVP.Instance.EndGame(true);
+    }
+
+
 }

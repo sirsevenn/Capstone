@@ -10,6 +10,7 @@ public class SceneLoader
     static SceneLoader()
     {
         sceneNames.Add("Area_1_Level_1");
+        sceneNames.Add("StoreScene");
     }
 
     public static void ChangeScene(int index)

@@ -24,6 +24,9 @@ public class LO_UIManager_PVP : UIManager
     }
     #endregion
 
+    [Header("SideUI")]
+    [SerializeField] private SideBarManager sideBar;
+
     [Header("UI GameObjects")]
     [SerializeField] private GameObject playerUI;
     [SerializeField] private GameObject enemyUI;
@@ -115,6 +118,21 @@ public class LO_UIManager_PVP : UIManager
         {
             if (swapPiece.CompareTag("PlayerPiece"))
             {
+                switch (inventoryPiece.actionType)
+                {
+                    case ActionType.Heavy:
+                        InventoryManager.Instance.DeductItem(0);
+                        break;
+                    case ActionType.Light:
+                        InventoryManager.Instance.DeductItem(1);
+                        break;
+                    case ActionType.Parry:
+                        InventoryManager.Instance.DeductItem(2);
+                        break;
+                }
+
+                sideBar.UpdateInventory();
+
                 swapPiece.actionType = inventoryPiece.actionType;
                 swapPiece.icon.sprite = inventoryPiece.icon.sprite;
                 swapPiece.pieceImage.color = inventoryPiece.pieceImage.color;
@@ -337,13 +355,67 @@ public class LO_UIManager_PVP : UIManager
         {
             inventoryPieces[i].DeactivatePiece();
         }
+        int tempRed = 0;
+        int tempGreen = 0;
+        int tempBlue = 0;
 
         for (int i = 0; i < inventoryPieces.Count; i++)
         {
             if (!inventoryPieces[i].isLocked)
             {
-                int randomAction = Random.Range(0, 3);
-                switch (randomAction)
+                bool valid = false;
+                bool checkedRed = false;
+                bool checkedBlue = false;
+                bool checkedGreen = false;
+                int index = -1;
+                while (!valid && (!checkedRed || !checkedGreen || !checkedBlue))
+                {
+                    int randomAction = Random.Range(0, 3);
+                    switch (randomAction)
+                    {
+                        case 0:
+                            if (tempRed + 1 <= InventoryManager.Instance.RedPieces) { 
+                                tempRed++; 
+                                valid = true;
+                                index = randomAction;
+                            }
+                            else
+                            {
+                                checkedRed = true;
+                            }
+                            break;
+                        case 1:
+                            if (tempGreen + 1 <= InventoryManager.Instance.GreenPieces) 
+                            { 
+                                tempGreen++; 
+                                valid = true;
+                                index = randomAction;
+                            }
+                            else
+                            {
+                                checkedGreen = true;
+                            }
+
+                            break;
+                        case 2:
+                            if (tempBlue + 1 <= InventoryManager.Instance.BluePieces) 
+                            { 
+                                tempBlue++; 
+                                valid = true;
+                                index = randomAction;
+                            }
+                            else
+                            {
+                                checkedBlue = true;
+                            }
+                            break;
+                    }
+                }
+               
+                //Check if we have enough piece from inven to add
+
+
+                switch (index)
                 {
                     case 0:
                         inventoryPieces[i].ActivatePiece();

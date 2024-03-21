@@ -54,6 +54,21 @@ public class Health : MonoBehaviour
         UpdateHealthText();
     }
 
+    public void Heal(int value)
+    {
+        float newHp = Mathf.Min(maxHP, HP + value);
+        float oldHp = HP;
+        DOVirtual.Float(oldHp, newHp, hpLerpDuration, LerpHp);
+        HP = (int)newHp;
+
+        if (hpValue == null)
+        {
+            return;
+        }
+
+        UpdateHealthText();
+    }
+
     public int GetHP()
     {
         return HP;

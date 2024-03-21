@@ -6,6 +6,15 @@ using DG.Tweening;
 
 public class BaseCombatManager : MonoBehaviour
 {
+
+    enum MatchResult
+    {
+        None,
+        Win,
+        Lose,
+        Draw
+    }
+
     [Header("Debug")]
     [SerializeField] private int testDamage = 10;
 
@@ -36,7 +45,6 @@ public class BaseCombatManager : MonoBehaviour
     {
         readyCombat = true;
         OnEnemyPreCombat();
-        
     }
 
     protected virtual void OnEnemyPreCombat()
@@ -67,9 +75,19 @@ public class BaseCombatManager : MonoBehaviour
         EnemyAnimation(enemyAction);
 
     }
+    protected virtual void OnEnemyDeath()
+    {
+
+    }
+
+    protected virtual void OnPlayerDeath()
+    {
+
+    }
 
     protected void CombatProper(Vector3 playerStartPos, Vector3 enemyStartPos)
     {
+        MatchResult result = MatchResult.None;
         switch (playerAction)
         {
 
@@ -77,122 +95,31 @@ public class BaseCombatManager : MonoBehaviour
 
                 if (enemyAction == ActionType.Heavy)
                 {
-                    player.transform.DOJump(playerStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-
-                    Health health = currentEnemy.GetComponent<Health>();
-                    health.ApplyDamage((int)(testDamage * 1.5f));
-
-                    if (health.GetHP() <= 0)
-                    {
-                        currentEnemy.Die();
-                        enemyList.Remove(currentEnemy);
-                        currentEnemy.DeselectEnemy();
-                    }
-                    else
-                    {
-                        currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                    }
+                    result = MatchResult.Draw;
                 }
                 else if (enemyAction == ActionType.Light)
                 {
-                    currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-
-                    Health health = LO_GameFlow_PVP.Instance.health;
-                    health.ApplyDamage(currentEnemy.GetEnemyData().attackDamage);
-
-                    if (health.GetHP() <= 0)
-                    {
-                        //playerdie
-                        //changescene
-                        player.gameObject.GetComponent<AnimationHandler>().PlayDeathAnimation();
-                        LO_UIManager_PVP.Instance.EndGame(false);
-                    }
-                    else
-                    {
-                        player.transform.DOJump(playerStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                       
-                    }
-
-                    //dialogueManager.ChangeDialogue(CombatResult.PlayerHeavyLose);
+                    result = MatchResult.Lose;
                 }
                 else
                 {
-                    player.transform.DOJump(playerStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-
-                    Health health = currentEnemy.GetComponent<Health>();
-                    health.ApplyDamage(testDamage);
-
-                    if (health.GetHP() <= 0)
-                    {
-                        currentEnemy.Die();
-                        enemyList.Remove(currentEnemy);
-                        currentEnemy.DeselectEnemy();
-                    }
-                    else
-                    {
-                        player.transform.DOJump(playerStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                        currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                    }
+                    result = MatchResult.Win;
                 }
-
                 break;
 
             case ActionType.Parry:
 
                 if (enemyAction == ActionType.Parry)
                 {
-                    player.transform.DOJump(playerStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                    Health health = currentEnemy.GetComponent<Health>();
-                    health.ApplyDamage((int)(testDamage * 1.5f));
-
-                    if (health.GetHP() <= 0)
-                    {
-                        currentEnemy.Die();
-                        enemyList.Remove(currentEnemy);
-                        currentEnemy.DeselectEnemy();
-                    }
-                    else
-                    {
-                        currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                    }
-
+                    result = MatchResult.Draw;
                 }
                 else if (enemyAction == ActionType.Heavy)
                 {
-                    currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-
-                    Health health = LO_GameFlow_PVP.Instance.health;
-                    health.ApplyDamage(currentEnemy.GetEnemyData().attackDamage);
-
-                    if (health.GetHP() <= 0)
-                    {
-                        //playerdie
-                        //changescene
-                        player.gameObject.GetComponent<AnimationHandler>().PlayDeathAnimation();
-                        LO_UIManager_PVP.Instance.EndGame(false);
-                    }
-                    else
-                    {
-                        player.transform.DOJump(playerStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                    }
+                    result = MatchResult.Lose;
                 }
                 else
                 {
-                    player.transform.DOJump(playerStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-
-                    Health health = currentEnemy.GetComponent<Health>();
-                    health.ApplyDamage(testDamage);
-
-                    if (health.GetHP() <= 0)
-                    {
-                        currentEnemy.Die();
-                        enemyList.Remove(currentEnemy);
-                        currentEnemy.DeselectEnemy();
-                    }
-                    else
-                    {
-                        currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                    }
+                    result = MatchResult.Win;
                 }
 
                 break;
@@ -201,62 +128,83 @@ public class BaseCombatManager : MonoBehaviour
 
                 if (enemyAction == ActionType.Light)
                 {
-                    player.transform.DOJump(playerStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                    Health health = currentEnemy.GetComponent<Health>();
-                    health.ApplyDamage((int)(testDamage * 1.5f));
-
-                    if (health.GetHP() <= 0)
-                    {
-                        currentEnemy.Die();
-                        enemyList.Remove(currentEnemy);
-                        currentEnemy.DeselectEnemy();
-                    }
-                    else
-                    {
-                        currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                    }
-
+                    result = MatchResult.Draw;
                 }
                 else if (enemyAction == ActionType.Parry)
                 {
-                    currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-
-                    Health health = LO_GameFlow_PVP.Instance.health;
-                    health.ApplyDamage(currentEnemy.GetEnemyData().attackDamage);
-
-                    if (health.GetHP() <= 0)
-                    {
-                        //playerdie
-                        //changescene
-                        player.gameObject.GetComponent<AnimationHandler>().PlayDeathAnimation();
-                        LO_UIManager_PVP.Instance.EndGame(false);
-                    }
-                    else
-                    {
-                        player.transform.DOJump(playerStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                        
-                    }
+                    result = MatchResult.Lose;
                 }
                 else
                 {
-                    player.transform.DOJump(playerStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                    Health health = currentEnemy.GetComponent<Health>();
-                    health.ApplyDamage(testDamage);
-
-                    if (health.GetHP() <= 0)
-                    {
-                        currentEnemy.Die();
-                        enemyList.Remove(currentEnemy);
-                        currentEnemy.DeselectEnemy();
-                    }
-                    else
-                    {
-                        currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
-                    }
+                    result = MatchResult.Win;
                 }
 
                 break;
 
+        }
+
+        Health health;
+        switch (result)
+        {
+            case MatchResult.None:
+                Debug.Log("Error on Match Result");
+                break;
+            case MatchResult.Win:
+                player.transform.DOJump(playerStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
+                health = currentEnemy.GetComponent<Health>();
+                health.ApplyDamage(testDamage);
+
+                if (health.GetHP() <= 0)
+                {
+                    currentEnemy.Die();
+                    currentEnemy.DeselectEnemy();
+                    enemyList.Remove(currentEnemy);
+                    currentEnemy = null;
+                    OnEnemyDeath();
+                }
+                else
+                {
+                    currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
+                }
+                break;
+            case MatchResult.Lose:
+                currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
+
+                health = LO_GameFlow_PVP.Instance.health;
+                health.ApplyDamage(currentEnemy.GetEnemyData().attackDamage);
+
+                if (health.GetHP() <= 0)
+                {
+                    player.gameObject.GetComponent<AnimationHandler>().PlayDeathAnimation();
+                    OnPlayerDeath();
+                    //LO_UIManager_PVP.Instance.EndGame(false);
+                }
+                else
+                {
+                    player.transform.DOJump(playerStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
+
+                }
+                break;
+            case MatchResult.Draw:
+                player.transform.DOJump(playerStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
+                health = currentEnemy.GetComponent<Health>();
+                health.ApplyDamage((int)(testDamage * 1.5f));
+
+                if (health.GetHP() <= 0)
+                {
+                    currentEnemy.Die();
+                    currentEnemy.DeselectEnemy();
+                    enemyList.Remove(currentEnemy);
+                    currentEnemy = null;
+                    OnEnemyDeath();
+                }
+                else
+                {
+                    currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
+                }
+                break;
+            default:
+                break;
         }
 
         OnStartCombat();
@@ -276,13 +224,19 @@ public class BaseCombatManager : MonoBehaviour
         //If there are more go next combat
         if (enemyList.Count > 0)
         {
-            EnemyPreCombat();
+            StartCoroutine(GameUtilities.DelayFunction(EnemyPreCombat, 2));
+            EndRound();
         }
         else if (enemyList.Count == 0)
         {
             //Exit Room
-            TriggerEndRoom();
+            StartCoroutine(GameUtilities.DelayFunction(TriggerEndRoom, 2));
         }
+
+    }
+
+    protected virtual void EndRound()
+    {
 
     }
 

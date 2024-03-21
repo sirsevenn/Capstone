@@ -6,21 +6,33 @@ using DG.Tweening;
 
 public class Spinner : MonoBehaviour
 {
+    public bool resetOnStart = false;
+
     [Header("Spinner Pieces")]
     public SpinnerPiece[] spinnerPieces;
+
+    [Header("Spinner Settings")]
+    [SerializeField] private Color redColor;
+    [SerializeField] private Color greenColor;
+    [SerializeField] private Color blueColor;
+    [Space(10)]
+    [SerializeField] private Sprite redIcon;
+    [SerializeField] private Sprite greenIcon;
+    [SerializeField] private Sprite blueIcon;
+
 
     //Other stuff
     private int[] pieceAngles = {0, 18, 54, 90, 126, 162, 198, 234, 270, 306, 342};
 
-    /*
-    private void Update()
+    private void Start()
     {
-        if (Input.GetKeyDown(KeyCode.Space))
+        SetDefault();
+
+        if (resetOnStart)
         {
-            Spin(3);
+            ResetWheel();
         }
     }
-    */
 
     public void Spin(float tweenDuration, bool isPlayer)
     {
@@ -36,7 +48,6 @@ public class Spinner : MonoBehaviour
 
         //Calculate which piece spinner lands on
         float currentZRot = transform.rotation.eulerAngles.z;
-        Debug.Log("Current Z Rot: " + currentZRot);
 
         //Turn into positive rotation
         while (currentZRot < 0)
@@ -62,6 +73,40 @@ public class Spinner : MonoBehaviour
 
         LO_GameFlow_PVP.Instance.SetActions(spinnerPieces[index].actionType, isPlayer);
 
+    }
+
+    public void ResetWheel()
+    {
+        for (int i = 0; i < spinnerPieces.Length; i++)
+        {
+            spinnerPieces[i].DeactivatePiece();
+        }
+    }
+
+    public void SetDefault()
+    {
+        int counter = 0;
+        for (int i = 0; i < spinnerPieces.Length; i++)
+        {
+            switch (counter)
+            {
+                case 0:
+                    spinnerPieces[i].ChangePiece(ActionType.Heavy, redIcon, redColor);
+                    break;
+                case 1:
+                    spinnerPieces[i].ChangePiece(ActionType.Light, greenIcon, greenColor);
+                    break;
+                case 2:
+                    spinnerPieces[i].ChangePiece(ActionType.Parry, blueIcon, blueColor);
+                    break;
+            }
+
+            counter++;
+            if (counter > 2)
+            {
+                counter = 0;
+            }
+        }
     }
 
     public void ChangeWheel(EnemyData probability)
@@ -104,6 +149,11 @@ public class Spinner : MonoBehaviour
             {
                 counter = 0;
             }
+        }
+
+        for (int i = 0; i < spinnerPieces.Length; i++)
+        {
+            spinnerPieces[i].ActivatePiece();
         }
 
     }

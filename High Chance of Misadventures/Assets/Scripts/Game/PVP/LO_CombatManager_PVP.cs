@@ -24,6 +24,7 @@ public class LO_CombatManager_PVP : BaseCombatManager
         playerSpinner.Spin(spinDuration * 0.5f, true);
         enemySpinner.Spin(spinDuration, false);
         StartCoroutine(GameUtilities.DelayFunction(StartCombat, spinDuration + 1.0f));
+
     }
 
     protected override void OnEnemyPreCombat()
@@ -32,12 +33,30 @@ public class LO_CombatManager_PVP : BaseCombatManager
         LO_UIManager_PVP.Instance.GenerateInventoryPieces();
     }
 
+    protected override void EndRound()
+    {
+        base.EndRound();
+        playerSpinner.SetDefault();
+
+    }
+
     protected override void TriggerEndRoom()
     {
         base.TriggerEndRoom();
         LO_GameFlow_PVP.Instance.EndRoom();
     }
 
+    protected override void OnEnemyDeath()
+    {
+        base.OnEnemyDeath();
+        enemySpinner.ResetWheel();
+    }
+
+    protected override void OnPlayerDeath()
+    {
+        base.OnPlayerDeath();
+        LO_UIManager_PVP.Instance.EndGame(false);
+    }
 
 
 }

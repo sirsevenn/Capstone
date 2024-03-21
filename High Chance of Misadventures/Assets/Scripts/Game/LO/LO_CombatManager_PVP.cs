@@ -12,7 +12,7 @@ public class LO_CombatManager_PVP : BaseCombatManager
     [SerializeField] private Spinner playerSpinner;
     [SerializeField] private Spinner enemySpinner;
 
-    public void SpinWheels()
+    public override void StartRound()
     {
         if (!readyCombat || currentEnemy == null)
         {

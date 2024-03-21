@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LO_CombatManager_Basic : BaseCombatManager
+public class HO_CombatManager : BaseCombatManager
 {
     public void PlayerAction(int type)
     {
@@ -20,7 +20,7 @@ public class LO_CombatManager_Basic : BaseCombatManager
                 break;
         }
 
-        EnemyData data = LO_GameFlow_Basic.Instance.selectedEnemy.GetComponent<Enemy>().GetEnemyData();
+        EnemyData data = HO_GameFlow.Instance.selectedEnemy.GetComponent<Enemy>().GetEnemyData();
 
         //Enemey Probability
         int total = data.heavyAttackProbability + data.lightAttackProbability + data.parryAttackProbability;
@@ -45,8 +45,8 @@ public class LO_CombatManager_Basic : BaseCombatManager
     protected override void TriggerEndRoom()
     {
         base.TriggerEndRoom();
-        LO_UIManager_Basic.Instance.ResetProbabilityBoard();
-        LO_GameFlow_Basic.Instance.EndRoom();
+        HO_UIManager.Instance.ResetProbabilityBoard();
+        HO_GameFlow.Instance.EndRoom();
     }
 
 }

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
-public class LO_UIManager_Basic : UIManager
+public class HO_UIManager : UIManager
 {
-    public static LO_UIManager_Basic Instance { get; private set; }
+    public static HO_UIManager Instance { get; private set; }
 
 #region
     private void Awake()

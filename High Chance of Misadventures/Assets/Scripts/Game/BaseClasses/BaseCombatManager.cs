@@ -47,6 +47,11 @@ public class BaseCombatManager : MonoBehaviour
         OnEnemyPreCombat();
     }
 
+    public virtual void StartRound()
+    {
+
+    }
+
     protected virtual void OnEnemyPreCombat()
     {
 

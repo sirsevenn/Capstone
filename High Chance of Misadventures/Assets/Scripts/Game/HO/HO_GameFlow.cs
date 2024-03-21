@@ -2,10 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LO_GameFlow_Basic : BaseGameFlow
+public class HO_GameFlow : BaseGameFlow
 {
     #region singleton
-    public static LO_GameFlow_Basic Instance { get; private set; }
+    public static HO_GameFlow Instance { get; private set; }
 
     private void Awake()
     {
@@ -21,7 +21,7 @@ public class LO_GameFlow_Basic : BaseGameFlow
     #endregion
 
     [Header("Other Components")]
-    public LO_CombatManager_Basic combatManager;
+    public HO_CombatManager combatManager;
 
     void Start()
     {
@@ -44,7 +44,7 @@ public class LO_GameFlow_Basic : BaseGameFlow
         combatManager.currentEnemy = enemy;
         combatManager.currentEnemy.SelectEnemy();
 
-        LO_UIManager_Basic.Instance.SetProbabiltyBoard(enemy.data.heavyAttackProbability * 10, enemy.data.lightAttackProbability * 10, enemy.data.parryAttackProbability * 10);
+        HO_UIManager.Instance.SetProbabiltyBoard(enemy.data.heavyAttackProbability * 10, enemy.data.lightAttackProbability * 10, enemy.data.parryAttackProbability * 10);
 
     }
 

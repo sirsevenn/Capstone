@@ -1,7 +1,9 @@
-using System.Collections;
+using Cinemachine;
+using DG.Tweening;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
-using TMPro;
+using UnityEngine.UI;
 
 public class HO_UIManager : UIManager
 {
@@ -19,25 +21,72 @@ public class HO_UIManager : UIManager
         Instance = this;
 
     }
-#endregion
+    #endregion
 
-    [Header("Probability Texts")]
-    [SerializeField] private TMP_Text heavyProbabilityText;
-    [SerializeField] private TMP_Text lightProbabilityText;
-    [SerializeField] private TMP_Text parryProbabilityText;
+    [Header("Other Properties")]
+    [SerializeField] private List<Button> attackButtonsList;
 
-    public void SetProbabiltyBoard(int heavy, int light, int parry)
+    [Space(10)]
+    [SerializeField] private CinemachineVirtualCamera mainCamera;
+    [SerializeField] private GameObject enemyAttackPopUp;
+    [SerializeField] private Image popUpIcon;
+    [SerializeField] private Image popUpBG;
+
+
+    public void Start()
     {
-        heavyProbabilityText.text = heavy.ToString() + "%";
-        lightProbabilityText.text = light.ToString() + "%";
-        parryProbabilityText.text = parry.ToString() + "%";
+        enemyAttackPopUp.SetActive(false);
+
+        SetActiveAttackButtons(false);
     }
 
-    public void ResetProbabilityBoard()
+    public void SetActiveAttackButtons(bool value)
     {
-        heavyProbabilityText.text = "---" + "%";
-        lightProbabilityText.text = "---" + "%";
-        parryProbabilityText.text = "---" + "%";
+        foreach (var button in attackButtonsList)
+        {
+            button.interactable = value;
+
+            // reset button state, it gets stuck as highlighted as some point
+            button.enabled = false;
+            button.enabled = true;
+        }
     }
 
+    public void ActivatePopUp(ActionType attackType, Vector3 pos)
+    {
+        Sprite icon = null;
+        Color color = Color.white;
+
+        switch (attackType)
+        {
+            case ActionType.Heavy:
+                icon = heavyIcon;
+                color = heavyColor;
+                break;
+            case ActionType.Light:
+                icon = lightIcon;
+                color = lightColor;
+                break;
+            case ActionType.Parry:
+                icon = parryIcon;
+                color = parryColor;
+                break;
+            default:
+                return;
+        }
+
+        enemyAttackPopUp.SetActive(true);
+        popUpIcon.sprite = icon;
+        popUpBG.color = color;
+
+        enemyAttackPopUp.transform.LookAt(mainCamera.transform);
+        enemyAttackPopUp.transform.position = new Vector3(pos.x, pos.y + 0.5f, pos.z);
+        float yDelta = enemyAttackPopUp.transform.position.y + 2;
+        enemyAttackPopUp.transform.DOMoveY(yDelta, 1f, false).SetEase(Ease.Linear).OnComplete(OnCompletePopUp);
+    }
+
+    private void OnCompletePopUp()
+    {
+        enemyAttackPopUp.SetActive(false);
+    }
 }

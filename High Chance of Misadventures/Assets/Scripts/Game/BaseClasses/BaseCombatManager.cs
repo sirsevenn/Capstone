@@ -37,6 +37,10 @@ public class BaseCombatManager : MonoBehaviour
     [Space(10)]
     public List<Enemy> enemyList = new List<Enemy>();
 
+    [Header("Scene Managers")]
+    [SerializeField] private BaseGameFlow gameFlow;
+
+
     //numbers
     protected int queueCount = 0;
     protected float offsetMultiplier = 0.5f;
@@ -172,10 +176,12 @@ public class BaseCombatManager : MonoBehaviour
                     currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
                 }
                 break;
+
             case MatchResult.Lose:
                 currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
 
-                health = LO_GameFlow_PVP.Instance.health;
+                //health = LO_GameFlow_PVP.Instance.health;
+                health = gameFlow.health;
                 health.ApplyDamage(currentEnemy.GetEnemyData().attackDamage);
 
                 if (health.GetHP() <= 0)
@@ -190,6 +196,7 @@ public class BaseCombatManager : MonoBehaviour
 
                 }
                 break;
+
             case MatchResult.Draw:
                 player.transform.DOJump(playerStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
                 health = currentEnemy.GetComponent<Health>();
@@ -212,10 +219,8 @@ public class BaseCombatManager : MonoBehaviour
                 break;
         }
 
-        OnStartCombat();
-
+        //OnStartCombat();
         StartCoroutine(GameUtilities.DelayFunction(EndCombat, 2));
-
     }
 
     protected virtual void OnStartCombat()
@@ -225,7 +230,6 @@ public class BaseCombatManager : MonoBehaviour
 
     protected void EndCombat()
     {
-
         //If there are more go next combat
         if (enemyList.Count > 0)
         {

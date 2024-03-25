@@ -106,8 +106,7 @@ public class BaseGameFlow : MonoBehaviour
 
     public void StartRoom()
     {
-
-        Debug.Log("Start Room");
+        //Debug.Log("Start Room");
         gameState = GameState.Start;
 
         DOVirtual.Float(nearFog, farFog, fogStartDuration, StartFogEffect);

@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class HO_GameFlow : BaseGameFlow
@@ -21,10 +19,28 @@ public class HO_GameFlow : BaseGameFlow
     #endregion
 
     [Header("Other Components")]
-    public HO_CombatManager combatManager;
+    [SerializeField] private HO_CombatManager combatManager;
+    [SerializeField] private HO_UIManager uiManager;
+    [SerializeField] private JournalManager journal;
+    private int selectedEnemyIndex;
 
-    void Start()
+
+    public int SelectedEnemyIndex 
+    { 
+        get
+        {
+            return selectedEnemyIndex;
+        }
+
+        private set
+        {
+            selectedEnemyIndex = value;
+        }
+    }
+
+    protected override void Start()
     {
+        base.Start();
         StartRoom();
     }
 
@@ -43,21 +59,39 @@ public class HO_GameFlow : BaseGameFlow
 
         combatManager.currentEnemy = enemy;
         combatManager.currentEnemy.SelectEnemy();
+        selectedEnemy = enemy.gameObject;
+        selectedEnemyIndex = combatManager.enemyList.IndexOf(enemy);
+        journal.UpdateJournalPage();
+    }
 
-        HO_UIManager.Instance.SetProbabiltyBoard(enemy.data.heavyAttackProbability * 10, enemy.data.lightAttackProbability * 10, enemy.data.parryAttackProbability * 10);
+    public void OnReselectEnemy(Enemy enemy)
+    {
+        if (combatManager.currentEnemy == enemy)
+        {
+            return;
+        }
 
+        OnSelectedEnemy(enemy);
     }
 
     protected override void AddEnemyToCombatManager(GameObject clone)
     {
-        base.AddEnemyToCombatManager(clone);
+        //base.AddEnemyToCombatManager(clone);
         combatManager.enemyList.Add(clone.GetComponent<Enemy>());
     }
 
     protected override void OnStartCombatState()
     {
         base.OnStartCombatState();
-        combatManager.EnemyPreCombat();
+
+        OnSelectedEnemy(combatManager.enemyList[0]);
+
+        if (combatManager.currentEnemy != null)
+        {
+            combatManager.StartRound();
+        }
+
+        journal.UpdateJournalPage();
     }
 
     protected override void OnResetRoom()
@@ -66,16 +100,8 @@ public class HO_GameFlow : BaseGameFlow
         combatManager.ResetCombatManager();
     }
 
-    public void SetActions(ActionType action, bool isPlayer)
+    protected override void OnEndGame()
     {
-        if (isPlayer)
-        {
-            combatManager.playerAction = action;
-        }
-        else if (!isPlayer)
-        {
-            combatManager.enemyAction = action;
-        }
-
+        journal.SaveJournalData();
     }
 }

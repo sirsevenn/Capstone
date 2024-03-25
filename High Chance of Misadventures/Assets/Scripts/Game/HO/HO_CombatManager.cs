@@ -4,8 +4,17 @@ using UnityEngine;
 
 public class HO_CombatManager : BaseCombatManager
 {
-    public void PlayerAction(int type)
+    [SerializeField] private HO_UIManager uiManager;
+    private bool isOnCombat;
+
+
+    public void OnPlayerAction(int type)
     {
+        if (isOnCombat)
+        {
+            return;
+        }
+
         //PLAYER ACTION
         switch (type)
         {
@@ -39,13 +48,43 @@ public class HO_CombatManager : BaseCombatManager
             enemyAction = ActionType.Parry;
         }
 
+        if (uiManager != null)
+        {
+            uiManager.SetActiveAttackButtons(false);
+            uiManager.ActivatePopUp(enemyAction, currentEnemy.transform.position);
+        }
+
+        isOnCombat = true;
         StartCombat();
+    }
+
+    public override void StartRound()
+    {
+        if (uiManager != null)
+        {
+            uiManager.SetActiveAttackButtons(true);
+        }
+
+        isOnCombat = false; 
+    }
+
+    protected override void EndRound()
+    {
+        StartCoroutine(GameUtilities.DelayFunction(StartRound, 1));
+    }
+
+    protected override void OnEnemyDeath()
+    {
+        if (enemyList.Count > 0)
+        {
+            HO_GameFlow.Instance.OnReselectEnemy(enemyList[0]);
+        }
     }
 
     protected override void TriggerEndRoom()
     {
         base.TriggerEndRoom();
-        HO_UIManager.Instance.ResetProbabilityBoard();
+        //HO_UIManager.Instance.ResetProbabilityBoard();
         HO_GameFlow.Instance.EndRoom();
     }
 

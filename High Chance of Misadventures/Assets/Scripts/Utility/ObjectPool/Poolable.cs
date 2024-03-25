@@ -27,7 +27,7 @@ public class Poolable : MonoBehaviour
         Health health = GetComponent<Health>();
         if (health)
         {
-            Debug.Log("Reset HP");
+            //Debug.Log("Reset HP");
             health.ResetHp();
         }
 

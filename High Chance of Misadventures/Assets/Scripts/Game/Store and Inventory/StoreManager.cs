@@ -18,7 +18,29 @@ public class StoreManager : MonoBehaviour
     [SerializeField] private GameObject weaponPage;
     [SerializeField] private GameObject itemPage;
 
-   
+    [Header("Armor Settings")]
+    [SerializeField] private SO_Armor currentHelmet;
+    [SerializeField] private SO_Armor currentCuirass;
+    [SerializeField] private SO_Armor currentGreaves;
+    [Space(20)]
+    [SerializeField] private Image HelmetImage;
+    [SerializeField] private TMP_Text HelmetName;
+    [SerializeField] private TMP_Text HelmetDefense;
+    [SerializeField] private TMP_Text HelmetCost;
+    [Space(10)]
+    [SerializeField] private Image ArmorImage;
+    [SerializeField] private TMP_Text ArmorName;
+    [SerializeField] private TMP_Text ArmorDefense;
+    [SerializeField] private TMP_Text ArmorCost;
+    [Space(10)]
+    [SerializeField] private Image LegsImage;
+    [SerializeField] private TMP_Text LegsName;
+    [SerializeField] private TMP_Text LegsDefense;
+    [SerializeField] private TMP_Text LegsCost;
+
+  
+
+
 
     #region PageManagement
     private void CloseAllPages()
@@ -49,7 +71,8 @@ public class StoreManager : MonoBehaviour
 
     private void Start()
     {
-        InitializeStore();
+        InitializeItemPage();
+        InitializeArmorPage();
     }
 
     public void ProceedToFight()
@@ -57,13 +80,50 @@ public class StoreManager : MonoBehaviour
         SceneLoader.ChangeScene(0);
     }
 
-    private void InitializeStore()
+    private void InitializeItemPage()
     {
         goldText.text = InventoryManager.Instance.Gold.ToString();
         itemHolders[0].InitializeItemHolder(InventoryManager.Instance.RedPieces);
         itemHolders[1].InitializeItemHolder(InventoryManager.Instance.GreenPieces);
         itemHolders[2].InitializeItemHolder(InventoryManager.Instance.BluePieces);
         itemHolders[3].InitializeItemHolder(InventoryManager.Instance.HealthPotions);
+    }
+
+    public void InitializeArmorPage()
+    {
+        InitializeHelmetBar();
+        InitializeCuirassBar();
+        InitializeGreavesBar();
+    }
+
+    private void InitializeHelmetBar()
+    {
+        int helmetLevel = InventoryManager.Instance.HelmetLevel;
+        currentHelmet = ScriptableObjectDatabase.Instance.helmetUpgrades[helmetLevel];
+        HelmetImage.sprite = currentHelmet.sprite;
+        HelmetName.text = currentHelmet.armorName;
+        HelmetDefense.text = "Defense:" + currentHelmet.defenseValue.ToString();
+        HelmetCost.text = currentHelmet.upgradeCost.ToString();
+    }
+
+    private void InitializeCuirassBar()
+    {
+        int armorLevel = InventoryManager.Instance.CuirassLevel;
+        currentCuirass = ScriptableObjectDatabase.Instance.cuirassUpgrades[armorLevel];
+        ArmorImage.sprite = currentCuirass.sprite;
+        ArmorName.text = currentCuirass.armorName;
+        ArmorDefense.text = "Defense:" + currentCuirass.defenseValue.ToString();
+        ArmorCost.text = currentCuirass.upgradeCost.ToString();
+    }
+
+    private void InitializeGreavesBar()
+    {
+        int legsLevel = InventoryManager.Instance.GreavesLevel;
+        currentGreaves = ScriptableObjectDatabase.Instance.greavesUpgrades[legsLevel];
+        LegsImage.sprite = currentGreaves.sprite;
+        LegsName.text = currentGreaves.armorName;
+        LegsDefense.text = "Defense:" + currentGreaves.defenseValue.ToString();
+        LegsCost.text = currentGreaves.upgradeCost.ToString();
     }
 
     public void BuyItem(int index)
@@ -124,6 +184,35 @@ public class StoreManager : MonoBehaviour
         goldText.text = InventoryManager.Instance.Gold.ToString();
 
     }
+
+    public void BuyArmor(int index)
+    {
+        switch (index)
+        {
+            case 0:
+                if (!CanPurchase(currentHelmet.upgradeCost)) { return; }
+                DeductGold(currentHelmet.upgradeCost);
+                InventoryManager.Instance.UpgradeArmor(0);
+                InitializeHelmetBar();
+                break;
+            case 1:
+                if (!CanPurchase(currentCuirass.upgradeCost)) { return; }
+                DeductGold(currentCuirass.upgradeCost);
+                InventoryManager.Instance.UpgradeArmor(1);
+                InitializeCuirassBar();
+                break;
+            case 2:
+                if (!CanPurchase(currentGreaves.upgradeCost)) { return; }
+                DeductGold(currentGreaves.upgradeCost);
+                InventoryManager.Instance.UpgradeArmor(2);
+                InitializeGreavesBar();
+                break;
+        }
+
+        goldText.text = InventoryManager.Instance.Gold.ToString();
+    }
+
+  
 
 
     private bool CanPurchase(int cost)

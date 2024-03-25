@@ -212,16 +212,11 @@ public class BaseCombatManager : MonoBehaviour
                 break;
         }
 
-        OnStartCombat();
-
         StartCoroutine(GameUtilities.DelayFunction(EndCombat, 2));
 
     }
 
-    protected virtual void OnStartCombat()
-    {
-
-    }
+  
 
     protected void EndCombat()
     {

@@ -71,8 +71,6 @@ public class BaseGameFlow : MonoBehaviour
         health.InitializaHealth(playerMaxHP);
     }
 
-    
-
     protected virtual void Update()
     {
         if (Input.GetMouseButtonDown(0))

@@ -42,6 +42,12 @@ public class HO_CombatManager : BaseCombatManager
         StartCombat();
     }
 
+    public override void StartRound()
+    {
+        base.StartRound();
+
+    }
+
     protected override void TriggerEndRoom()
     {
         base.TriggerEndRoom();

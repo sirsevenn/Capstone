@@ -67,6 +67,7 @@ public class InventoryManager : MonoBehaviour
         Debug.Log("Scene loaded: " + scene.name);
         // Call your function here
         InitializeInventory();
+        
     }
 
     void OnSceneUnloaded(Scene scene)
@@ -79,7 +80,7 @@ public class InventoryManager : MonoBehaviour
 
     private void InitializeInventory()
     {
-        gold = PlayerPrefs.GetInt(goldKey, 100);
+        gold = PlayerPrefs.GetInt(goldKey, 5000);
 
         helmetLevel = PlayerPrefs.GetInt(helmetKey, 0);
         cuirassLevel = PlayerPrefs.GetInt(cuirassKey, 0);
@@ -145,6 +146,22 @@ public class InventoryManager : MonoBehaviour
                 break;
             case 3:
                 healthPotions--;
+                break;
+        }
+    }
+
+    public void UpgradeArmor(int index)
+    {
+        switch (index)
+        {
+            case 0:
+                helmetLevel++;
+                break;
+            case 1:
+                cuirassLevel++;
+                break;
+            case 2:
+                greavesLevel++;
                 break;
         }
     }

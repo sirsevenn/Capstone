@@ -6641,9 +6641,24 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c3d1ea14dab2cc641a7c6f0879e73843, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  helmetUpgrades: []
-  cuirassUpgrades: []
-  greavesUpgrades: []
+  helmetUpgrades:
+  - {fileID: 11400000, guid: 0921f868fc1e73242b85d9b5db3e3bbb, type: 2}
+  - {fileID: 11400000, guid: ef72349c83c3d5f4ea6df33c5cff606f, type: 2}
+  - {fileID: 11400000, guid: 43edcc1d9eb2e5d4f8aafeda71eb4cd8, type: 2}
+  - {fileID: 11400000, guid: e48ead62a041c324ab6155c79556d036, type: 2}
+  - {fileID: 11400000, guid: d92e58ea237ecb348bb829ebd059e76b, type: 2}
+  cuirassUpgrades:
+  - {fileID: 11400000, guid: 8325a7ecb3837b24aaaea11f7a6bf917, type: 2}
+  - {fileID: 11400000, guid: d18011e80419dbe4c97c5d7c5e5d3041, type: 2}
+  - {fileID: 11400000, guid: 377f07ad350b39b4db2ac7d65766ef24, type: 2}
+  - {fileID: 11400000, guid: 0ad306e4a858edf4db713543b4d6e6ef, type: 2}
+  - {fileID: 11400000, guid: 155a212e6524f8747a9af2a81574a241, type: 2}
+  greavesUpgrades:
+  - {fileID: 11400000, guid: 2e3f10fdc8a9ac440b002eb0fd4d2f69, type: 2}
+  - {fileID: 11400000, guid: 0ff28b7785c8f0446bff4b6c32f729c0, type: 2}
+  - {fileID: 11400000, guid: 70a49598121a35c4d9839a4a23dc119e, type: 2}
+  - {fileID: 11400000, guid: da17d372d61584d41b901d8830f969df, type: 2}
+  - {fileID: 11400000, guid: 37d3fab2d4660314f82d60662583befd, type: 2}
 --- !u!4 &783487432
 Transform:
   m_ObjectHideFlags: 0
@@ -12089,6 +12104,21 @@ MonoBehaviour:
   armorPage: {fileID: 1147455891645569392}
   weaponPage: {fileID: 1147455891175737011}
   itemPage: {fileID: 453039149}
+  currentHelmet: {fileID: 0}
+  currentCuirass: {fileID: 0}
+  currentGreaves: {fileID: 0}
+  HelmetImage: {fileID: 1612708403}
+  HelmetName: {fileID: 1147455891162893382}
+  HelmetDefense: {fileID: 354325092}
+  HelmetCost: {fileID: 134207410}
+  ArmorImage: {fileID: 567771467}
+  ArmorName: {fileID: 215783172}
+  ArmorDefense: {fileID: 246134501}
+  ArmorCost: {fileID: 1036287023}
+  LegsImage: {fileID: 2033430324}
+  LegsName: {fileID: 1872619382}
+  LegsDefense: {fileID: 1922699562}
+  LegsCost: {fileID: 858340164}
 --- !u!1 &1413313874
 GameObject:
   m_ObjectHideFlags: 0
@@ -12137,6 +12167,7 @@ GameObject:
   - component: {fileID: 1421974706}
   - component: {fileID: 1421974708}
   - component: {fileID: 1421974707}
+  - component: {fileID: 1421974709}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -12203,6 +12234,62 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1421974705}
   m_CullTransparentMesh: 1
+--- !u!114 &1421974709
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1421974705}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 1421974707}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1408375172}
+        m_TargetAssemblyTypeName: StoreManager, Assembly-CSharp
+        m_MethodName: BuyArmor
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1422692907
 GameObject:
   m_ObjectHideFlags: 0
@@ -12214,6 +12301,7 @@ GameObject:
   - component: {fileID: 1422692908}
   - component: {fileID: 1422692910}
   - component: {fileID: 1422692909}
+  - component: {fileID: 1422692911}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -12280,6 +12368,62 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1422692907}
   m_CullTransparentMesh: 1
+--- !u!114 &1422692911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1422692907}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 1422692909}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1408375172}
+        m_TargetAssemblyTypeName: StoreManager, Assembly-CSharp
+        m_MethodName: BuyArmor
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 1
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &1426927520
 GameObject:
   m_ObjectHideFlags: 0
@@ -16781,6 +16925,7 @@ GameObject:
   - component: {fileID: 2121168503}
   - component: {fileID: 2121168505}
   - component: {fileID: 2121168504}
+  - component: {fileID: 2121168506}
   m_Layer: 5
   m_Name: Button
   m_TagString: Untagged
@@ -16847,6 +16992,62 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2121168502}
   m_CullTransparentMesh: 1
+--- !u!114 &2121168506
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2121168502}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Navigation:
+    m_Mode: 3
+    m_WrapAround: 0
+    m_SelectOnUp: {fileID: 0}
+    m_SelectOnDown: {fileID: 0}
+    m_SelectOnLeft: {fileID: 0}
+    m_SelectOnRight: {fileID: 0}
+  m_Transition: 1
+  m_Colors:
+    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
+    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
+    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
+    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_ColorMultiplier: 1
+    m_FadeDuration: 0.1
+  m_SpriteState:
+    m_HighlightedSprite: {fileID: 0}
+    m_PressedSprite: {fileID: 0}
+    m_SelectedSprite: {fileID: 0}
+    m_DisabledSprite: {fileID: 0}
+  m_AnimationTriggers:
+    m_NormalTrigger: Normal
+    m_HighlightedTrigger: Highlighted
+    m_PressedTrigger: Pressed
+    m_SelectedTrigger: Selected
+    m_DisabledTrigger: Disabled
+  m_Interactable: 1
+  m_TargetGraphic: {fileID: 2121168504}
+  m_OnClick:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 1408375172}
+        m_TargetAssemblyTypeName: StoreManager, Assembly-CSharp
+        m_MethodName: BuyArmor
+        m_Mode: 3
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 2
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &2137404928
 GameObject:
   m_ObjectHideFlags: 0
@@ -17950,6 +18151,7 @@ GameObject:
   - component: {fileID: 1147455891645569393}
   - component: {fileID: 1147455891645569398}
   - component: {fileID: 1147455891645569399}
+  - component: {fileID: 1147455891645569400}
   m_Layer: 5
   m_Name: Armor Page
   m_TagString: Untagged
@@ -18014,6 +18216,18 @@ MonoBehaviour:
   m_ChildScaleWidth: 1
   m_ChildScaleHeight: 1
   m_ReverseArrangement: 0
+--- !u!114 &1147455891645569400
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1147455891645569392}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a853dda217fc0f04da8d5c3d2ee5b23e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!224 &1147455891687366652
 RectTransform:
   m_ObjectHideFlags: 0

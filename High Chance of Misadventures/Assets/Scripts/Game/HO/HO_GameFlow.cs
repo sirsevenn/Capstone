@@ -44,8 +44,6 @@ public class HO_GameFlow : BaseGameFlow
         combatManager.currentEnemy = enemy;
         combatManager.currentEnemy.SelectEnemy();
 
-        HO_UIManager.Instance.SetProbabiltyBoard(enemy.data.heavyAttackProbability * 10, enemy.data.lightAttackProbability * 10, enemy.data.parryAttackProbability * 10);
-
     }
 
     protected override void AddEnemyToCombatManager(GameObject clone)

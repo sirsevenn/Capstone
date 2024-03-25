@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using TMPro;
 using DG.Tweening;
 using UnityEngine;
+using Unity.VisualScripting;
+using System.Linq;
 
 public class JournalManager : MonoBehaviour
 {
@@ -227,5 +229,25 @@ public class JournalManager : MonoBehaviour
         totalTallyText.text = total.ToString();
         probability = (total == 0) ? 0M : 100M;
         totalProbText.text = probability.ToString() + "%";
+    }
+
+
+    //DEBUG
+    public void ResetJournalKeys()
+    {
+        foreach (var key in recordedTallies.Keys.ToList())
+        {
+            string prefsKey = CreateJournalKey(key.enemyType, key.attackType);
+            PlayerPrefs.DeleteKey(prefsKey);
+
+            recordedTallies[key] = 0;
+        }
+
+        foreach (var key in totalTallies.Keys.ToList())
+        {
+            totalTallies[key] = 0;
+        }
+
+        UpdateJournalPage();
     }
 }

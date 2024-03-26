@@ -106,7 +106,7 @@ public class BaseGameFlow : MonoBehaviour
     {
         //Debug.Log("Start Room");
         gameState = GameState.Start;
-
+        playerAnimationHandler.PlayerMove();
         DOVirtual.Float(nearFog, farFog, fogStartDuration, StartFogEffect);
 
         roomCounter++;
@@ -182,7 +182,7 @@ public class BaseGameFlow : MonoBehaviour
         OnStartCombatState();
        
 
-        playerAnimationHandler.ToggleMove();
+        playerAnimationHandler.PlayerStopMove();
 
         camera1.Priority = 1;
         camera2.Priority = 0;
@@ -212,8 +212,8 @@ public class BaseGameFlow : MonoBehaviour
             camera2.Priority = 1;
             camera3.Priority = 0;
 
-            playerAnimationHandler.ToggleMove();
-            player.transform.DOMove(exitTransform.position, 20).OnComplete(playerAnimationHandler.ToggleMove);
+            playerAnimationHandler.PlayerMove();
+            player.transform.DOMove(exitTransform.position, 20).OnComplete(playerAnimationHandler.PlayerMove);
 
             StartCoroutine(GameUtilities.DelayFunction(ResetRoom, 1.0f));
         }

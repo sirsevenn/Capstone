@@ -45,13 +45,13 @@ public class SideBarManager : MonoBehaviour
     {
         if (!isOpen)
         {
-            sideBar.transform.DOMoveX(openPos.position.x, travelDuration, true).SetEase(Ease.Linear);
+            sideBar.transform.DOMoveX(openPos.position.x, travelDuration, true).SetEase(Ease.InSine);
             arrow.transform.localScale = new Vector3(-1, 1, 1);
             isOpen = !isOpen;
         }
         else if (isOpen)
         {
-            sideBar.transform.DOMoveX(closePos.position.x, travelDuration, true).SetEase(Ease.Linear);
+            sideBar.transform.DOMoveX(closePos.position.x, travelDuration, true).SetEase(Ease.InSine);
             arrow.transform.localScale = new Vector3(1, 1, 1);
             isOpen = !isOpen;
         }

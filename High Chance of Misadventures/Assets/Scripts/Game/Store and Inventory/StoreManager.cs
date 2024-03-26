@@ -19,6 +19,8 @@ public class StoreManager : MonoBehaviour
     [SerializeField] private GameObject itemPage;
 
     [Header("Armor Settings")]
+    [SerializeField] private ArmorManager armorManager;
+    [Space(10)]
     [SerializeField] private SO_Armor currentHelmet;
     [SerializeField] private SO_Armor currentCuirass;
     [SerializeField] private SO_Armor currentGreaves;
@@ -38,7 +40,8 @@ public class StoreManager : MonoBehaviour
     [SerializeField] private TMP_Text LegsDefense;
     [SerializeField] private TMP_Text LegsCost;
 
-  
+
+
 
 
 
@@ -194,18 +197,21 @@ public class StoreManager : MonoBehaviour
                 DeductGold(currentHelmet.upgradeCost);
                 InventoryManager.Instance.UpgradeArmor(0);
                 InitializeHelmetBar();
+                armorManager.UpdateHelmet();
                 break;
             case 1:
                 if (!CanPurchase(currentCuirass.upgradeCost)) { return; }
                 DeductGold(currentCuirass.upgradeCost);
                 InventoryManager.Instance.UpgradeArmor(1);
                 InitializeCuirassBar();
+                armorManager.UpdateCuirass();
                 break;
             case 2:
                 if (!CanPurchase(currentGreaves.upgradeCost)) { return; }
                 DeductGold(currentGreaves.upgradeCost);
                 InventoryManager.Instance.UpgradeArmor(2);
                 InitializeGreavesBar();
+                armorManager.UpdateGreaves();
                 break;
         }
 

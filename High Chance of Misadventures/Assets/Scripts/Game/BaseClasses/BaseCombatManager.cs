@@ -20,6 +20,8 @@ public class BaseCombatManager : MonoBehaviour
 
     [Header("Player")]
     [SerializeField] protected GameObject player;
+    [SerializeField] private int playerAttackDamage = 0;
+    [SerializeField] private int playerDefenseValue = 0;
 
     [Header("Actions")]
     public ActionType playerAction;
@@ -182,7 +184,8 @@ public class BaseCombatManager : MonoBehaviour
 
                 //health = LO_GameFlow_PVP.Instance.health;
                 health = gameFlow.health;
-                health.ApplyDamage(currentEnemy.GetEnemyData().attackDamage);
+                int damage = Math.Max(0, currentEnemy.GetEnemyData().attackDamage - playerDefenseValue);
+                health.ApplyDamage(damage);
 
                 if (health.GetHP() <= 0)
                 {
@@ -271,5 +274,11 @@ public class BaseCombatManager : MonoBehaviour
     {
         AnimationHandler handler = currentEnemy.gameObject.GetComponent<AnimationHandler>();
         handler.PlayAnimation(action);
+    }
+
+    public void SetPlayerValues(int attack, int defense)
+    {
+        playerAttackDamage = attack;
+        playerDefenseValue = defense;
     }
 }

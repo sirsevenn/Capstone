@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ArmorManager : MonoBehaviour
 {
+    public bool inGame = false;
+
     public SO_Armor Helmet;
     public SO_Armor Cuirass;
     public SO_Armor Greaves;
@@ -12,9 +14,10 @@ public class ArmorManager : MonoBehaviour
     public List<GameObject> cuirassObjects = new List<GameObject>();
     public List<GameObject> greavesObjects = new List<GameObject>();
 
+    public BaseCombatManager combatManager;
     private void Start()
     {
-        
+        InitializeArmor();
     }
 
     private void ResetHelmet()
@@ -43,21 +46,39 @@ public class ArmorManager : MonoBehaviour
 
     private void InitializeArmor()
     {
+        UpdateHelmet();
+        UpdateCuirass();
+        UpdateGreaves();
+
+        if (inGame && combatManager != null)
+        {
+            int defenseTotal = Helmet.defenseValue + Cuirass.defenseValue + Greaves.defenseValue;
+            combatManager.SetPlayerValues(10, defenseTotal);
+        }
+      
+    }
+
+    public void UpdateHelmet()
+    {
         int helmetLevel = InventoryManager.Instance.HelmetLevel;
-        int cuirassLevel = InventoryManager.Instance.CuirassLevel;
-        int greavesLevel = InventoryManager.Instance.GreavesLevel;
-
         Helmet = ScriptableObjectDatabase.Instance.helmetUpgrades[helmetLevel];
-        Cuirass = ScriptableObjectDatabase.Instance.cuirassUpgrades[cuirassLevel];
-        Greaves = ScriptableObjectDatabase.Instance.greavesUpgrades[greavesLevel];
-
         ResetHelmet();
-        ResetCuirass();
-        ResetGreaves();
         helmetObjects[helmetLevel].SetActive(true);
+    }
+
+    public void UpdateCuirass()
+    {
+        int cuirassLevel = InventoryManager.Instance.CuirassLevel;
+        Cuirass = ScriptableObjectDatabase.Instance.cuirassUpgrades[cuirassLevel];
+        ResetCuirass();
         cuirassObjects[cuirassLevel].SetActive(true);
+    }
+
+    public void UpdateGreaves()
+    {
+        int greavesLevel = InventoryManager.Instance.GreavesLevel;
+        Greaves = ScriptableObjectDatabase.Instance.greavesUpgrades[greavesLevel];
+        ResetGreaves();
         greavesObjects[greavesLevel].SetActive(true);
-
-
     }
 }

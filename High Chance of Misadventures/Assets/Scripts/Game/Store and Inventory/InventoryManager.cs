@@ -80,7 +80,7 @@ public class InventoryManager : MonoBehaviour
 
     private void InitializeInventory()
     {
-        gold = PlayerPrefs.GetInt(goldKey, 5000);
+        gold = PlayerPrefs.GetInt(goldKey, 10000);
 
         helmetLevel = PlayerPrefs.GetInt(helmetKey, 0);
         cuirassLevel = PlayerPrefs.GetInt(cuirassKey, 0);
@@ -164,5 +164,19 @@ public class InventoryManager : MonoBehaviour
                 greavesLevel++;
                 break;
         }
+    }
+
+    public void ResetSavedValues()
+    {
+        PlayerPrefs.SetInt(goldKey, 17000);
+
+        PlayerPrefs.SetInt(helmetKey, 0);
+        PlayerPrefs.SetInt(cuirassKey, 0);
+        PlayerPrefs.SetInt(greavesKey, 0);
+
+        PlayerPrefs.SetInt(redKey, 10);
+        PlayerPrefs.SetInt(greenKey, 10);
+        PlayerPrefs.SetInt(blueKey, 10);
+        PlayerPrefs.SetInt(healthPotionKey, 1);
     }
 }

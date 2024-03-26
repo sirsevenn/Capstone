@@ -26,9 +26,14 @@ public class AnimationHandler : MonoBehaviour
         }
     }
 
-    public void ToggleMove()
+    public void PlayerMove()
     {
-        animator.SetBool("Move", !animator.GetBool("Move"));
+        animator.SetBool("Move", true);
+    }
+
+    public void PlayerStopMove()
+    {
+        animator.SetBool("Move", false);
     }
 
     public void PlayDeathAnimation()

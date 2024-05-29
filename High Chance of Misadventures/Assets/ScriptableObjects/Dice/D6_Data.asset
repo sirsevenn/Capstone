@@ -1,0 +1,64 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 89f14f183371b92448ecc27a21dc7a14, type: 3}
+  m_Name: D6_Data
+  m_EditorClassIdentifier: 
+  sides: 6
+  diceNumbersToVectorsList:
+  - {x: 0, y: 0, z: 1}
+  - {x: 0, y: 1, z: 0}
+  - {x: -1, y: 0, z: 0}
+  - {x: 1, y: 0, z: 0}
+  - {x: 0, y: -1, z: 0}
+  - {x: 0, y: 0, z: -1}
+  prerecordedRollsList:
+  - PrerecordedRollAnimation: {fileID: 7400000, guid: 63b62bc0fcf275643b6076a9b2e44a88,
+      type: 2}
+    DiceRollResult: 6
+  - PrerecordedRollAnimation: {fileID: 7400000, guid: 92d15679ddde98e4197ce93cf717d95f,
+      type: 2}
+    DiceRollResult: 6
+  - PrerecordedRollAnimation: {fileID: 7400000, guid: 0858afbe992e38648b3bc089fb809e99,
+      type: 2}
+    DiceRollResult: 6
+  - PrerecordedRollAnimation: {fileID: 7400000, guid: 3bc067aa6d657cc429a4c5349c99df0c,
+      type: 2}
+    DiceRollResult: 5
+  - PrerecordedRollAnimation: {fileID: 7400000, guid: cd5c813254233e84da974985abb1702c,
+      type: 2}
+    DiceRollResult: 3
+  - PrerecordedRollAnimation: {fileID: 7400000, guid: 457b6ea0019d57a4dacf39c726e8e558,
+      type: 2}
+    DiceRollResult: 5
+  - PrerecordedRollAnimation: {fileID: 7400000, guid: a672722c499486c48b21a25515da7ad2,
+      type: 2}
+    DiceRollResult: 6
+  - PrerecordedRollAnimation: {fileID: 7400000, guid: c0d821f0aa4239049ac13559b62c3175,
+      type: 2}
+    DiceRollResult: 1
+  - PrerecordedRollAnimation: {fileID: 7400000, guid: 3c0eb598fced2e4418771b6984ac24d3,
+      type: 2}
+    DiceRollResult: 2
+  - PrerecordedRollAnimation: {fileID: 7400000, guid: c26b3fb6c7447794a88e48dee8edc044,
+      type: 2}
+    DiceRollResult: 1
+  - PrerecordedRollAnimation: {fileID: 7400000, guid: 428006c2cc1b1974f9aa103193e67153,
+      type: 2}
+    DiceRollResult: 2
+  - PrerecordedRollAnimation: {fileID: 7400000, guid: af01a5b83727d0b4083e0b29eaa0e7f9,
+      type: 2}
+    DiceRollResult: 5
+  - PrerecordedRollAnimation: {fileID: 7400000, guid: aff279dddf81a394c9d9d39646116433,
+      type: 2}
+    DiceRollResult: 3
+  animationTriggerPrefix: DiceRoll
+  idleTrigger: Idle

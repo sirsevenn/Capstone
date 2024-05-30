@@ -54,7 +54,7 @@ public class ArmorManager : MonoBehaviour
         {
             int defenseTotal = Helmet.defenseValue + Cuirass.defenseValue + Greaves.defenseValue;
             combatManager.SetPlayerValues(10, defenseTotal);
-        }
+        } 
       
     }
 

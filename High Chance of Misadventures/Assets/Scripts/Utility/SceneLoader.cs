@@ -11,6 +11,7 @@ public class SceneLoader
     {
         sceneNames.Add("Area_1_Level_1");
         sceneNames.Add("StoreScene");
+        sceneNames.Add("MainMenu");
     }
 
     public static void ChangeScene(int index)

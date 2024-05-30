@@ -3469,7 +3469,7 @@ MonoBehaviour:
   sideBar: {fileID: 1451818991}
   playerUI: {fileID: 345446730}
   enemyUI: {fileID: 2057470335}
-  playerHPUI: {fileID: 0}
+  playerHPUI: {fileID: 1435452763}
   endScreen: {fileID: 2065990599}
   playerUIStartTransform: {fileID: 1693531661}
   playerUIEndTransform: {fileID: 461917121}
@@ -8783,10 +8783,11 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: BACK TO GUILD
+  m_text: Return To Level Select
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 409eaf4826914164591fd7353ddbb444, type: 2}
+  m_sharedMaterial: {fileID: -2248764432328240198, guid: 409eaf4826914164591fd7353ddbb444,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -10622,8 +10623,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: YOU HAVE BEEN SLAINED
   m_isRightToLeft: 0
-  m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
-  m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
+  m_fontAsset: {fileID: 11400000, guid: 409eaf4826914164591fd7353ddbb444, type: 2}
+  m_sharedMaterial: {fileID: -2248764432328240198, guid: 409eaf4826914164591fd7353ddbb444,
+    type: 2}
   m_fontSharedMaterials: []
   m_fontMaterial: {fileID: 0}
   m_fontMaterials: []
@@ -10647,7 +10649,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 150
+  m_fontSize: 132.05
   m_fontSizeBase: 150
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -11243,6 +11245,12 @@ MonoBehaviour:
   m_FlexibleWidth: -1
   m_FlexibleHeight: -1
   m_LayoutPriority: 1
+--- !u!1 &1435452763 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4736805859333377079, guid: ecd7cda0b3323df4ead92f34d96985c1,
+    type: 3}
+  m_PrefabInstance: {fileID: 2130374911}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1447781969
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -14633,7 +14641,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerMaxHP: 100
   health: {fileID: 2009462376}
-  rooms: 2
+  rooms: 1
   player: {fileID: 919132148505281705}
   selectedEnemy: {fileID: 0}
   goblinSpawnRate: 0.5

@@ -186,6 +186,7 @@ public class BaseCombatManager : MonoBehaviour
                 health = gameFlow.health;
                 int damage = Math.Max(0, currentEnemy.GetEnemyData().attackDamage - playerDefenseValue);
                 health.ApplyDamage(damage);
+                Debug.Log("Damage: " + damage);
 
                 if (health.GetHP() <= 0)
                 {

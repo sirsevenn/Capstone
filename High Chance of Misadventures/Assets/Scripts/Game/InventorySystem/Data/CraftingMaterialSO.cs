@@ -4,7 +4,7 @@ using UnityEngine;
 public class CraftingMaterialSO : ScriptableObject
 {
     [Header("Main Properties")]
-    [SerializeField] private CraftingMaterialType materialType;
+    [SerializeField] private ECraftingMaterialType materialType;
     [TextArea(4, 10)]
     [SerializeField] private string materialDescription;
     [SerializeField] private Sprite materialIcon;
@@ -15,7 +15,7 @@ public class CraftingMaterialSO : ScriptableObject
     [SerializeField] private float successRate;
 
 
-    public CraftingMaterialType MaterialType
+    public ECraftingMaterialType MaterialType
     {
         get { return materialType; }
         private set { materialType = value; }

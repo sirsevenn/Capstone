@@ -1,4 +1,7 @@
+using DG.Tweening;
+using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -7,7 +10,11 @@ public class CraftingSystemUI : MonoBehaviour
     [Header("Crafting UI References")]
     [SerializeField] private List<Image> materialSlotImages;
     [SerializeField] private List<Image> materialSlotHighlights;
+    [SerializeField] private List<TMP_Text> materialSlotTexts;
     [SerializeField] private Image possibleOutputImage;
+    [SerializeField] private RectTransform successRateRedPortion;
+    [SerializeField] private RectTransform successRateGreenPortion;
+
 
     [Space(10)] [Header("UI Default Values")]
     [SerializeField] private Color defaultSlotColor;
@@ -27,6 +34,10 @@ public class CraftingSystemUI : MonoBehaviour
     [SerializeField] private List<ItemPanelScript> potionsPanelsList;
     [SerializeField] private List<ItemPanelScript> materialsPanelsList;
 
+    [Space(10)] [Header("Dice Roll Properties")]
+    [SerializeField] private List<TMP_Text> diceRollResultsDisplayList;
+    [SerializeField] private float defaultResultsDisplayPosY;
+
 
     #region Initialization
     private void Start()
@@ -36,11 +47,11 @@ public class CraftingSystemUI : MonoBehaviour
             highlight.enabled = false;
         }
 
-        ResetIconsOnSelectedSlots();
+        ResetSelectedSlots();
         InitializeItemPanels();
         EnableMaterialsListPanel();
 
-        possibleOutputImage.enabled = false;
+        possibleOutputImage.gameObject.SetActive(false);
     }
 
     private void InitializeItemPanels()
@@ -100,12 +111,17 @@ public class CraftingSystemUI : MonoBehaviour
     #endregion
 
     #region Public UI Methods
-    public void ResetIconsOnSelectedSlots()
+    public void ResetSelectedSlots()
     {
         foreach (var slot in materialSlotImages)
         {
             slot.sprite = null;
             slot.color = defaultSlotColor;
+        }
+
+        foreach (var text in materialSlotTexts)
+        {
+            text.text = "";
         }
     }
 
@@ -116,18 +132,22 @@ public class CraftingSystemUI : MonoBehaviour
         materialSlotHighlights[index].enabled = enabled;
     }
 
-    public void SetIconOnSelectedSlot(Sprite materialIcon, int index)
+    public void SetValuesOnSelectedSlot(Sprite materialIcon, int index, float successRate = -1)
     {
         if (index < 0 || index >= materialSlotImages.Count) return;
 
         materialSlotImages[index].sprite = (materialIcon != null) ? materialIcon : null;
         materialSlotImages[index].color = (materialIcon != null) ? Color.white : defaultSlotColor;
+        materialSlotTexts[index].text = (successRate == -1) ? "" : (successRate * 100).ToString() + "%";
     }
 
-    public void SetIconOnOutputImage(Sprite outputIcon, bool enabled)
+    public void SetIconOnOutputImage(Sprite outputIcon, bool enabled, float successRate = 0f)
     {
         possibleOutputImage.sprite = (outputIcon == null) ? defaultOutputIcon : outputIcon;
-        possibleOutputImage.enabled = enabled;
+        possibleOutputImage.gameObject.SetActive(enabled);
+
+        float width = successRateRedPortion.rect.width;
+        successRateGreenPortion.sizeDelta = new Vector2(width * -(1 - successRate), successRateGreenPortion.rect.height);
     }
     #endregion
 
@@ -178,4 +198,21 @@ public class CraftingSystemUI : MonoBehaviour
         }
     }
     #endregion
+
+    public void DisplayDiceRollDisplay(int index, int result, Action onCompleteDisplayMethod)
+    {
+        TMP_Text textToDisplay = diceRollResultsDisplayList[index];
+        textToDisplay.text = result.ToString();
+
+        textToDisplay.transform.DOMoveY(defaultResultsDisplayPosY + 100, 1.25f, false).SetEase(Ease.Linear).OnComplete(() => onCompleteDisplayMethod.Invoke());
+    }
+
+    public void ResetDiceRollDisplays()
+    {
+        foreach (var display in diceRollResultsDisplayList)
+        {
+            display.text = "";
+            display.transform.position = new Vector2(display.transform.position.x, defaultResultsDisplayPosY);
+        }
+    }
 }

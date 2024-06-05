@@ -1,11 +1,11 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "Dice_SO", menuName = "ScriptableObjects/Dice")]
 public class DiceSO : ScriptableObject
 {
-    [Tooltip("Number of sides of the dice")]
-    [SerializeField] private uint sides;
+    [SerializeField] private DiceType diceType;
 
     [Space(10)]
     [Tooltip("Each index with addition of 1 corresponds to the resulting number/dice roll of each vector")]
@@ -20,9 +20,15 @@ public class DiceSO : ScriptableObject
     [SerializeField] private string idleTrigger;
 
 
+    public DiceType DiceType
+    {
+        get { return diceType; }
+        private set { }
+    }
+
     public uint Sides 
     {
-        get { return sides; } 
+        get { return UInt32.Parse(diceType.ToString().Replace("D", "")); } 
         private set { } 
     }
 

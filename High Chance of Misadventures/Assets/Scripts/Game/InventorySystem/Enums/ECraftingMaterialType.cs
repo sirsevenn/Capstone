@@ -1,4 +1,4 @@
-public enum CraftingMaterialType
+public enum ECraftingMaterialType
 {
     Unknown,
     Goblin_Blood,

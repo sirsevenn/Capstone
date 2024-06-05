@@ -1,4 +1,4 @@
-public enum PotionType
+public enum EPotionType
 {
     Unknown,
     Health_Potion,

@@ -4,12 +4,12 @@ using UnityEngine;
 public class PotionSO : CraftableSO
 {
     [Space(10)] [Header("Potion Properties")]
-    [SerializeField] private PotionType potionType;
+    [SerializeField] private EPotionType potionType;
     [TextArea(4, 10)]
     [SerializeField] private string potionDescription;
 
 
-    public PotionType PotionType
+    public EPotionType PotionType
     {  
         get { return potionType; } 
         private set {  potionType = value; } 

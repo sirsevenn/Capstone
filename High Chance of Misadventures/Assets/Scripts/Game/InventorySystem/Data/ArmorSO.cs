@@ -4,13 +4,13 @@ using UnityEngine;
 public class ArmorSO : CraftableSO
 {
     [Space(10)] [Header("Armor Properties")]
-    [SerializeField] private ArmorType armorType;
+    [SerializeField] private EArmorType armorType;
     [SerializeField] private string armorName;
     [SerializeField] private uint armorLevel;   
     [SerializeField] private uint defValue;
 
 
-    public ArmorType ArmorType
+    public EArmorType ArmorType
     { 
         get { return armorType; } 
         private set { armorType = value; } 

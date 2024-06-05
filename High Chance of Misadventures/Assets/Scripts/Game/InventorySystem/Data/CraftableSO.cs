@@ -6,6 +6,7 @@ public abstract class CraftableSO : ScriptableObject
     [Header("Craftable Properties")]
     [SerializeField] private Sprite craftableIcon;
     [SerializeField] private List<CraftingRecipe> recipesList;
+    [SerializeField] private EMixingType mixingType;
 
 
     public Sprite CraftableIcon
@@ -17,6 +18,12 @@ public abstract class CraftableSO : ScriptableObject
     public List<CraftingRecipe> RecipesList
     {
         get { return recipesList; }
+        private set { }
+    }
+
+    public EMixingType MixingType
+    {
+        get { return mixingType; }
         private set { }
     }
 

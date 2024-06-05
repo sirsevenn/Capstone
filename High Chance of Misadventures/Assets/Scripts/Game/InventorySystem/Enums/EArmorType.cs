@@ -1,4 +1,4 @@
-public enum ArmorType 
+public enum EArmorType 
 {
     Unknown,
     Helmet, 

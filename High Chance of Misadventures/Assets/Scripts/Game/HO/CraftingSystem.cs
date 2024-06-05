@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class CraftingSystem : MonoBehaviour
@@ -12,11 +13,20 @@ public class CraftingSystem : MonoBehaviour
     [SerializeField] private int selectedSlotIndex;
     [SerializeField] private CraftingMaterialSO[] selectedMaterialsList;
 
+    [Space(20)]
+    [SerializeField] private bool isCrafting;
+    //[SerializeField] private int numDisplayedDiceRolls;
     [SerializeField] private List<CraftableSO> possibleCraftablesList;
     [SerializeField] private CraftableSO possibleCraftableOutput;
 
+    [Space(20)]
+    [SerializeField] private GameObject screenPanel;
+    [SerializeField] private CauldronMixingHandler mixingScript;
+    [SerializeField] private bool isMaterialCraftingSuccessful;
+
     [Space(10)] [Header("Other References")]
     [SerializeField] private CraftingSystemUI UI;
+    [SerializeField] private List<DiceHolder> diceHoldersList;
 
 
     #region Singleton
@@ -39,6 +49,7 @@ public class CraftingSystem : MonoBehaviour
         if (Instance != null && Instance == this)
         {
             Destroy(this.gameObject);
+            mixingScript.OnFinishedMixingEvent -= OnFinishedMixingCauldron;
         }
     }
     #endregion
@@ -48,6 +59,10 @@ public class CraftingSystem : MonoBehaviour
         isInSelectionMode = false;
         selectedSlotIndex = -1;
 
+        isCrafting = false;
+        isMaterialCraftingSuccessful = false;
+        //numDisplayedDiceRolls = -1;
+
         selectedMaterialsList = new CraftingMaterialSO[] { 
             null,
             null,
@@ -55,11 +70,17 @@ public class CraftingSystem : MonoBehaviour
         };
         possibleCraftablesList.Clear();
         possibleCraftableOutput = null;
+
+        mixingScript.OnFinishedMixingEvent += OnFinishedMixingCauldron;
+        mixingScript.enabled = false;
+        screenPanel.SetActive(false);
     }
 
     #region UI Event Methods
     public void OnClickCraftingSlot(int index)
     {
+        if (isCrafting) return;
+
         // If nothing is currently selected
         if (!isInSelectionMode)
         {
@@ -78,19 +99,19 @@ public class CraftingSystem : MonoBehaviour
         else if (isInSelectionMode && selectedSlotIndex == index)
         {
             selectedMaterialsList[index] = null;
-            UI.SetIconOnSelectedSlot(null, index);
+            UI.SetValuesOnSelectedSlot(null, index);
 
             UI.SetHighlightOnCraftingSlot(index, false);
             isInSelectionMode = false;
             selectedSlotIndex = -1;
 
-            CheckForPossibleCraftables(false);
+            CheckForPossibleCraftables(true);
         }
     }
 
     public void OnClickMaterial(CraftingMaterialSO material)
     {
-        if (!isInSelectionMode) return;
+        if (!isInSelectionMode || isCrafting) return;
 
         // Check if there is at least one of the specified material in the inventory
         if (!InventorySystem.Instance.HasMaterial(material.MaterialType)) return;
@@ -112,11 +133,12 @@ public class CraftingSystem : MonoBehaviour
         if (selectedAmount > materialToAdd.Amount) return;
 
         // Replace current slot with the new material, then check for possible craftables from the combination
+        bool hasRemovedMaterial = selectedMaterialsList[selectedSlotIndex] != null;
         selectedMaterialsList[selectedSlotIndex] = material;
-        CheckForPossibleCraftables(true);
+        CheckForPossibleCraftables(hasRemovedMaterial);
 
         // Update UI for the selected slot along with its status
-        UI.SetIconOnSelectedSlot(material.MaterialIcon, selectedSlotIndex);
+        UI.SetValuesOnSelectedSlot(material.MaterialIcon, selectedSlotIndex, material.SuccessRate);
         UI.SetHighlightOnCraftingSlot(selectedSlotIndex, false);
 
         // Update selection status
@@ -128,29 +150,24 @@ public class CraftingSystem : MonoBehaviour
     {
         if (possibleCraftableOutput == null) return;
 
-        // Get the child class of the Craftable; if it is an armor, see if it is already discovered
+        // If craftable is an armor, see if it is already discovered
         ArmorSO armorToCraft = null;
-        PotionSO potionToCraft = null;
 
         if (possibleCraftableOutput is ArmorSO)
         {
             armorToCraft = (ArmorSO)possibleCraftableOutput;
         }
-        else if (possibleCraftableOutput is PotionSO)
-        {
-            potionToCraft = (PotionSO)possibleCraftableOutput;
-        }
-        else return;
-
+        else if (possibleCraftableOutput is not PotionSO) return;
         if (InventorySystem.Instance.IsCraftableDiscovered(armorToCraft)) return;
 
-        // Perform dice rolls and see if crafting is a success
-        // Also recreate new selected material list WITH their total amount
-        bool isCraftingSuccessful = true;
-        List<CraftingMaterial> selectedMaterialsWithAmountList = new();
 
-        foreach (CraftingMaterialSO selectedMaterial in selectedMaterialsList)
+        // Perform dice rolls and see if crafting is a success
+        isMaterialCraftingSuccessful = true;
+
+        for (int i = 0; i < selectedMaterialsList.Length; i++)
         {
+            CraftingMaterialSO selectedMaterial = selectedMaterialsList[i];
+
             if (selectedMaterial == null) continue;
 
             if (selectedMaterial.DiceType == DiceType.Unknown)
@@ -164,79 +181,22 @@ public class CraftingSystem : MonoBehaviour
             int sides = Int32.Parse(sidesStr);
 
             int maxSuccessNumber = (int)Math.Ceiling(sides * selectedMaterial.SuccessRate);
-            int randNum = UnityEngine.Random.Range(1, sides + 1);
+            int diceRollResult = UnityEngine.Random.Range(1, sides + 1);
 
-            isCraftingSuccessful = isCraftingSuccessful && (randNum <= maxSuccessNumber);
-
-            // Update material list with the correct amount of the same material
-            int index = selectedMaterialsWithAmountList.FindIndex(x => x.MaterialData.MaterialType == selectedMaterial.MaterialType);
-            if (index == -1)
-            {
-                selectedMaterialsWithAmountList.Add(new CraftingMaterial(selectedMaterial, 1));
-            }
-            else
-            {
-                selectedMaterialsWithAmountList[index].Amount++;
-            }
+            isMaterialCraftingSuccessful = isMaterialCraftingSuccessful && (diceRollResult <= maxSuccessNumber);
         }
 
-        // Reduce the materials from the inventory, and add the new craftable to the inventory
-        foreach (var material in selectedMaterialsWithAmountList)
-        {
-            InventorySystem.Instance.ReduceMaterials(material);
-        }
-
-        if (isCraftingSuccessful && armorToCraft != null)
-        {
-            InventorySystem.Instance.UpgradeArmorPiece(armorToCraft);
-        }
-        else if (isCraftingSuccessful && potionToCraft != null)
-        {
-            Potion newPotion = new Potion(potionToCraft, 1);
-            InventorySystem.Instance.AddPotions(newPotion);
-            InventorySystem.Instance.AddPotionToCatalogue(newPotion.PotionData.PotionType);
-        }
-
-        // Reset selection slots and trackers for possible craftables 
-        for (int i = 0; i < selectedMaterialsList.Length; i++)
-        {
-            selectedMaterialsList[i] = null;
-        }
-
-        possibleCraftablesList.Clear();
-        possibleCraftableOutput = null;
-
-        // Reset UI
-        UI.ResetIconsOnSelectedSlots();
+        // Prepare the mixing phase
+        mixingScript.SetMixingType(possibleCraftableOutput.MixingType);
+        mixingScript.enabled = true;
+        screenPanel.SetActive(true);
         UI.SetIconOnOutputImage(null, false);
-
-        foreach (var material in selectedMaterialsWithAmountList)
-        {
-            CraftingMaterial materialInInventory = InventorySystem.Instance.GetCraftingMaterial(material.MaterialData.MaterialType);
-            if (materialInInventory == null)
-            {
-                materialInInventory = new CraftingMaterial(material.MaterialData, 0);
-            }
-            UI.UpdateMaterialPanel(materialInInventory);
-        }
-
-        if (isCraftingSuccessful && armorToCraft != null) 
-        {
-            UI.UpdateArmorPanel(armorToCraft);
-        }
-        else if (isCraftingSuccessful && potionToCraft != null) 
-        {
-            Potion newPotion = InventorySystem.Instance.GetPotion(potionToCraft.PotionType);
-            UI.UpdatePotionPanel(newPotion);
-        }
-
-        Debug.Log((isCraftingSuccessful ? "Craft Successful" : "Craft Failed"));
     }
-    #endregion
 
-    #region Possible Craftables Methods
-    private void CheckForPossibleCraftables(bool hasAddedNewMaterial)
+    public void OnFinishedMixingCauldron(bool isMixingSuccessful)
     {
+        Debug.Log((isMaterialCraftingSuccessful && isMixingSuccessful ? "Craft Successful" : "Craft Failed"));
+
         // Recreate new selected material list WITH their total amount
         List<CraftingMaterial> selectedMaterialsWithAmountList = new();
         foreach (var selectedMaterial in selectedMaterialsList)
@@ -254,11 +214,274 @@ public class CraftingSystem : MonoBehaviour
             }
         }
 
+        // Get the child class of the Craftable
+        ArmorSO armorToCraft = null;
+        PotionSO potionToCraft = null;
+
+        if (possibleCraftableOutput is ArmorSO)
+        {
+            armorToCraft = (ArmorSO)possibleCraftableOutput;
+        }
+        else if (possibleCraftableOutput is PotionSO)
+        {
+            potionToCraft = (PotionSO)possibleCraftableOutput;
+        }
+
+        // Reduce the materials from the inventory, and add the new craftable to the inventory
+        foreach (var material in selectedMaterialsWithAmountList)
+        {
+            InventorySystem.Instance.ReduceMaterials(material);
+        }
+
+        if (isMaterialCraftingSuccessful && isMixingSuccessful && armorToCraft != null)
+        {
+            InventorySystem.Instance.UpgradeArmorPiece(armorToCraft);
+        }
+        else if (isMaterialCraftingSuccessful && isMixingSuccessful && potionToCraft != null)
+        {
+            Potion newPotion = new Potion(potionToCraft, 1);
+            InventorySystem.Instance.AddPotions(newPotion);
+            InventorySystem.Instance.AddPotionToCatalogue(newPotion.PotionData.PotionType);
+        }
+
+        // Reset selection slots and trackers for possible craftables 
+        for (int i = 0; i < selectedMaterialsList.Length; i++)
+        {
+            selectedMaterialsList[i] = null;
+        }
+
+        possibleCraftablesList.Clear();
+        possibleCraftableOutput = null;
+
+        // Reset UI
+        UI.ResetSelectedSlots();
+
+        foreach (var material in selectedMaterialsWithAmountList)
+        {
+            CraftingMaterial materialInInventory = InventorySystem.Instance.GetCraftingMaterial(material.MaterialData.MaterialType);
+            if (materialInInventory == null)
+            {
+                materialInInventory = new CraftingMaterial(material.MaterialData, 0);
+            }
+            UI.UpdateMaterialPanel(materialInInventory);
+        }
+
+        if (isMaterialCraftingSuccessful && isMixingSuccessful && armorToCraft != null)
+        {
+            UI.UpdateArmorPanel(armorToCraft);
+        }
+        else if (isMaterialCraftingSuccessful && isMixingSuccessful && potionToCraft != null)
+        {
+            Potion newPotion = InventorySystem.Instance.GetPotion(potionToCraft.PotionType);
+            UI.UpdatePotionPanel(newPotion);
+        }
+
+        // Disable mixing script and reenable UI interaction
+        mixingScript.enabled = false;
+        screenPanel.SetActive(false);
+
+        isMaterialCraftingSuccessful = false;
+    }
+
+    //public void OnCraft()
+    //{
+    //    if (possibleCraftableOutput == null) return;
+
+    //    // If craftable is an armor, see if it is already discovered
+    //    ArmorSO armorToCraft = null;
+    //    if (possibleCraftableOutput is ArmorSO)
+    //    {
+    //        armorToCraft = (ArmorSO)possibleCraftableOutput;
+    //    }
+    //    else if (possibleCraftableOutput is not PotionSO) return;
+    //    if (InventorySystem.Instance.IsCraftableDiscovered(armorToCraft)) return;
+
+    //    // Update crafting prooperties; Disable any other UI interactions
+    //    isCrafting = true;
+    //    isCraftSuccessful = false;
+    //    numDisplayedDiceRolls = 0;
+    //    UI.ResetIconsOnSelectedSlots();
+
+    //    // Perform dice rolls and see if crafting is a success
+    //    bool isCraftingSuccessful = true;
+
+    //    for (int i = 0; i < selectedMaterialsList.Length; i++)
+    //    {
+    //        CraftingMaterialSO selectedMaterial = selectedMaterialsList[i];
+
+    //        if (selectedMaterial == null) continue;
+
+    //        if (selectedMaterial.DiceType == DiceType.Unknown)
+    //        {
+    //            Debug.Log("Dice for " + selectedMaterial.GetMaterialName() + " is not assigned properly!");
+    //            return;
+    //        }
+
+    //        // Determine outcome of the dice roll
+    //        DiceHolder holder = diceHoldersList[i];
+    //        holder.PickDice(selectedMaterial.DiceType);
+    //        holder.SubscribeToFinishedDiceRollEvent(OnFinishedDiceRollEvent);
+
+    //        string sidesStr = selectedMaterial.DiceType.ToString().Replace("D", "");
+    //        int sides = Int32.Parse(sidesStr);
+
+    //        int maxSuccessNumber = (int)Math.Ceiling(sides * selectedMaterial.SuccessRate);
+    //        int diceRollResult = holder.RollDice();
+
+    //        isCraftingSuccessful = isCraftingSuccessful && (diceRollResult <= maxSuccessNumber);
+    //    }
+
+    //    Debug.Log((isCraftingSuccessful ? "Craft Successful" : "Craft Failed"));
+    //}
+    #endregion
+
+    #region Dice Roll and Crafting Methods
+    //private void OnFinishedDiceRollEvent()
+    //{
+    //    for (int i = 0; i < diceHoldersList.Count; i++)
+    //    {
+    //        DiceHolder holder = diceHoldersList[i];
+
+    //        if (holder.IsFinishedRolling())
+    //        {
+    //            UI.DisplayDiceRollDisplay(i, holder.GetRecentDiceRollResult(), OnDisplayDiceRoll);
+    //            holder.ResetDiceProperties();
+    //            break;
+    //        }
+    //    }
+    //}
+
+    //private void OnDisplayDiceRoll()
+    //{
+    //    numDisplayedDiceRolls++;
+
+    //    int numMaterials = 0;
+    //    foreach (var selectedMaterial in selectedMaterialsList)
+    //    {
+    //        if (selectedMaterial != null) numMaterials++;
+    //    }
+
+    //    if (numDisplayedDiceRolls == numMaterials)
+    //    {
+    //        CraftItem();
+    //    }
+    //}
+
+    //private void CraftItem()
+    //{
+    //    // Recreate new selected material list WITH their total amount
+    //    List<CraftingMaterial> selectedMaterialsWithAmountList = new();
+    //    foreach (var selectedMaterial in selectedMaterialsList)
+    //    {
+    //        if (selectedMaterial == null) continue;
+
+    //        int index = selectedMaterialsWithAmountList.FindIndex(x => x.MaterialData.MaterialType == selectedMaterial.MaterialType);
+    //        if (index == -1)
+    //        {
+    //            selectedMaterialsWithAmountList.Add(new CraftingMaterial(selectedMaterial, 1));
+    //        }
+    //        else
+    //        {
+    //            selectedMaterialsWithAmountList[index].Amount++;
+    //        }
+    //    }
+
+    //    // Get the child class of the Craftable
+    //    ArmorSO armorToCraft = null;
+    //    PotionSO potionToCraft = null;
+
+    //    if (possibleCraftableOutput is ArmorSO)
+    //    {
+    //        armorToCraft = (ArmorSO)possibleCraftableOutput;
+    //    }
+    //    else if (possibleCraftableOutput is PotionSO)
+    //    {
+    //        potionToCraft = (PotionSO)possibleCraftableOutput;
+    //    }
+
+    //    // Reduce the materials from the inventory, and add the new craftable to the inventory
+    //    foreach (var material in selectedMaterialsWithAmountList)
+    //    {
+    //        InventorySystem.Instance.ReduceMaterials(material);
+    //    }
+
+    //    if (isCraftSuccessful && armorToCraft != null)
+    //    {
+    //        InventorySystem.Instance.UpgradeArmorPiece(armorToCraft);
+    //    }
+    //    else if (isCraftSuccessful && potionToCraft != null)
+    //    {
+    //        Potion newPotion = new Potion(potionToCraft, 1);
+    //        InventorySystem.Instance.AddPotions(newPotion);
+    //        InventorySystem.Instance.AddPotionToCatalogue(newPotion.PotionData.PotionType);
+    //    }
+
+    //    // Reset selection slots and trackers for possible craftables 
+    //    for (int i = 0; i < selectedMaterialsList.Length; i++)
+    //    {
+    //        selectedMaterialsList[i] = null;
+    //    }
+
+    //    possibleCraftablesList.Clear();
+    //    possibleCraftableOutput = null;
+
+    //    // Reset/Update UI
+    //    UI.ResetIconsOnSelectedSlots();
+    //    UI.SetIconOnOutputImage(null, false);
+    //    UI.ResetDiceRollDisplays();
+
+    //    foreach (var material in selectedMaterialsWithAmountList)
+    //    {
+    //        CraftingMaterial materialInInventory = InventorySystem.Instance.GetCraftingMaterial(material.MaterialData.MaterialType);
+    //        if (materialInInventory == null)
+    //        {
+    //            materialInInventory = new CraftingMaterial(material.MaterialData, 0);
+    //        }
+    //        UI.UpdateMaterialPanel(materialInInventory);
+    //    }
+
+    //    if (isCraftSuccessful && armorToCraft != null)
+    //    {
+    //        UI.UpdateArmorPanel(armorToCraft);
+    //    }
+    //    else if (isCraftSuccessful && potionToCraft != null)
+    //    {
+    //        Potion newPotion = InventorySystem.Instance.GetPotion(potionToCraft.PotionType);
+    //        UI.UpdatePotionPanel(newPotion);
+    //    }
+    //}
+    #endregion
+
+    #region Possible Craftables Methods
+    private void CheckForPossibleCraftables(bool hasRemovedMaterial)
+    {
+        // Recreate new selected material list WITH their total amount
+        // Also get their overall success rate
+        List<CraftingMaterial> selectedMaterialsWithAmountList = new();
+        float successRate = 1f;
+
+        foreach (var selectedMaterial in selectedMaterialsList)
+        {
+            if (selectedMaterial == null) continue;
+
+            int index = selectedMaterialsWithAmountList.FindIndex(x => x.MaterialData.MaterialType == selectedMaterial.MaterialType);
+            if (index == -1)
+            {
+                selectedMaterialsWithAmountList.Add(new CraftingMaterial(selectedMaterial, 1));
+            }
+            else
+            {
+                selectedMaterialsWithAmountList[index].Amount++;
+            }
+
+            successRate *= selectedMaterial.SuccessRate;
+        }
+
         // Reset output
         possibleCraftableOutput = null;
 
         // If 2nd or 3rd material has been added
-        if (hasAddedNewMaterial && possibleCraftablesList.Count > 0)
+        if (!hasRemovedMaterial && possibleCraftablesList.Count > 0)
         {
             List<CraftableSO> newList = new List<CraftableSO>(possibleCraftablesList);
             UpdatePossibleCraftablesList(newList, selectedMaterialsWithAmountList, false);
@@ -273,11 +496,11 @@ public class CraftingSystem : MonoBehaviour
         // Update output UI if player has already discovered it
         if (InventorySystem.Instance.IsCraftableDiscovered(possibleCraftableOutput))
         {
-            UI.SetIconOnOutputImage(possibleCraftableOutput.CraftableIcon, true);
+            UI.SetIconOnOutputImage(possibleCraftableOutput.CraftableIcon, true, successRate);
         }
         else
         {
-            UI.SetIconOnOutputImage(null, (possibleCraftableOutput != null));
+            UI.SetIconOnOutputImage(null, (possibleCraftableOutput != null), successRate);
         }
     }
 

@@ -12,7 +12,7 @@ public class InventorySystem : MonoBehaviour
     [Space(10)]
     [Header("Potion Properties")]
     [SerializeField] private List<Potion> potionsList;
-    [SerializeField] private List<PotionType> craftedPotionsCatalogue;
+    [SerializeField] private List<EPotionType> craftedPotionsCatalogue;
 
     [Space(10)]
     [Header("Crafting Material Properties")]
@@ -81,36 +81,36 @@ public class InventorySystem : MonoBehaviour
 
     public void UpgradeArmorPiece(ArmorSO newArmor)
     {
-        if (newArmor.ArmorType == ArmorType.Helmet && newArmor.ArmorLevel > this.helmet.ArmorLevel)
+        if (newArmor.ArmorType == EArmorType.Helmet && newArmor.ArmorLevel > this.helmet.ArmorLevel)
         {
             this.helmet = newArmor;
             UpdateTotalDEF();
         }
-        else if (newArmor.ArmorType == ArmorType.Chestplate && newArmor.ArmorLevel > this.chestplate.ArmorLevel)
+        else if (newArmor.ArmorType == EArmorType.Chestplate && newArmor.ArmorLevel > this.chestplate.ArmorLevel)
         {
             this.chestplate = newArmor;
             UpdateTotalDEF();
         }
-        else if (newArmor.ArmorType == ArmorType.Leggings && newArmor.ArmorLevel > this.leggings.ArmorLevel)
+        else if (newArmor.ArmorType == EArmorType.Leggings && newArmor.ArmorLevel > this.leggings.ArmorLevel)
         {
             this.leggings = newArmor;
             UpdateTotalDEF();
         }
     }
 
-    private bool IsArmorPieceDiscovered(ArmorType type, uint level)
+    private bool IsArmorPieceDiscovered(EArmorType type, uint level)
     {
         switch (type)
         {
-            case ArmorType.Helmet:
+            case EArmorType.Helmet:
                 if (level <= helmet.ArmorLevel) return true;
                 break;
 
-            case ArmorType.Chestplate:
+            case EArmorType.Chestplate:
                 if (level <= chestplate.ArmorLevel) return true;
                 break;
 
-            case ArmorType.Leggings:
+            case EArmorType.Leggings:
                 if (level <= leggings.ArmorLevel) return true;
                 break;
 
@@ -134,18 +134,18 @@ public class InventorySystem : MonoBehaviour
 
 
     #region Potion Methods
-    public bool HasPotion(PotionType potion)
+    public bool HasPotion(EPotionType potion)
     {
         return potionsList.Exists(x => x.PotionData.PotionType == potion);
     }
 
-    public uint GetPotionAmount(PotionType potion)
+    public uint GetPotionAmount(EPotionType potion)
     {
         Potion selectedPotion = potionsList.Find(x => x.PotionData.PotionType == potion);
         return selectedPotion.Amount;
     }
 
-    public Potion GetPotion(PotionType potion)
+    public Potion GetPotion(EPotionType potion)
     {
         return potionsList.Find(x => x.PotionData.PotionType == potion);
     }
@@ -169,7 +169,7 @@ public class InventorySystem : MonoBehaviour
         }
     }
 
-    public void UsePotion(PotionType potion)
+    public void UsePotion(EPotionType potion)
     {
         int index = potionsList.FindIndex(x => x.PotionData.PotionType == potion);
 
@@ -185,14 +185,14 @@ public class InventorySystem : MonoBehaviour
         }
     }
 
-    private bool IsPotionDiscovered(PotionType type)
+    private bool IsPotionDiscovered(EPotionType type)
     {
         return craftedPotionsCatalogue.Contains(type);
     }
 
-    public void AddPotionToCatalogue(PotionType potion)
+    public void AddPotionToCatalogue(EPotionType potion)
     {
-        if (potion == PotionType.Unknown || IsPotionDiscovered(potion)) return;
+        if (potion == EPotionType.Unknown || IsPotionDiscovered(potion)) return;
 
         craftedPotionsCatalogue.Add(potion);
     }
@@ -200,18 +200,18 @@ public class InventorySystem : MonoBehaviour
 
 
     #region Crafting Materials Methods
-    public bool HasMaterial(CraftingMaterialType material)
+    public bool HasMaterial(ECraftingMaterialType material)
     {
         return craftingMaterialsList.Exists(x => x.MaterialData.MaterialType == material);
     }
 
-    public uint GetMaterialAmount(CraftingMaterialType material)
+    public uint GetMaterialAmount(ECraftingMaterialType material)
     {
         CraftingMaterial selectedMaterial = craftingMaterialsList.Find(x => x.MaterialData.MaterialType == material);
         return selectedMaterial.Amount;
     }
 
-    public CraftingMaterial GetCraftingMaterial(CraftingMaterialType material)
+    public CraftingMaterial GetCraftingMaterial(ECraftingMaterialType material)
     {
         return craftingMaterialsList.Find(x => x.MaterialData.MaterialType == material);
     }

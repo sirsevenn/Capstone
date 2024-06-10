@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Armor", menuName = "ScriptableObjects/Armor")]
+[CreateAssetMenu(fileName = "New Armor", menuName = "ScriptableObjects/HO/Armor")]
 public class ArmorSO : CraftableSO
 {
     [Space(10)] [Header("Armor Properties")]

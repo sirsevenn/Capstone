@@ -5,9 +5,9 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class HO_UIManager : UIManager
+public class HO_UIManager_old : UIManager
 {
-    public static HO_UIManager Instance { get; private set; }
+    public static HO_UIManager_old Instance { get; private set; }
 
 #region
     private void Awake()

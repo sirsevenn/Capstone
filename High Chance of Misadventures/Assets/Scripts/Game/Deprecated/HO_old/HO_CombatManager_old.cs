@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HO_CombatManager : BaseCombatManager
+public class HO_CombatManager_old : BaseCombatManager
 {
-    [SerializeField] private HO_UIManager uiManager;
+    [SerializeField] private HO_UIManager_old uiManager;
     private bool isOnCombat;
 
 
@@ -29,7 +29,7 @@ public class HO_CombatManager : BaseCombatManager
                 break;
         }
 
-        EnemyData data = HO_GameFlow.Instance.selectedEnemy.GetComponent<Enemy>().GetEnemyData();
+        EnemyData data = HO_GameFlow_old.Instance.selectedEnemy.GetComponent<Enemy>().GetEnemyData();
 
         //Enemey Probability
         int total = data.heavyAttackProbability + data.lightAttackProbability + data.parryAttackProbability;
@@ -77,7 +77,7 @@ public class HO_CombatManager : BaseCombatManager
     {
         if (enemyList.Count > 0)
         {
-            HO_GameFlow.Instance.OnReselectEnemy(enemyList[0]);
+            HO_GameFlow_old.Instance.OnReselectEnemy(enemyList[0]);
         }
     }
 
@@ -85,7 +85,7 @@ public class HO_CombatManager : BaseCombatManager
     {
         base.TriggerEndRoom();
         //HO_UIManager.Instance.ResetProbabilityBoard();
-        HO_GameFlow.Instance.EndRoom();
+        HO_GameFlow_old.Instance.EndRoom();
     }
 
 }

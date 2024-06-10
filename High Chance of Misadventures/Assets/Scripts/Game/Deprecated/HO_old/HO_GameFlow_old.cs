@@ -1,9 +1,9 @@
 using UnityEngine;
 
-public class HO_GameFlow : BaseGameFlow
+public class HO_GameFlow_old : BaseGameFlow
 {
     #region singleton
-    public static HO_GameFlow Instance { get; private set; }
+    public static HO_GameFlow_old Instance { get; private set; }
 
     private void Awake()
     {
@@ -19,9 +19,9 @@ public class HO_GameFlow : BaseGameFlow
     #endregion
 
     [Header("Other Components")]
-    [SerializeField] private HO_CombatManager combatManager;
-    [SerializeField] private HO_UIManager uiManager;
-    [SerializeField] private JournalManager journal;
+    [SerializeField] private HO_CombatManager_old combatManager;
+    [SerializeField] private HO_UIManager_old uiManager;
+    [SerializeField] private JournalManager_old journal;
     private int selectedEnemyIndex;
 
 

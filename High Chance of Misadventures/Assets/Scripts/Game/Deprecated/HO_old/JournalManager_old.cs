@@ -6,7 +6,7 @@ using UnityEngine;
 using Unity.VisualScripting;
 using System.Linq;
 
-public class JournalManager : MonoBehaviour
+public class JournalManager_old : MonoBehaviour
 {
     [Header("General Settings")]
     [SerializeField] private GameObject sideBar;
@@ -23,7 +23,7 @@ public class JournalManager : MonoBehaviour
     [SerializeField] private EnemyType currentEnemyType;
     [SerializeField] private EnemyType prevEnemyType;
     [SerializeField] private int maxPages;
-    private Dictionary<JournalDataType, int> recordedTallies = new();
+    private Dictionary<JournalDataType_old, int> recordedTallies = new();
     private Dictionary<EnemyType, int> totalTallies = new();
 
     [Header("Journal UI")]
@@ -43,7 +43,7 @@ public class JournalManager : MonoBehaviour
 
 
     [Header("Other References")]
-    [SerializeField] private HO_CombatManager combatManager;
+    [SerializeField] private HO_CombatManager_old combatManager;
 
 
     private void Start()
@@ -65,7 +65,7 @@ public class JournalManager : MonoBehaviour
                 }
 
                 string prefsKey = CreateJournalKey(enemyType, attackType);
-                JournalDataType data;
+                JournalDataType_old data;
                 data.enemyType = enemyType;
                 data.attackType = attackType;
 
@@ -114,7 +114,7 @@ public class JournalManager : MonoBehaviour
         if (combatManager.enemyList.Count != 0)
         {
             Enemy newlySelectedEnemy = combatManager.enemyList[currentPageNum];
-            HO_GameFlow.Instance.OnReselectEnemy(newlySelectedEnemy); // updates page here
+            HO_GameFlow_old.Instance.OnReselectEnemy(newlySelectedEnemy); // updates page here
         }
     }
 
@@ -125,7 +125,7 @@ public class JournalManager : MonoBehaviour
             return;
         }
 
-        JournalDataType data;
+        JournalDataType_old data;
         data.enemyType = currentEnemyType;
         data.attackType = (ActionType)attackType;
 
@@ -141,7 +141,7 @@ public class JournalManager : MonoBehaviour
             return;
         }
 
-        JournalDataType data;
+        JournalDataType_old data;
         data.enemyType = currentEnemyType;
         data.attackType = (ActionType)attackType;
 
@@ -159,7 +159,7 @@ public class JournalManager : MonoBehaviour
     {
         foreach (var pair in recordedTallies)
         {
-            JournalDataType data = pair.Key;
+            JournalDataType_old data = pair.Key;
             int tally = pair.Value;
             string prefsKey = CreateJournalKey(data.enemyType, data.attackType);
             PlayerPrefs.SetInt(prefsKey, tally);
@@ -176,12 +176,12 @@ public class JournalManager : MonoBehaviour
     public void UpdateJournalPage()
     {
         maxPages = combatManager.enemyList.Count;
-        currentPageNum = HO_GameFlow.Instance.SelectedEnemyIndex;
+        currentPageNum = HO_GameFlow_old.Instance.SelectedEnemyIndex;
 
         if (maxPages != 0)
         {
             Enemy selectedEnemy = combatManager.enemyList[currentPageNum]; 
-            HO_GameFlow.Instance.OnReselectEnemy(selectedEnemy);
+            HO_GameFlow_old.Instance.OnReselectEnemy(selectedEnemy);
 
             prevEnemyType = currentEnemyType;
             currentEnemyType = selectedEnemy.data.type;
@@ -193,7 +193,7 @@ public class JournalManager : MonoBehaviour
         decimal probability = 0M;
         int total = totalTallies[currentEnemyType];
 
-        JournalDataType heavyData;
+        JournalDataType_old heavyData;
         heavyData.enemyType = currentEnemyType;
         heavyData.attackType = ActionType.Heavy;
 
@@ -204,7 +204,7 @@ public class JournalManager : MonoBehaviour
         heavyProbText.text = probability.ToString() + "%";
         
 
-        JournalDataType lightData;
+        JournalDataType_old lightData;
         lightData.enemyType = currentEnemyType;
         lightData.attackType = ActionType.Light;
 
@@ -215,7 +215,7 @@ public class JournalManager : MonoBehaviour
         lightProbText.text = probability.ToString() + "%"; 
 
 
-        JournalDataType parryData;
+        JournalDataType_old parryData;
         parryData.enemyType = currentEnemyType;
         parryData.attackType = ActionType.Parry;
 

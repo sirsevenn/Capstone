@@ -1,6 +1,6 @@
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Crafting Material", menuName = "ScriptableObjects/CraftingMaterial")]
+[CreateAssetMenu(fileName = "New Crafting Material", menuName = "ScriptableObjects/HO/CraftingMaterial")]
 public class CraftingMaterialSO : ItemSO
 {
     [Space(10)] [Header("Crafting Material Properties")]

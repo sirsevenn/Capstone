@@ -1,31 +1,21 @@
-using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class CraftableSO : ScriptableObject
+public abstract class CraftableSO : ItemSO
 {
-    [Header("Craftable Properties")]
-    [SerializeField] private Sprite craftableIcon;
-    [SerializeField] private List<CraftingRecipe> recipesList;
-    [SerializeField] private EMixingType mixingType;
+    [Space(10)] [Header("Craftable Properties")]
+    [SerializeField] protected uint tierLevel;
+    [SerializeField] protected int baseValue;
 
 
-    public Sprite CraftableIcon
+    public uint TierLevel
     {
-        get { return craftableIcon; }
-        private set { craftableIcon = value; }
-    }
-
-    public List<CraftingRecipe> RecipesList
-    {
-        get { return recipesList; }
+        get { return tierLevel; }
         private set { }
     }
 
-    public EMixingType MixingType
+    public int BaseValue
     {
-        get { return mixingType; }
+        get { return baseValue; }
         private set { }
     }
-
-    public abstract string GetCraftableName();
 }

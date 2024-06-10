@@ -1,20 +1,31 @@
-using DG.Tweening;
-using System;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class CraftingSystemUI : MonoBehaviour
 {
     [Header("Crafting UI References")]
+    [SerializeField] private int currentHighlightedSlot;
     [SerializeField] private List<Image> materialSlotImages;
     [SerializeField] private List<Image> materialSlotHighlights;
-    [SerializeField] private List<TMP_Text> materialSlotTexts;
+
+    [Space(10)]
+    [SerializeField] private GameObject outputPanel;
     [SerializeField] private Image possibleOutputImage;
+
+    [Space(10)]
     [SerializeField] private RectTransform successRateRedPortion;
     [SerializeField] private RectTransform successRateGreenPortion;
 
+    [Space(10)]
+    [SerializeField] private GameObject craftingEffectPanel;
+    [SerializeField] private RectTransform craftingEffectTransform;
+    [SerializeField] private RectTransform craftingEffectRedPortion;
+    [SerializeField] private RectTransform craftingEffectGreenPortion;
+
+    [Space(10)] [Header("Dragged Material Properties")]
+    [SerializeField] private Image draggedIcon;
+    [SerializeField] private RectTransform draggedIconTransform;
 
     [Space(10)] [Header("UI Default Values")]
     [SerializeField] private Color defaultSlotColor;
@@ -31,27 +42,19 @@ public class CraftingSystemUI : MonoBehaviour
 
     [Space(10)] [Header("Item Panel References")]
     [SerializeField] private List<ItemPanelScript> armorPanelsList;
-    [SerializeField] private List<ItemPanelScript> potionsPanelsList;
-    [SerializeField] private List<ItemPanelScript> materialsPanelsList;
-
-    [Space(10)] [Header("Dice Roll Properties")]
-    [SerializeField] private List<TMP_Text> diceRollResultsDisplayList;
-    [SerializeField] private float defaultResultsDisplayPosY;
+    [SerializeField] private List<ItemPanelScript> potionPanelsList;
+    [SerializeField] private List<ItemPanelScript> scrollPanelsList;
+    [SerializeField] private List<ItemPanelScript> materialPanelsList;
 
 
     #region Initialization
     private void Start()
     {
-        foreach (var highlight in materialSlotHighlights)
-        {
-            highlight.enabled = false;
-        }
-
-        ResetSelectedSlots();
+        ResetCraftingUI();
         InitializeItemPanels();
         EnableMaterialsListPanel();
 
-        possibleOutputImage.gameObject.SetActive(false);
+        draggedIcon.gameObject.SetActive(false);
     }
 
     private void InitializeItemPanels()
@@ -75,28 +78,32 @@ public class CraftingSystemUI : MonoBehaviour
         }
 
         // Potions
-        potionsPanelsList = new List<ItemPanelScript>();
+        potionPanelsList = new List<ItemPanelScript>();
         foreach (var potion in InventorySystem.Instance.GetPotionsList())
         {
-            GameObject newPotionPanel = GameObject.Instantiate(itemPanelPrefab, craftablesListParent);
-            ItemPanelScript script = newPotionPanel.GetComponent<ItemPanelScript>();
-            script.UpdatePanelInfo(potion.PotionData, potion.Amount);
-            potionsPanelsList.Add(script);
+            AddNewPotionPanel(potion);
+        }
+
+        // Scrolls
+        scrollPanelsList = new List<ItemPanelScript>();
+        foreach (var scroll in InventorySystem.Instance.GetScrollsList())
+        {
+            AddNewScrollPanel(scroll);
         }
 
         // Materials
-        materialsPanelsList = new List<ItemPanelScript>();
+        materialPanelsList = new List<ItemPanelScript>();
         foreach (var material in InventorySystem.Instance.GetCraftingMaterialsList())
         {
             GameObject newMaterialPanel = GameObject.Instantiate(itemPanelPrefab, materialsListParent);
             ItemPanelScript script = newMaterialPanel.GetComponent<ItemPanelScript>();
             script.UpdatePanelInfo(material.MaterialData, material.Amount);
-            materialsPanelsList.Add(script);
+            materialPanelsList.Add(script);
         }
     }
     #endregion
 
-    #region Button-click Methods
+    #region Tab-switching Methods
     public void EnableCraftablesListPanel()
     {
         craftablesListTab.gameObject.SetActive(true);
@@ -111,43 +118,128 @@ public class CraftingSystemUI : MonoBehaviour
     #endregion
 
     #region Public UI Methods
-    public void ResetSelectedSlots()
+    public void OnBeginDragMaterial(Sprite icon)
     {
+        draggedIcon.gameObject.SetActive(true);
+        draggedIcon.sprite = icon;
+    }
+
+    public void OnDragMaterial(Vector2 pos)
+    {
+        draggedIconTransform.position = pos;
+
+        if (currentHighlightedSlot != -1)
+        {
+            materialSlotHighlights[currentHighlightedSlot].enabled = false;
+        }
+
+        int index = IsDroppedMaterialOnBaseSlot(pos) ? 0 : GetSupplementarySlotIndexFromHoveredMaterial(pos);
+        if (index != -1)
+        {
+            materialSlotHighlights[index].enabled = true;
+            currentHighlightedSlot = index;
+        }
+    }
+
+    public void OnEndDragMaterial(int index)
+    {
+        if (index != -1)
+        {
+            materialSlotImages[index].sprite = draggedIcon.sprite;
+            materialSlotImages[index].color = Color.white;
+        }
+
+        if (currentHighlightedSlot != -1)
+        {
+            materialSlotHighlights[currentHighlightedSlot].enabled = false;
+        }
+
+        currentHighlightedSlot = -1;
+        draggedIcon.gameObject.SetActive(false);
+        draggedIcon.sprite = null;
+    }
+
+    public bool IsDroppedMaterialOnBaseSlot(Vector2 pos)
+    {
+        RectTransform slotTransform = materialSlotHighlights[0].GetComponent<RectTransform>();
+        return RectTransformUtility.RectangleContainsScreenPoint(slotTransform, pos);
+    }
+
+    public int GetSupplementarySlotIndexFromHoveredMaterial(Vector2 pos)
+    {
+        for (int i = 1; i < materialSlotHighlights.Count; i++)
+        {
+            RectTransform slotTransform = materialSlotHighlights[i].GetComponent<RectTransform>();
+
+            if (RectTransformUtility.RectangleContainsScreenPoint(slotTransform, pos)) return i;
+        }
+
+        return -1;
+    }
+
+    public void ResetCraftingUI()
+    {
+        foreach (var highlight in materialSlotHighlights)
+        {
+            highlight.enabled = false;
+        }
+
         foreach (var slot in materialSlotImages)
         {
             slot.sprite = null;
             slot.color = defaultSlotColor;
         }
 
-        foreach (var text in materialSlotTexts)
-        {
-            text.text = "";
-        }
+        currentHighlightedSlot = -1;
+
+        possibleOutputImage.sprite = defaultOutputIcon;
+        outputPanel.gameObject.SetActive(false);
+
+        SetSuccessRateBar(0f);
+        SetCraftingEffectBar(EEffectModifier.Unknown, true);
     }
 
-    public void SetHighlightOnCraftingSlot(int index, bool enabled)
-    {
-        if (index < 0 || index >= materialSlotHighlights.Count) return;
-
-        materialSlotHighlights[index].enabled = enabled;
-    }
-
-    public void SetValuesOnSelectedSlot(Sprite materialIcon, int index, float successRate = -1)
-    {
-        if (index < 0 || index >= materialSlotImages.Count) return;
-
-        materialSlotImages[index].sprite = (materialIcon != null) ? materialIcon : null;
-        materialSlotImages[index].color = (materialIcon != null) ? Color.white : defaultSlotColor;
-        materialSlotTexts[index].text = (successRate == -1) ? "" : (successRate * 100).ToString() + "%";
-    }
-
-    public void SetIconOnOutputImage(Sprite outputIcon, bool enabled, float successRate = 0f)
+    public void SetIconOnOutputImage(Sprite outputIcon)
     {
         possibleOutputImage.sprite = (outputIcon == null) ? defaultOutputIcon : outputIcon;
-        possibleOutputImage.gameObject.SetActive(enabled);
+        outputPanel.gameObject.SetActive(true);
+    }
 
-        float width = successRateRedPortion.rect.width;
-        successRateGreenPortion.sizeDelta = new Vector2(width * -(1 - successRate), successRateGreenPortion.rect.height);
+    public void SetSuccessRateBar(float successRate)
+    {
+        float height = successRateRedPortion.rect.height;
+        successRateGreenPortion.sizeDelta = new Vector2(successRateGreenPortion.rect.width, height * -(1 - successRate));
+    }
+
+    public void SetCraftingEffectBar(EEffectModifier effect, bool disablePanel = false)
+    {
+        craftingEffectPanel.gameObject.SetActive(!disablePanel);
+        craftingEffectRedPortion.sizeDelta = new Vector2(-craftingEffectTransform.rect.width, craftingEffectRedPortion.rect.height);
+        craftingEffectGreenPortion.sizeDelta = new Vector2(-craftingEffectTransform.rect.width, craftingEffectRedPortion.rect.height);
+
+        if (disablePanel) return;
+
+        switch (effect)
+        {
+            case EEffectModifier.Bad_Effect:
+                craftingEffectRedPortion.sizeDelta = new Vector2(-craftingEffectTransform.rect.width / 2f, craftingEffectRedPortion.rect.height);
+                break;
+
+            case EEffectModifier.No_Effect:
+                craftingEffectRedPortion.sizeDelta = new Vector2(-craftingEffectTransform.rect.width * 3 / 4f, craftingEffectRedPortion.rect.height);
+                break;
+
+            case EEffectModifier.Good_Effect:
+                craftingEffectGreenPortion.sizeDelta = new Vector2(-craftingEffectTransform.rect.width * 3 / 4f, craftingEffectGreenPortion.rect.height);
+                break;
+
+            case EEffectModifier.Strong_Effect:
+                craftingEffectGreenPortion.sizeDelta = new Vector2(-craftingEffectTransform.rect.width / 2f, craftingEffectGreenPortion.rect.height);
+                break;
+
+            default:
+                break;
+        }
     }
     #endregion
 
@@ -156,7 +248,7 @@ public class CraftingSystemUI : MonoBehaviour
     {
         foreach (var armorPanel in armorPanelsList)
         {
-            if (armorPanel.IsTheSameItemInPanel(newArmor))
+            if (armorPanel.IsTheSameArmorInPanel(newArmor))
             {
                 armorPanel.UpdatePanelInfo(newArmor);
                 return;
@@ -164,55 +256,38 @@ public class CraftingSystemUI : MonoBehaviour
         }
     }
 
-    public void UpdatePotionPanel(Potion newPotion) // MAKE THIS EVENT BASED METHOD
+    public void AddNewPotionPanel(Potion newPotion) // MAKE THIS EVENT BASED METHOD
     {
-        foreach (var potionPanel in potionsPanelsList)
-        {
-            if (potionPanel.IsTheSameItemInPanel(newPotion.PotionData))
-            {
-                potionPanel.UpdatePanelInfo(newPotion.PotionData, newPotion.Amount); 
-                return;
-            }
-        }
-
         GameObject newPotionPanel = GameObject.Instantiate(itemPanelPrefab, craftablesListParent);
         ItemPanelScript script = newPotionPanel.GetComponent<ItemPanelScript>();
-        script.UpdatePanelInfo(newPotion.PotionData, newPotion.Amount);
-        potionsPanelsList.Add(script);
+        script.UpdatePanelInfo(newPotion.PotionData, newPotion.FinalValue);
+        potionPanelsList.Add(script);
+    }
+
+    public void AddNewScrollPanel(ScrollSpell newScroll) // MAKE THIS EVENT BASED METHOD
+    {
+        GameObject newPotionPanel = GameObject.Instantiate(itemPanelPrefab, craftablesListParent);
+        ItemPanelScript script = newPotionPanel.GetComponent<ItemPanelScript>();
+        script.UpdatePanelInfo(newScroll.ScrollData, newScroll.FinalValue);
+        scrollPanelsList.Add(script);
     }
 
     public void UpdateMaterialPanel(CraftingMaterial newMaterial) // MAKE THIS EVENT BASED METHOD
     {
-        foreach (var materialPanel in materialsPanelsList)
+        foreach (var materialPanel in materialPanelsList)
         {
-            if (newMaterial.Amount > 0 && materialPanel.IsTheSameItemInPanel(newMaterial.MaterialData))
+            if (newMaterial.Amount > 0 && materialPanel.IsTheSameMaterialInPanel(newMaterial.MaterialData))
             {
                 materialPanel.UpdatePanelInfo(newMaterial.MaterialData, newMaterial.Amount);
                 return;
             }
-            else if (newMaterial.Amount == 0 && materialPanel.IsTheSameItemInPanel(newMaterial.MaterialData))
+            else if (newMaterial.Amount == 0 && materialPanel.IsTheSameMaterialInPanel(newMaterial.MaterialData))
             {
-                materialPanel.gameObject.SetActive(false);
+                //materialPanel.gameObject.SetActive(false);
+                DestroyImmediate(materialPanel.gameObject);
                 return;
             }
         }
     }
     #endregion
-
-    public void DisplayDiceRollDisplay(int index, int result, Action onCompleteDisplayMethod)
-    {
-        TMP_Text textToDisplay = diceRollResultsDisplayList[index];
-        textToDisplay.text = result.ToString();
-
-        textToDisplay.transform.DOMoveY(defaultResultsDisplayPosY + 100, 1.25f, false).SetEase(Ease.Linear).OnComplete(() => onCompleteDisplayMethod.Invoke());
-    }
-
-    public void ResetDiceRollDisplays()
-    {
-        foreach (var display in diceRollResultsDisplayList)
-        {
-            display.text = "";
-            display.transform.position = new Vector2(display.transform.position.x, defaultResultsDisplayPosY);
-        }
-    }
 }

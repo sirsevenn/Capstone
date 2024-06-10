@@ -6,29 +6,15 @@ public class ArmorSO : CraftableSO
     [Space(10)] [Header("Armor Properties")]
     [SerializeField] private EArmorType armorType;
     [SerializeField] private string armorName;
-    [SerializeField] private uint armorLevel;   
-    [SerializeField] private uint defValue;
 
 
     public EArmorType ArmorType
     { 
         get { return armorType; } 
-        private set { armorType = value; } 
+        private set { } 
     }
 
-    public uint ArmorLevel
-    {
-        get { return armorLevel; }
-        private set { armorLevel = value; }
-    }
-
-    public uint DEF
-    {
-        get { return defValue; }
-        private set { defValue = value; }
-    }
-
-    public override string GetCraftableName()
+    public override string GetItemName()
     {
         return armorName;
     }

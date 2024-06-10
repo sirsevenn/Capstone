@@ -10,69 +10,91 @@ public class ItemPanelScript : MonoBehaviour
     [SerializeField] private TMP_Text itemNumberText;
     [SerializeField] private TMP_Text itemNameText;
     [SerializeField] private TMP_Text itemDescriptionText;
-    [SerializeField] private Button itemPanelButton;
 
-    [Header("Item Propterties")]
-    [SerializeField] private ScriptableObject itemSO;
-    
+    [Header("Item Properties")]
+    [SerializeField] private ItemSO itemSO;
+    [SerializeField] private ItemDraggable draggableScript;
 
-    public bool IsTheSameItemInPanel(ScriptableObject itemToCheck)
-    {
-        if (itemToCheck == null) return false;
-
-        if (itemToCheck is ArmorSO && itemSO is ArmorSO)
-        {
-            ArmorSO armorToCheck = (ArmorSO)itemToCheck;
-            ArmorSO armorInPanel = (ArmorSO)itemSO; 
-            return (armorToCheck.ArmorType == armorInPanel.ArmorType);
-        }
-        else if (itemToCheck is PotionSO && itemSO is PotionSO)
-        {
-            PotionSO potionToCheck = (PotionSO)itemToCheck;
-            PotionSO potionInPanel = (PotionSO)itemSO;
-            return (potionToCheck.PotionType == potionInPanel.PotionType);
-        }
-        else if (itemToCheck is CraftingMaterialSO && itemSO is CraftingMaterialSO)
-        {
-            CraftingMaterialSO materialToCheck = (CraftingMaterialSO)itemToCheck;
-            CraftingMaterialSO materialInPanel = (CraftingMaterialSO)itemSO;
-            return (materialToCheck.MaterialType == materialInPanel.MaterialType);
-        }
-
-        return false;
-    }
 
     public void UpdatePanelInfo(ArmorSO armor)
     {
-        itemImage.sprite = armor.CraftableIcon;
-        itemNumberText.text = armor.ArmorLevel.ToString();
-        itemNameText.text = armor.GetCraftableName();
+        itemImage.sprite = armor.ItemIcon;
+        itemNumberText.text = armor.TierLevel.ToString();
+        itemNameText.text = armor.GetItemName();
         itemDescriptionText.gameObject.SetActive(false);
-        itemSO = armor;
 
-        itemPanelButton.enabled = false;
+        itemSO = armor;
+        draggableScript.enabled = false;
     }
 
-    public void UpdatePanelInfo(PotionSO potion, uint quantity)
+    public void UpdatePanelInfo(PotionSO potion, int healValue)
     {
-        itemImage.sprite = potion.CraftableIcon;
-        itemNumberText.text = quantity.ToString();
-        itemNameText.text = potion.GetCraftableName();
-        itemDescriptionText.text = potion.PotionDescription;
-        itemSO = potion;
+        itemImage.sprite = potion.ItemIcon;
+        itemNumberText.text = potion.TierLevel.ToString();
+        itemNameText.text = potion.GetItemName();
 
-        itemPanelButton.enabled = false;
+        string description = "";
+        switch (potion.PotionType)
+        {
+            case EPotionType.Health_Potion:
+                description = "Can heal for " + healValue.ToString() + " health points";
+                break;
+
+            case EPotionType.Attack_Potion:
+                description = "Can increase damage for " + healValue.ToString() + " points";
+                break;
+
+            case EPotionType.Defense_Potion:
+                description = "Can increase defense for " + healValue.ToString() + " points";
+                break;
+
+            default:
+                break;
+        }
+        itemDescriptionText.text = description;
+
+        itemSO = potion;
+        draggableScript.enabled = false;
+    }
+
+    public void UpdatePanelInfo(ScrollSpellSO scroll, int atkValue)
+    {
+        itemImage.sprite = scroll.ItemIcon;
+        itemNumberText.text = scroll.TierLevel.ToString();
+        itemNameText.text = scroll.GetItemName();
+        itemDescriptionText.text = "Can deal " + atkValue.ToString() + " damage";
+
+        itemSO = scroll;
+        draggableScript.enabled = false;
     }
 
     public void UpdatePanelInfo(CraftingMaterialSO material, uint quantity)
     {
-        itemImage.sprite = material.MaterialIcon;
+        itemImage.sprite = material.ItemIcon;
         itemNumberText.text = quantity.ToString();
-        itemNameText.text = material.GetMaterialName();
+        itemNameText.text = material.GetItemName();
         itemDescriptionText.text = material.MaterialDescription;
-        itemSO = material;
 
-        itemPanelButton.enabled = true;
-        itemPanelButton.onClick.AddListener(() => CraftingSystem.Instance.OnClickMaterial(material));
+        itemSO = material;
+        draggableScript.SetMaterial(material);
+        draggableScript.enabled = true;
+    }
+
+    public bool IsTheSameArmorInPanel(ArmorSO armorToCheck)
+    {
+        if (armorToCheck == null) return false;
+        if (itemSO is not ArmorSO) return false;
+
+        ArmorSO armorInPanel = (ArmorSO)itemSO;
+        return (armorToCheck.ArmorType == armorInPanel.ArmorType);
+    }
+
+    public bool IsTheSameMaterialInPanel(CraftingMaterialSO materialToCheck)
+    {
+        if (materialToCheck == null) return false;
+        if (itemSO is not CraftingMaterialSO) return false;
+
+        CraftingMaterialSO materialInPanel = (CraftingMaterialSO)itemSO;
+        return (materialToCheck.MaterialType == materialInPanel.MaterialType);
     }
 }

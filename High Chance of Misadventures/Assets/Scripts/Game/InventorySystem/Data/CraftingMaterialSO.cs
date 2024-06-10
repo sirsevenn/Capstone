@@ -1,18 +1,20 @@
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Crafting Material", menuName = "ScriptableObjects/CraftingMaterial")]
-public class CraftingMaterialSO : ScriptableObject
+public class CraftingMaterialSO : ItemSO
 {
-    [Header("Main Properties")]
+    [Space(10)] [Header("Crafting Material Properties")]
     [SerializeField] private ECraftingMaterialType materialType;
-    [TextArea(4, 10)]
-    [SerializeField] private string materialDescription;
-    [SerializeField] private Sprite materialIcon;
 
-    [Space(10)] [Header("Crafting Properties")]
-    [SerializeField] private DiceType diceType;
+    [TextArea(4, 10)] 
+    [SerializeField] private string materialDescription;
+
+    [Space(10)]
+    [SerializeField] private CraftableSO itemToCraft;
+
     [Tooltip("Success Rate in percent")] 
     [SerializeField] private float successRate;
+    [SerializeField] private EEffectModifier craftingEffect;
 
 
     public ECraftingMaterialType MaterialType
@@ -27,16 +29,10 @@ public class CraftingMaterialSO : ScriptableObject
         private set { materialDescription = value; }
     }
 
-    public Sprite MaterialIcon
+    public CraftableSO ItemToCraft
     {
-        get { return materialIcon; }
-        private set { materialIcon = value; }
-    }
-
-    public DiceType DiceType
-    {
-        get { return diceType; }
-        private set { diceType = value; }
+        get { return itemToCraft; }
+        private set { itemToCraft = value; }
     }
 
     public float SuccessRate
@@ -45,7 +41,13 @@ public class CraftingMaterialSO : ScriptableObject
         private set { successRate = value; }
     }
 
-    public string GetMaterialName()
+    public EEffectModifier CraftingEffect
+    {
+        get { return craftingEffect; }
+        private set { craftingEffect = value; }
+    }
+
+    public override string GetItemName()
     {
         return materialType.ToString().Replace('_', ' ');
     }

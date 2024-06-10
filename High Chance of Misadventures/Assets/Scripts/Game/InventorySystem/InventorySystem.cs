@@ -7,15 +7,14 @@ public class InventorySystem : MonoBehaviour
     [SerializeField] private ArmorSO helmet;
     [SerializeField] private ArmorSO chestplate;
     [SerializeField] private ArmorSO leggings;
-    [SerializeField] private uint totalDEF;
+    [SerializeField] private int totalDEF;
 
-    [Space(10)]
-    [Header("Potion Properties")]
+    [Space(10)] [Header("Other Craftables Properties")]
     [SerializeField] private List<Potion> potionsList;
-    [SerializeField] private List<EPotionType> craftedPotionsCatalogue;
+    [SerializeField] private List<ScrollSpell> scrollSpellsList;
+    [SerializeField] private List<string> craftablesCatalogue;
 
-    [Space(10)]
-    [Header("Crafting Material Properties")]
+    [Space(10)] [Header("Crafting Material Properties")]
     [SerializeField] private List<CraftingMaterial> craftingMaterialsList;
 
 
@@ -50,12 +49,17 @@ public class InventorySystem : MonoBehaviour
         if (craftable is ArmorSO)
         {
             ArmorSO armor = (ArmorSO)craftable;
-            return IsArmorPieceDiscovered(armor.ArmorType, armor.ArmorLevel);
+            return IsArmorPieceDiscovered(armor.ArmorType, armor.TierLevel);
         }
         else if (craftable is PotionSO)
         {
             PotionSO potion = (PotionSO)craftable;
-            return IsPotionDiscovered(potion.PotionType);
+            return craftablesCatalogue.Contains(potion.GetItemName());
+        }
+        else if (craftable is ScrollSpellSO)
+        {
+            ScrollSpellSO scroll = (ScrollSpellSO)craftable;
+            return craftablesCatalogue.Contains(scroll.GetItemName());
         }
         else
         {
@@ -81,17 +85,17 @@ public class InventorySystem : MonoBehaviour
 
     public void UpgradeArmorPiece(ArmorSO newArmor)
     {
-        if (newArmor.ArmorType == EArmorType.Helmet && newArmor.ArmorLevel > this.helmet.ArmorLevel)
+        if (newArmor.ArmorType == EArmorType.Helmet && newArmor.TierLevel > this.helmet.TierLevel)
         {
             this.helmet = newArmor;
             UpdateTotalDEF();
         }
-        else if (newArmor.ArmorType == EArmorType.Chestplate && newArmor.ArmorLevel > this.chestplate.ArmorLevel)
+        else if (newArmor.ArmorType == EArmorType.Chestplate && newArmor.TierLevel > this.chestplate.TierLevel)
         {
             this.chestplate = newArmor;
             UpdateTotalDEF();
         }
-        else if (newArmor.ArmorType == EArmorType.Leggings && newArmor.ArmorLevel > this.leggings.ArmorLevel)
+        else if (newArmor.ArmorType == EArmorType.Leggings && newArmor.TierLevel > this.leggings.TierLevel)
         {
             this.leggings = newArmor;
             UpdateTotalDEF();
@@ -100,35 +104,20 @@ public class InventorySystem : MonoBehaviour
 
     private bool IsArmorPieceDiscovered(EArmorType type, uint level)
     {
-        switch (type)
-        {
-            case EArmorType.Helmet:
-                if (level <= helmet.ArmorLevel) return true;
-                break;
-
-            case EArmorType.Chestplate:
-                if (level <= chestplate.ArmorLevel) return true;
-                break;
-
-            case EArmorType.Leggings:
-                if (level <= leggings.ArmorLevel) return true;
-                break;
-
-            default:
-                break;
-        }
-
-        return false;
+        if (type == EArmorType.Helmet && level <= this.helmet.TierLevel) return true;
+        else if (type == EArmorType.Chestplate && level <= this.chestplate.TierLevel) return true;
+        else if (type == EArmorType.Leggings && level <= this.leggings.TierLevel) return true;
+        else return false;
     }
 
-    public uint GetTotalDEF()
+    public int GetTotalDEF()
     {
         return totalDEF;
     }
 
     private void UpdateTotalDEF()
     {
-        totalDEF = helmet.DEF + chestplate.DEF + leggings.DEF;
+        totalDEF = helmet.BaseValue + chestplate.BaseValue + leggings.BaseValue;
     }
     #endregion
 
@@ -139,15 +128,29 @@ public class InventorySystem : MonoBehaviour
         return potionsList.Exists(x => x.PotionData.PotionType == potion);
     }
 
-    public uint GetPotionAmount(EPotionType potion)
+    public int GetPotionAmount(EPotionType potionType)
     {
-        Potion selectedPotion = potionsList.Find(x => x.PotionData.PotionType == potion);
-        return selectedPotion.Amount;
+        int numPotions = 0;
+        foreach (var potionInList in potionsList)
+        {
+            if (potionInList.PotionData.PotionType == potionType) numPotions++;
+        }
+        return numPotions;
     }
 
-    public Potion GetPotion(EPotionType potion)
+    public List<Potion> GetPotionsOfType(EPotionType potionType)
     {
-        return potionsList.Find(x => x.PotionData.PotionType == potion);
+        List<Potion> returnList = new();
+        foreach (var potionInList in potionsList)
+        {
+            if (potionInList.PotionData.PotionType == potionType) returnList.Add(potionInList);
+        }
+        return returnList;
+    }
+
+    public Potion GetPotionByID(uint id)
+    {
+        return potionsList.Find(x => x.PotionID == id);
     }
 
     public List<Potion> GetPotionsList()
@@ -155,46 +158,106 @@ public class InventorySystem : MonoBehaviour
         return potionsList;
     }
 
-    public void AddPotions(Potion potions)
+    public int GetNextPotionID()
     {
-        int index = potionsList.FindIndex(x => x.PotionData.PotionType == potions.PotionData.PotionType);
-
-        if (index != -1)
+        int id = 1;
+        foreach (var potion in potionsList)
         {
-            potionsList[index].Amount += potions.Amount;
+            if (id != potion.PotionID) break;
+            else id++;
         }
-        else
-        {
-            potionsList.Add(potions);
-        }
+        return id;
     }
 
-    public void UsePotion(EPotionType potion)
+    public void AddPotion(Potion potion)
     {
-        int index = potionsList.FindIndex(x => x.PotionData.PotionType == potion);
+        potionsList.Add(potion);
+        potionsList.Sort((x,y) => x.PotionID.CompareTo(y.PotionID));
+    }
 
-        if (index != -1)
+    public void UsePotion(uint id)
+    {
+        Potion potion = potionsList.Find(x => x.PotionID == id);
+        // use potion
+
+        potionsList.Remove(potion);
+        potionsList.Sort((x, y) => x.PotionID.CompareTo(y.PotionID));
+    }
+
+    public void AddPotionToCatalogue(string potionName)
+    {
+        if (craftablesCatalogue.Contains(potionName)) return;
+        craftablesCatalogue.Add(potionName);
+    }
+    #endregion
+
+
+    #region Scroll Methods
+    public bool HasScroll(EElementalAttackType attackType)
+    {
+        return scrollSpellsList.Exists(x => x.ScrollData.ElementalAttackType == attackType);
+    }
+
+    public int GetScrollAmount(EElementalAttackType attackType)
+    {
+        int numScrolls = 0;
+        foreach (var scroll in scrollSpellsList)
         {
-            // use method
-
-            potionsList[index].Amount--;
-            if (potionsList[index].Amount == 0)
-            {
-                potionsList.RemoveAt(index);
-            }
+            if (scroll.ScrollData.ElementalAttackType == attackType) numScrolls++;
         }
+        return numScrolls;
     }
 
-    private bool IsPotionDiscovered(EPotionType type)
+    public List<ScrollSpell> GetScrollsOfType(EElementalAttackType attackType)
     {
-        return craftedPotionsCatalogue.Contains(type);
+        List<ScrollSpell> returnList = new();
+        foreach (var scroll in scrollSpellsList)
+        {
+            if (scroll.ScrollData.ElementalAttackType == attackType) returnList.Add(scroll);
+        }
+        return returnList;
     }
 
-    public void AddPotionToCatalogue(EPotionType potion)
+    public ScrollSpell GetScrollByID(uint id)
     {
-        if (potion == EPotionType.Unknown || IsPotionDiscovered(potion)) return;
+        return scrollSpellsList.Find(x => x.ScrollID == id);
+    }
 
-        craftedPotionsCatalogue.Add(potion);
+    public List<ScrollSpell> GetScrollsList()
+    {
+        return scrollSpellsList;
+    }
+
+    public int GetNextScrollID()
+    {
+        int id = 1;
+        foreach (var scroll in scrollSpellsList)
+        {
+            if (id != scroll.ScrollID) break;
+            else id++;
+        }
+        return id;
+    }
+
+    public void AddScroll(ScrollSpell scroll)
+    {
+        scrollSpellsList.Add(scroll);
+        scrollSpellsList.Sort((x, y) => x.ScrollID.CompareTo(y.ScrollID));
+    }
+
+    public void UseScroll(uint id)
+    {
+        ScrollSpell scroll = scrollSpellsList.Find(x => x.ScrollID == id);
+        // use scroll
+
+        scrollSpellsList.Remove(scroll);
+        scrollSpellsList.Sort((x, y) => x.ScrollID.CompareTo(y.ScrollID));
+    }
+
+    public void AddScrollToCatalogue(string scrollName)
+    {
+        if (craftablesCatalogue.Contains(scrollName)) return;
+        craftablesCatalogue.Add(scrollName);
     }
     #endregion
 

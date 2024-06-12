@@ -113,7 +113,7 @@ public class CraftingSystem : MonoBehaviour
             UI.SetSuccessRateBar(currentSuccessRate);
             UI.SetCraftingEffectBar(EEffectModifier.Unknown);
         }
-        else if (hasEnoughMaterials && selectedBaseMaterial != null && index != -1 && selectedSupplementaryMaterials[index - 1] == null)
+        else if (hasEnoughMaterials && selectedBaseMaterial != null && index > 0 && selectedSupplementaryMaterials[index - 1] == null)
         {
             selectedSupplementaryMaterials[index - 1] = draggedMaterial;
 

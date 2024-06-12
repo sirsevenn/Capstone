@@ -41,10 +41,10 @@ public class CraftingSystemUI : MonoBehaviour
     [SerializeField] private Transform materialsListParent;
 
     [Space(10)] [Header("Item Panel References")]
-    [SerializeField] private List<ItemPanelScript> armorPanelsList;
-    [SerializeField] private List<ItemPanelScript> potionPanelsList;
-    [SerializeField] private List<ItemPanelScript> scrollPanelsList;
-    [SerializeField] private List<ItemPanelScript> materialPanelsList;
+    [SerializeField] private List<CraftingItemPanelScript> armorPanelsList;
+    [SerializeField] private List<CraftingItemPanelScript> potionPanelsList;
+    [SerializeField] private List<CraftingItemPanelScript> scrollPanelsList;
+    [SerializeField] private List<CraftingItemPanelScript> materialPanelsList;
 
 
     #region Initialization
@@ -53,14 +53,26 @@ public class CraftingSystemUI : MonoBehaviour
         ResetCraftingUI();
         InitializeItemPanels();
         EnableMaterialsListPanel();
-
         draggedIcon.gameObject.SetActive(false);
+
+        InventorySystem.Instance.OnUpgradeArmorEvent += UpdateArmorPanel;
+        InventorySystem.Instance.OnUpdatePotionsEvent += AddNewPotionPanel;
+        InventorySystem.Instance.OnUpdateScrollsEvent += AddNewScrollPanel;
+        InventorySystem.Instance.OnUpdateMaterialsEvent += UpdateMaterialPanel;
+    }
+
+    private void OnDestroy()
+    {
+        InventorySystem.Instance.OnUpgradeArmorEvent -= UpdateArmorPanel;
+        InventorySystem.Instance.OnUpdatePotionsEvent -= AddNewPotionPanel;
+        InventorySystem.Instance.OnUpdateScrollsEvent -= AddNewScrollPanel;
+        InventorySystem.Instance.OnUpdateMaterialsEvent -= UpdateMaterialPanel;
     }
 
     private void InitializeItemPanels()
     {
         // Armor
-        armorPanelsList = new List<ItemPanelScript>();
+        armorPanelsList = new List<CraftingItemPanelScript>();
 
         List<ArmorSO> armorList = new List<ArmorSO>()
         {
@@ -72,31 +84,31 @@ public class CraftingSystemUI : MonoBehaviour
         foreach (var armor in armorList)
         {
             GameObject newArmorPanel = GameObject.Instantiate(itemPanelPrefab, craftablesListParent);
-            ItemPanelScript script = newArmorPanel.GetComponent<ItemPanelScript>();
+            CraftingItemPanelScript script = newArmorPanel.GetComponent<CraftingItemPanelScript>();
             script.UpdatePanelInfo(armor);
             armorPanelsList.Add(script);
         }
 
         // Potions
-        potionPanelsList = new List<ItemPanelScript>();
+        potionPanelsList = new List<CraftingItemPanelScript>();
         foreach (var potion in InventorySystem.Instance.GetPotionsList())
         {
-            AddNewPotionPanel(potion);
+            AddNewPotionPanel(potion, true);
         }
 
         // Scrolls
-        scrollPanelsList = new List<ItemPanelScript>();
+        scrollPanelsList = new List<CraftingItemPanelScript>();
         foreach (var scroll in InventorySystem.Instance.GetScrollsList())
         {
-            AddNewScrollPanel(scroll);
+            AddNewScrollPanel(scroll, true);
         }
 
         // Materials
-        materialPanelsList = new List<ItemPanelScript>();
+        materialPanelsList = new List<CraftingItemPanelScript>();
         foreach (var material in InventorySystem.Instance.GetCraftingMaterialsList())
         {
             GameObject newMaterialPanel = GameObject.Instantiate(itemPanelPrefab, materialsListParent);
-            ItemPanelScript script = newMaterialPanel.GetComponent<ItemPanelScript>();
+            CraftingItemPanelScript script = newMaterialPanel.GetComponent<CraftingItemPanelScript>();
             script.UpdatePanelInfo(material.MaterialData, material.Amount);
             materialPanelsList.Add(script);
         }
@@ -244,8 +256,10 @@ public class CraftingSystemUI : MonoBehaviour
     #endregion
 
     #region Update Item Panels Methods
-    public void UpdateArmorPanel(ArmorSO newArmor) // MAKE THIS EVENT BASED METHOD
+    private void UpdateArmorPanel(ArmorSO newArmor) 
     {
+        if (newArmor == null) return;
+
         foreach (var armorPanel in armorPanelsList)
         {
             if (armorPanel.IsTheSameArmorInPanel(newArmor))
@@ -256,24 +270,30 @@ public class CraftingSystemUI : MonoBehaviour
         }
     }
 
-    public void AddNewPotionPanel(Potion newPotion) // MAKE THIS EVENT BASED METHOD
+    private void AddNewPotionPanel(Potion newPotion, bool hasAddedNewPotion) 
     {
+        if (!hasAddedNewPotion || newPotion == null) return;
+
         GameObject newPotionPanel = GameObject.Instantiate(itemPanelPrefab, craftablesListParent);
-        ItemPanelScript script = newPotionPanel.GetComponent<ItemPanelScript>();
+        CraftingItemPanelScript script = newPotionPanel.GetComponent<CraftingItemPanelScript>();
         script.UpdatePanelInfo(newPotion.PotionData, newPotion.FinalValue);
         potionPanelsList.Add(script);
     }
 
-    public void AddNewScrollPanel(ScrollSpell newScroll) // MAKE THIS EVENT BASED METHOD
+    private void AddNewScrollPanel(ScrollSpell newScroll, bool hasAddedNewScroll) 
     {
+        if (!hasAddedNewScroll || newScroll == null) return;
+
         GameObject newPotionPanel = GameObject.Instantiate(itemPanelPrefab, craftablesListParent);
-        ItemPanelScript script = newPotionPanel.GetComponent<ItemPanelScript>();
+        CraftingItemPanelScript script = newPotionPanel.GetComponent<CraftingItemPanelScript>();
         script.UpdatePanelInfo(newScroll.ScrollData, newScroll.FinalValue);
         scrollPanelsList.Add(script);
     }
 
-    public void UpdateMaterialPanel(CraftingMaterial newMaterial) // MAKE THIS EVENT BASED METHOD
+    private void UpdateMaterialPanel(CraftingMaterial newMaterial, bool hasAddedNewMaterial) 
     {
+        if (newMaterial == null) return;
+
         foreach (var materialPanel in materialPanelsList)
         {
             if (newMaterial.Amount > 0 && materialPanel.IsTheSameMaterialInPanel(newMaterial.MaterialData))

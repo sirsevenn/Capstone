@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -16,6 +17,11 @@ public class InventorySystem : MonoBehaviour
 
     [Space(10)] [Header("Crafting Material Properties")]
     [SerializeField] private List<CraftingMaterial> craftingMaterialsList;
+
+    public event Action<ArmorSO> OnUpgradeArmorEvent;
+    public event Action<Potion, bool> OnUpdatePotionsEvent;
+    public event Action<ScrollSpell, bool> OnUpdateScrollsEvent;
+    public event Action<CraftingMaterial, bool> OnUpdateMaterialsEvent;
 
 
     #region Singleton
@@ -89,16 +95,19 @@ public class InventorySystem : MonoBehaviour
         {
             this.helmet = newArmor;
             UpdateTotalDEF();
+            OnUpgradeArmorEvent?.Invoke(newArmor);
         }
         else if (newArmor.ArmorType == EArmorType.Chestplate && newArmor.TierLevel > this.chestplate.TierLevel)
         {
             this.chestplate = newArmor;
             UpdateTotalDEF();
+            OnUpgradeArmorEvent?.Invoke(newArmor);
         }
         else if (newArmor.ArmorType == EArmorType.Leggings && newArmor.TierLevel > this.leggings.TierLevel)
         {
             this.leggings = newArmor;
             UpdateTotalDEF();
+            OnUpgradeArmorEvent?.Invoke(newArmor);
         }
     }
 
@@ -131,26 +140,35 @@ public class InventorySystem : MonoBehaviour
     public int GetPotionAmount(EPotionType potionType)
     {
         int numPotions = 0;
-        foreach (var potionInList in potionsList)
+        foreach (var potion in potionsList)
         {
-            if (potionInList.PotionData.PotionType == potionType) numPotions++;
+            if (potion.PotionData.PotionType == potionType) numPotions++;
         }
         return numPotions;
+    }
+
+    public Potion GetOnePotionOfType(EPotionType potionType)
+    {
+        foreach (var potion in potionsList)
+        {
+            if (potion.PotionData.PotionType == potionType) return potion;
+        }
+        return null;
     }
 
     public List<Potion> GetPotionsOfType(EPotionType potionType)
     {
         List<Potion> returnList = new();
-        foreach (var potionInList in potionsList)
+        foreach (var potion in potionsList)
         {
-            if (potionInList.PotionData.PotionType == potionType) returnList.Add(potionInList);
+            if (potion.PotionData.PotionType == potionType) returnList.Add(potion);
         }
         return returnList;
     }
 
     public Potion GetPotionByID(uint id)
     {
-        return potionsList.Find(x => x.PotionID == id);
+        return potionsList.Find(x => x.ItemID == id);
     }
 
     public List<Potion> GetPotionsList()
@@ -163,7 +181,7 @@ public class InventorySystem : MonoBehaviour
         int id = 1;
         foreach (var potion in potionsList)
         {
-            if (id != potion.PotionID) break;
+            if (id != potion.ItemID) break;
             else id++;
         }
         return id;
@@ -171,17 +189,28 @@ public class InventorySystem : MonoBehaviour
 
     public void AddPotion(Potion potion)
     {
+        if (potion.PotionData.PotionType == EPotionType.Unknown) return;
+
         potionsList.Add(potion);
-        potionsList.Sort((x,y) => x.PotionID.CompareTo(y.PotionID));
+        potionsList.Sort((x,y) => x.ItemID.CompareTo(y.ItemID));
+        OnUpdatePotionsEvent?.Invoke(potion, true);
     }
 
-    public void UsePotion(uint id)
+    public void UsePotion(uint id, HO_CharacterStat stat)
     {
-        Potion potion = potionsList.Find(x => x.PotionID == id);
-        // use potion
+        Potion potion = potionsList.Find(x => x.ItemID == id);
+
+        switch (potion.PotionData.PotionType)
+        {
+            case EPotionType.Health_Potion: stat.Heal(potion.FinalValue); break;
+            case EPotionType.Attack_Potion: stat.ModifyATK(potion.FinalValue); break;
+            case EPotionType.Defense_Potion: stat.ModifyDEF(potion.FinalValue); break;
+            default: break;
+        }
 
         potionsList.Remove(potion);
-        potionsList.Sort((x, y) => x.PotionID.CompareTo(y.PotionID));
+        potionsList.Sort((x, y) => x.ItemID.CompareTo(y.ItemID));
+        OnUpdatePotionsEvent?.Invoke(potion, false);
     }
 
     public void AddPotionToCatalogue(string potionName)
@@ -208,6 +237,15 @@ public class InventorySystem : MonoBehaviour
         return numScrolls;
     }
 
+    public ScrollSpell GetOneScrollOfType(EElementalAttackType attackType)
+    {
+        foreach (var scroll in scrollSpellsList)
+        {
+            if (scroll.ScrollData.ElementalAttackType == attackType) return scroll;
+        }
+        return null;
+    }
+
     public List<ScrollSpell> GetScrollsOfType(EElementalAttackType attackType)
     {
         List<ScrollSpell> returnList = new();
@@ -220,7 +258,7 @@ public class InventorySystem : MonoBehaviour
 
     public ScrollSpell GetScrollByID(uint id)
     {
-        return scrollSpellsList.Find(x => x.ScrollID == id);
+        return scrollSpellsList.Find(x => x.ItemID == id);
     }
 
     public List<ScrollSpell> GetScrollsList()
@@ -233,7 +271,7 @@ public class InventorySystem : MonoBehaviour
         int id = 1;
         foreach (var scroll in scrollSpellsList)
         {
-            if (id != scroll.ScrollID) break;
+            if (id != scroll.ItemID) break;
             else id++;
         }
         return id;
@@ -241,17 +279,19 @@ public class InventorySystem : MonoBehaviour
 
     public void AddScroll(ScrollSpell scroll)
     {
+        if (scroll.ScrollData.ElementalAttackType == EElementalAttackType.Unknown) return;
+
         scrollSpellsList.Add(scroll);
-        scrollSpellsList.Sort((x, y) => x.ScrollID.CompareTo(y.ScrollID));
+        scrollSpellsList.Sort((x, y) => x.ItemID.CompareTo(y.ItemID));
+        OnUpdateScrollsEvent?.Invoke(scroll, true);
     }
 
     public void UseScroll(uint id)
     {
-        ScrollSpell scroll = scrollSpellsList.Find(x => x.ScrollID == id);
-        // use scroll
-
+        ScrollSpell scroll = scrollSpellsList.Find(x => x.ItemID == id);
         scrollSpellsList.Remove(scroll);
-        scrollSpellsList.Sort((x, y) => x.ScrollID.CompareTo(y.ScrollID));
+        scrollSpellsList.Sort((x, y) => x.ItemID.CompareTo(y.ItemID));
+        OnUpdateScrollsEvent?.Invoke(scroll, false);
     }
 
     public void AddScrollToCatalogue(string scrollName)
@@ -286,25 +326,32 @@ public class InventorySystem : MonoBehaviour
 
     public void AddMaterials(CraftingMaterial materials)
     {
+        if (materials.MaterialData.MaterialType == ECraftingMaterialType.Unknown) return;
+
         int index = craftingMaterialsList.FindIndex(x => x.MaterialData.MaterialType == materials.MaterialData.MaterialType);
 
         if (index != -1)
         {
             craftingMaterialsList[index].Amount += materials.Amount;
+            OnUpdateMaterialsEvent?.Invoke(craftingMaterialsList[index], true);
         }
         else
         {
             craftingMaterialsList.Add(materials);
+            OnUpdateMaterialsEvent?.Invoke(materials, true);
         }
     }
 
     public void ReduceMaterials(CraftingMaterial materials)
     {
+        if (materials.MaterialData.MaterialType == ECraftingMaterialType.Unknown) return;
+
         int index = craftingMaterialsList.FindIndex(x => x.MaterialData.MaterialType == materials.MaterialData.MaterialType);
 
         if (index != -1 && craftingMaterialsList[index].Amount >= materials.Amount)
         {
             craftingMaterialsList[index].Amount -= materials.Amount;
+            OnUpdateMaterialsEvent?.Invoke(craftingMaterialsList[index], false);
 
             if (craftingMaterialsList[index].Amount == 0) 
             {

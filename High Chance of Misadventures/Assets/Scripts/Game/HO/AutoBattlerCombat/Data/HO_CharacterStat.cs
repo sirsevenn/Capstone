@@ -6,17 +6,17 @@ public class HO_CharacterStat
 {
     [Header("HP Stat")]
     [SerializeField] private int baseHP;
-    [SerializeField] private int increaseHP;
+    [SerializeField] private int changeInHP;
     [SerializeField] private int currentHP;
 
     [Space(10)] [Header("ATK Stat")]
     [SerializeField] private int baseATK;
-    [SerializeField] private int increaseATK;
+    [SerializeField] private int changeInATK;
     [SerializeField] private int totalATK;
 
     [Space(10)] [Header("DEF Stat")]
     [SerializeField] private int baseDEF;
-    [SerializeField] private int increaseDEF;
+    [SerializeField] private int changeInDEF;
     [SerializeField] private int totalDEF;
     [SerializeField] private int defReduc;
 
@@ -24,14 +24,14 @@ public class HO_CharacterStat
     public void InitializeCharacterStat()
     {
         ResetHP();
-        totalATK = baseATK + increaseATK;
-        totalDEF = baseDEF + increaseDEF;
+        totalATK = baseATK + changeInATK;
+        totalDEF = baseDEF + changeInDEF;
     }
 
     #region HP
     public int GetMaxHP()
     {
-        return baseHP + increaseHP;
+        return baseHP + changeInHP;
     }
 
     public int GetCurrentHP()
@@ -54,18 +54,16 @@ public class HO_CharacterStat
         baseHP = hp;
     }
 
-    public void SetIncreaseHP(int increase)
+    public void ModifyHP(int increase)
     {
-        if (increase < 0) return;
-
-        increaseHP = increase;
+        changeInHP += increase;
         float percent = GetCurrentHPInPercent();
         currentHP = Mathf.RoundToInt(GetMaxHP() * percent);
     }
 
     public void Heal(int heal)
     {
-        if (heal < 0) return;
+        if (heal <= 0) return;
 
         currentHP += heal;
         currentHP = (currentHP > GetMaxHP()) ? GetMaxHP() : currentHP; 
@@ -74,9 +72,11 @@ public class HO_CharacterStat
 
     public void TakeDamage(int damage, bool isElemental)
     {
-        if (damage < 0) return;
+        if (damage <= 0) return;
 
-        int reducedDMG = Mathf.RoundToInt(defReduc / totalDEF * damage);
+        float DEF = (totalDEF == 0) ? 1 : totalDEF;
+        int reducedDMG = Mathf.RoundToInt(defReduc / DEF * damage);
+
         currentHP -= isElemental ? damage : reducedDMG;
         currentHP = (currentHP <= 0) ? 0 : currentHP;
     }
@@ -99,12 +99,16 @@ public class HO_CharacterStat
         baseATK = atk;
     }
 
-    public void SetIncreaseATK(int increase)
+    public void ModifyATK(int increase)
     {
-        if (increase < 0) return;
+        changeInATK += increase;
+        totalATK = baseATK + changeInATK;
+    }
 
-        increaseATK = increase;
-        totalATK = baseATK + increaseATK;
+    public void ResetATKToBase()
+    {
+        changeInATK = 0;
+        totalATK = baseATK;
     }
     #endregion
 
@@ -125,12 +129,10 @@ public class HO_CharacterStat
         baseDEF = def;
     }
 
-    public void SetIncreaseDEF(int increase)
+    public void ModifyDEF(int increase)
     {
-        if (increase < 0) return; 
-
-        increaseDEF = increase;
-        totalDEF = baseDEF + increaseDEF;
+        changeInDEF += increase;
+        totalDEF = baseDEF + changeInDEF;
     }
 
     public void SetDEFReduc(int reduc)
@@ -138,6 +140,12 @@ public class HO_CharacterStat
         if (reduc < 0) return;
 
         defReduc = reduc;
+    }
+
+    public void ResetDEFToBase()
+    {
+        changeInDEF = 0;
+        totalDEF = baseDEF;
     }
     #endregion
 }

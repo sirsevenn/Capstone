@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29fbd832dfade9a4e8013ec86be4031f, type: 3}
+  m_Name: ForestRegion
+  m_EditorClassIdentifier: 
+  regionName: Forest
+  enemiesList:
+  - {fileID: 11400000, guid: 9b82d40c44c26d24d9f351fde1399069, type: 2}
+  - {fileID: 11400000, guid: ef1fb8c2a1f32f7439ba494af37b2f6f, type: 2}
+  - {fileID: 11400000, guid: e04847d8d2c5fce46b915eb32e3229e4, type: 2}
+  bossEnemy: {fileID: 11400000, guid: dd84d127e69f95d4383242fdd7dc0803, type: 2}
+  environmentModel: {fileID: 2603565881939543737, guid: b9131f5922b2b5b45aa19119376a2a50,
+    type: 3}

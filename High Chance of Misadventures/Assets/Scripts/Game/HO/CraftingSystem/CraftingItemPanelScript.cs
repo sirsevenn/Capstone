@@ -2,7 +2,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class ItemPanelScript : MonoBehaviour
+public class CraftingItemPanelScript : MonoBehaviour
 {
     [Header("UI Properties")]
     [SerializeField] private Image itemImage;

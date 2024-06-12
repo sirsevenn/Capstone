@@ -1,45 +1,23 @@
 using System;
 using UnityEngine;
 
-public class ScrollSpell : MonoBehaviour
+[Serializable]
+public class ScrollSpell : ConsumableItem
 {
-    [SerializeField] private uint scrollID;
+    [Space(10)]
     [SerializeField] private ScrollSpellSO scrollData;
-    [SerializeField] private EEffectModifier appliedModifierType;
-    [SerializeField] private int finalValue;
 
 
-    public ScrollSpell(uint id, ScrollSpellSO data, EEffectModifier modifierType)
+    public ScrollSpell(uint id, EEffectModifier modifierType, ScrollSpellSO data) : base(id, modifierType)
     {
-        this.scrollID = id;
         this.scrollData = data;
-        this.appliedModifierType = modifierType;
 
         EffectModifier modifier = data.EffectModifiersList.Find(x => x.ModifierType == modifierType);
         this.finalValue = (modifier != null) ? data.BaseValue + modifier.EffectValue : data.BaseValue;
     }
-
-    public uint ScrollID
-    {
-        get { return scrollID; }
-        private set { }
-    }
-
     public ScrollSpellSO ScrollData
     {
         get { return scrollData; }
-        private set { }
-    }
-
-    public EEffectModifier AppliedModifierType
-    {
-        get { return appliedModifierType; }
-        private set { }
-    }
-
-    public int FinalValue
-    {
-        get { return finalValue; }
         private set { }
     }
 }

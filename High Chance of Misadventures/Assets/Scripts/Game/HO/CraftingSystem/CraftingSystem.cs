@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class CraftingSystem : MonoBehaviour
 {
@@ -85,19 +86,20 @@ public class CraftingSystem : MonoBehaviour
         if (!isDraggingMaterial || currentDraggedMaterial != draggedMaterial) return;
 
         // Check if there are enough materials to add
-        int count = (selectedBaseMaterial != null && selectedBaseMaterial.MaterialType == draggedMaterial.MaterialType) ? 1 : 0;
+        int count = 1; 
+        count += (selectedBaseMaterial != null && selectedBaseMaterial.MaterialType == draggedMaterial.MaterialType) ? 1 : 0;
+
         foreach (var selectedMaterial in selectedSupplementaryMaterials)
         {
             if (selectedMaterial != null && selectedMaterial.MaterialType == draggedMaterial.MaterialType) count++;
         }
 
-        if (count >= InventorySystem.Instance.GetMaterialAmount(draggedMaterial.MaterialType)) return;
-
+        bool hasEnoughMaterials = (count <= InventorySystem.Instance.GetMaterialAmount(draggedMaterial.MaterialType));
 
         // Determine on which slots was the material dropped onto
         int index = UI.IsDroppedMaterialOnBaseSlot(materialPos) ? 0 : UI.GetSupplementarySlotIndexFromHoveredMaterial(materialPos);
 
-        if (index == 0 && selectedBaseMaterial == null)
+        if (hasEnoughMaterials && index == 0 && selectedBaseMaterial == null)
         {
             selectedBaseMaterial = draggedMaterial;
             itemToCraft = draggedMaterial.ItemToCraft;
@@ -111,7 +113,7 @@ public class CraftingSystem : MonoBehaviour
             UI.SetSuccessRateBar(currentSuccessRate);
             UI.SetCraftingEffectBar(EEffectModifier.Unknown);
         }
-        else if (selectedBaseMaterial != null && index != -1 && selectedSupplementaryMaterials[index - 1] == null)
+        else if (hasEnoughMaterials && selectedBaseMaterial != null && index != -1 && selectedSupplementaryMaterials[index - 1] == null)
         {
             selectedSupplementaryMaterials[index - 1] = draggedMaterial;
 
@@ -205,40 +207,32 @@ public class CraftingSystem : MonoBehaviour
 
         // Reset UI
         UI.ResetCraftingUI();
-
-        foreach (var material in selectedMaterialsWithAmountList)
-        {
-            CraftingMaterial materialInInventory = InventorySystem.Instance.GetCraftingMaterial(material.MaterialData.MaterialType);
-            if (materialInInventory == null)
-            {
-                materialInInventory = new CraftingMaterial(material.MaterialData, 0);
-            }
-            UI.UpdateMaterialPanel(materialInInventory);
-        }
     }
 
     private void CraftArmor(ArmorSO armorToCraft)
     {
         InventorySystem.Instance.UpgradeArmorPiece(armorToCraft);
-        UI.UpdateArmorPanel(armorToCraft);
     }
 
     private void CraftPotion(PotionSO potionToCraft, EEffectModifier effectModifier)
     {
         uint id = (uint)InventorySystem.Instance.GetNextPotionID();
-        Potion newPotion = new Potion(id, potionToCraft, effectModifier);
+        Potion newPotion = new Potion(id, effectModifier, potionToCraft);
         InventorySystem.Instance.AddPotion(newPotion);
         InventorySystem.Instance.AddPotionToCatalogue(newPotion.PotionData.GetItemName());
-        UI.AddNewPotionPanel(newPotion);
     }
 
     private void CraftScroll(ScrollSpellSO scrollToCraft, EEffectModifier effectModifier)
     {
         uint id = (uint)InventorySystem.Instance.GetNextScrollID();
-        ScrollSpell newScroll = new ScrollSpell(id, scrollToCraft, effectModifier);
+        ScrollSpell newScroll = new ScrollSpell(id, effectModifier, scrollToCraft);
         InventorySystem.Instance.AddScroll(newScroll);
         InventorySystem.Instance.AddScrollToCatalogue(newScroll.ScrollData.GetItemName());
-        UI.AddNewScrollPanel(newScroll);
+    }
+
+    public void TransitionToBattleScene()
+    {
+        SceneManager.LoadScene("AutoBattleScene");
     }
     #endregion
 }

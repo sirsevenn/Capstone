@@ -1,13 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEditor.PlayerSettings;
 
 public class CraftingSystemUI : MonoBehaviour
 {
     [Header("Crafting UI References")]
-    [SerializeField] private int currentHighlightedSlot;
-    [SerializeField] private List<Image> materialSlotImages;
-    [SerializeField] private List<Image> materialSlotHighlights;
+    [SerializeField] private int currentHighlightedSlot; // -1 nothing, 0 base, 1 cauldron
+    [SerializeField] private Image baseSlotImage;
+    [SerializeField] private Image baseSlotHighlight;
+    [SerializeField] private Image cauldronHighlight;
 
     [Space(10)]
     [SerializeField] private GameObject outputPanel;
@@ -55,7 +57,7 @@ public class CraftingSystemUI : MonoBehaviour
         EnableMaterialsListPanel();
         draggedIcon.gameObject.SetActive(false);
 
-        InventorySystem.Instance.OnUpgradeArmorEvent += UpdateArmorPanel;
+        //InventorySystem.Instance.OnUpgradeArmorEvent += UpdateArmorPanel;
         InventorySystem.Instance.OnUpdatePotionsEvent += AddNewPotionPanel;
         InventorySystem.Instance.OnUpdateScrollsEvent += AddNewScrollPanel;
         InventorySystem.Instance.OnUpdateMaterialsEvent += UpdateMaterialPanel;
@@ -63,7 +65,7 @@ public class CraftingSystemUI : MonoBehaviour
 
     private void OnDestroy()
     {
-        InventorySystem.Instance.OnUpgradeArmorEvent -= UpdateArmorPanel;
+        //InventorySystem.Instance.OnUpgradeArmorEvent -= UpdateArmorPanel;
         InventorySystem.Instance.OnUpdatePotionsEvent -= AddNewPotionPanel;
         InventorySystem.Instance.OnUpdateScrollsEvent -= AddNewScrollPanel;
         InventorySystem.Instance.OnUpdateMaterialsEvent -= UpdateMaterialPanel;
@@ -72,22 +74,22 @@ public class CraftingSystemUI : MonoBehaviour
     private void InitializeItemPanels()
     {
         // Armor
-        armorPanelsList = new List<CraftingItemPanelScript>();
+        //armorPanelsList = new List<CraftingItemPanelScript>();
 
-        List<ArmorSO> armorList = new List<ArmorSO>()
-        {
-            InventorySystem.Instance.GetHelmet(),
-            InventorySystem.Instance.GetChestplate(),
-            InventorySystem.Instance.GetLeggings()
-        };
+        //List<ArmorSO> armorList = new List<ArmorSO>()
+        //{
+        //    InventorySystem.Instance.GetHelmet(),
+        //    InventorySystem.Instance.GetChestplate(),
+        //    InventorySystem.Instance.GetLeggings()
+        //};
 
-        foreach (var armor in armorList)
-        {
-            GameObject newArmorPanel = GameObject.Instantiate(itemPanelPrefab, craftablesListParent);
-            CraftingItemPanelScript script = newArmorPanel.GetComponent<CraftingItemPanelScript>();
-            script.UpdatePanelInfo(armor);
-            armorPanelsList.Add(script);
-        }
+        //foreach (var armor in armorList)
+        //{
+        //    GameObject newArmorPanel = GameObject.Instantiate(itemPanelPrefab, craftablesListParent);
+        //    CraftingItemPanelScript script = newArmorPanel.GetComponent<CraftingItemPanelScript>();
+        //    script.UpdatePanelInfo(armor);
+        //    armorPanelsList.Add(script);
+        //}
 
         // Potions
         potionPanelsList = new List<CraftingItemPanelScript>();
@@ -129,7 +131,7 @@ public class CraftingSystemUI : MonoBehaviour
     }
     #endregion
 
-    #region Public UI Methods
+    #region Dragging Event Methods
     public void OnBeginDragMaterial(Sprite icon)
     {
         draggedIcon.gameObject.SetActive(true);
@@ -140,68 +142,47 @@ public class CraftingSystemUI : MonoBehaviour
     {
         draggedIconTransform.position = pos;
 
-        if (currentHighlightedSlot != -1)
-        {
-            materialSlotHighlights[currentHighlightedSlot].enabled = false;
-        }
-
-        int index = IsDroppedMaterialOnBaseSlot(pos) ? 0 : GetSupplementarySlotIndexFromHoveredMaterial(pos);
-        if (index != -1)
-        {
-            materialSlotHighlights[index].enabled = true;
-            currentHighlightedSlot = index;
-        }
+        currentHighlightedSlot = IsDroppedMaterialOnBaseSlot(pos) ? 0 : IsDroppedMaterialOnCauldron(pos) ? 1 : -1;
+        baseSlotHighlight.enabled = IsDroppedMaterialOnBaseSlot(pos);
+        cauldronHighlight.enabled = IsDroppedMaterialOnCauldron(pos);
     }
 
-    public void OnEndDragMaterial(int index)
+    public void OnEndDragMaterial()
     {
-        if (index != -1)
+        if (currentHighlightedSlot == 0 && baseSlotImage.sprite == null)
         {
-            materialSlotImages[index].sprite = draggedIcon.sprite;
-            materialSlotImages[index].color = Color.white;
+            baseSlotImage.sprite = draggedIcon.sprite;
+            baseSlotImage.color = Color.white;
         }
 
-        if (currentHighlightedSlot != -1)
-        {
-            materialSlotHighlights[currentHighlightedSlot].enabled = false;
-        }
-
+        baseSlotHighlight.enabled = false;
+        cauldronHighlight.enabled = false;
         currentHighlightedSlot = -1;
+
         draggedIcon.gameObject.SetActive(false);
         draggedIcon.sprite = null;
     }
+    #endregion
 
+    #region Public UI Methods
     public bool IsDroppedMaterialOnBaseSlot(Vector2 pos)
     {
-        RectTransform slotTransform = materialSlotHighlights[0].GetComponent<RectTransform>();
+        RectTransform slotTransform = baseSlotHighlight.GetComponent<RectTransform>();
         return RectTransformUtility.RectangleContainsScreenPoint(slotTransform, pos);
     }
 
-    public int GetSupplementarySlotIndexFromHoveredMaterial(Vector2 pos)
+    public bool IsDroppedMaterialOnCauldron(Vector2 pos)
     {
-        for (int i = 1; i < materialSlotHighlights.Count; i++)
-        {
-            RectTransform slotTransform = materialSlotHighlights[i].GetComponent<RectTransform>();
-
-            if (RectTransformUtility.RectangleContainsScreenPoint(slotTransform, pos)) return i;
-        }
-
-        return -1;
+        RectTransform cauldronTransform = cauldronHighlight.GetComponent<RectTransform>();
+        return RectTransformUtility.RectangleContainsScreenPoint(cauldronTransform, pos) && !IsDroppedMaterialOnBaseSlot(pos);
     }
 
     public void ResetCraftingUI()
     {
-        foreach (var highlight in materialSlotHighlights)
-        {
-            highlight.enabled = false;
-        }
-
-        foreach (var slot in materialSlotImages)
-        {
-            slot.sprite = null;
-            slot.color = defaultSlotColor;
-        }
-
+        baseSlotImage.sprite = null;
+        baseSlotImage.color = defaultSlotColor;
+        baseSlotHighlight.enabled = false;
+        cauldronHighlight.enabled = false;
         currentHighlightedSlot = -1;
 
         possibleOutputImage.sprite = defaultOutputIcon;
@@ -256,19 +237,19 @@ public class CraftingSystemUI : MonoBehaviour
     #endregion
 
     #region Update Item Panels Methods
-    private void UpdateArmorPanel(ArmorSO newArmor) 
-    {
-        if (newArmor == null) return;
+    //private void UpdateArmorPanel(ArmorSO newArmor) 
+    //{
+    //    if (newArmor == null) return;
 
-        foreach (var armorPanel in armorPanelsList)
-        {
-            if (armorPanel.IsTheSameArmorInPanel(newArmor))
-            {
-                armorPanel.UpdatePanelInfo(newArmor);
-                return;
-            }
-        }
-    }
+    //    foreach (var armorPanel in armorPanelsList)
+    //    {
+    //        if (armorPanel.IsTheSameArmorInPanel(newArmor))
+    //        {
+    //            armorPanel.UpdatePanelInfo(newArmor);
+    //            return;
+    //        }
+    //    }
+    //}
 
     private void AddNewPotionPanel(Potion newPotion, bool hasAddedNewPotion) 
     {

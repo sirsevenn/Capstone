@@ -16,16 +16,16 @@ public class CraftingItemPanelScript : MonoBehaviour
     [SerializeField] private ItemDraggable draggableScript;
 
 
-    public void UpdatePanelInfo(ArmorSO armor)
-    {
-        itemImage.sprite = armor.ItemIcon;
-        itemNumberText.text = armor.TierLevel.ToString();
-        itemNameText.text = armor.GetItemName();
-        itemDescriptionText.gameObject.SetActive(false);
+    //public void UpdatePanelInfo(ArmorSO armor)
+    //{
+    //    itemImage.sprite = armor.ItemIcon;
+    //    itemNumberText.text = armor.TierLevel.ToString();
+    //    itemNameText.text = armor.GetItemName();
+    //    itemDescriptionText.gameObject.SetActive(false);
 
-        itemSO = armor;
-        draggableScript.enabled = false;
-    }
+    //    itemSO = armor;
+    //    draggableScript.enabled = false;
+    //}
 
     public void UpdatePanelInfo(PotionSO potion, int healValue)
     {
@@ -80,14 +80,14 @@ public class CraftingItemPanelScript : MonoBehaviour
         draggableScript.enabled = true;
     }
 
-    public bool IsTheSameArmorInPanel(ArmorSO armorToCheck)
-    {
-        if (armorToCheck == null) return false;
-        if (itemSO is not ArmorSO) return false;
+    //public bool IsTheSameArmorInPanel(ArmorSO armorToCheck)
+    //{
+    //    if (armorToCheck == null) return false;
+    //    if (itemSO is not ArmorSO) return false;
 
-        ArmorSO armorInPanel = (ArmorSO)itemSO;
-        return (armorToCheck.ArmorType == armorInPanel.ArmorType);
-    }
+    //    ArmorSO armorInPanel = (ArmorSO)itemSO;
+    //    return (armorToCheck.ArmorType == armorInPanel.ArmorType);
+    //}
 
     public bool IsTheSameMaterialInPanel(CraftingMaterialSO materialToCheck)
     {

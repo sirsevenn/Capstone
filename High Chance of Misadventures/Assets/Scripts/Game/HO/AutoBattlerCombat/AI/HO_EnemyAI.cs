@@ -23,7 +23,6 @@ public class HO_EnemyAI : HO_EntityAI
         characterStats.SetBaseHP(enemyData.EnemyHP);
         characterStats.SetBaseATK(enemyData.EnemyATK);
         characterStats.SetBaseDEF(enemyData.EnemyDEF);
-        characterStats.SetDEFReduc(enemyData.EnemyDEFReduc);
         characterStats.InitializeCharacterStat();
     }
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
@@ -8,12 +9,11 @@ public class Potion : ConsumableItem
     [SerializeField] private PotionSO potionData;
 
 
-    public Potion(uint id, EEffectModifier modifierType, PotionSO data) : base(id, modifierType)
+    public Potion(uint id, int finalValue, PotionSO data) : base(id)
     {
         this.potionData = data;
-
-        EffectModifier modifier = data.EffectModifiersList.Find(x => x.ModifierType == modifierType);
-        this.finalValue = (modifier != null) ? data.BaseValue + modifier.EffectValue : data.BaseValue;
+        this.finalValue = Mathf.Clamp(finalValue, data.GetEffectValueFromModifier(EEffectModifier.Bad_Effect), data.GetEffectValueFromModifier(EEffectModifier.Strong_Effect));
+        this.appliedModifierType = data.GetModifierFromEffectValue(this.finalValue);
     }
 
     public PotionSO PotionData

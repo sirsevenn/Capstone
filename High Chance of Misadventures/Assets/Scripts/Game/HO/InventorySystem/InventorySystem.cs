@@ -4,13 +4,13 @@ using UnityEngine;
 
 public class InventorySystem : MonoBehaviour
 {
-    [Header("Armor Properties")]
-    [SerializeField] private ArmorSO helmet;
-    [SerializeField] private ArmorSO chestplate;
-    [SerializeField] private ArmorSO leggings;
-    [SerializeField] private int totalDEF;
+    //[Header("Armor Properties")]
+    //[SerializeField] private ArmorSO helmet;
+    //[SerializeField] private ArmorSO chestplate;
+    //[SerializeField] private ArmorSO leggings;
+    //[SerializeField] private int totalDEF;
 
-    [Space(10)] [Header("Other Craftables Properties")]
+    [Space(10)] [Header("Craftables Properties")]
     [SerializeField] private List<Potion> potionsList;
     [SerializeField] private List<ScrollSpell> scrollSpellsList;
     [SerializeField] private List<string> craftablesCatalogue;
@@ -18,7 +18,7 @@ public class InventorySystem : MonoBehaviour
     [Space(10)] [Header("Crafting Material Properties")]
     [SerializeField] private List<CraftingMaterial> craftingMaterialsList;
 
-    public event Action<ArmorSO> OnUpgradeArmorEvent;
+    //public event Action<ArmorSO> OnUpgradeArmorEvent;
     public event Action<Potion, bool> OnUpdatePotionsEvent;
     public event Action<ScrollSpell, bool> OnUpdateScrollsEvent;
     public event Action<CraftingMaterial, bool> OnUpdateMaterialsEvent;
@@ -52,12 +52,12 @@ public class InventorySystem : MonoBehaviour
 
     public bool IsCraftableDiscovered(CraftableSO craftable)
     {
-        if (craftable is ArmorSO)
-        {
-            ArmorSO armor = (ArmorSO)craftable;
-            return IsArmorPieceDiscovered(armor.ArmorType, armor.TierLevel);
-        }
-        else if (craftable is PotionSO)
+        //if (craftable is ArmorSO)
+        //{
+        //    ArmorSO armor = (ArmorSO)craftable;
+        //    return IsArmorPieceDiscovered(armor.ArmorType, armor.TierLevel);
+        //}
+        if (craftable is PotionSO)
         {
             PotionSO potion = (PotionSO)craftable;
             return craftablesCatalogue.Contains(potion.GetItemName());
@@ -73,61 +73,88 @@ public class InventorySystem : MonoBehaviour
         }
     }
 
+    public void RemoveAllBadItems()
+    {
+        for (int i = 0; i < potionsList.Count; i++)
+        {
+            var potion = potionsList[i];
+
+            if (potion.AppliedModifierType == EEffectModifier.Bad_Effect || potion.AppliedModifierType == EEffectModifier.No_Effect)
+            {
+                potionsList.Remove(potion);
+                OnUpdatePotionsEvent?.Invoke(potion, false);
+                i--;
+            }
+        }
+
+        for (int i = 0; i < scrollSpellsList.Count; i++)
+        {
+            var scroll = scrollSpellsList[i];
+
+            if (scroll.AppliedModifierType == EEffectModifier.Bad_Effect || scroll.AppliedModifierType == EEffectModifier.No_Effect)
+            {
+                scrollSpellsList.Remove(scroll);
+                OnUpdateScrollsEvent?.Invoke(scroll, false);
+                i--;
+            }
+        }
+    }
+
     #region Armor Methods
-    public ArmorSO GetHelmet()
-    {
-        return helmet;
-    }
+    //public ArmorSO GetHelmet()
+    //{
+    //    return helmet;
+    //}
 
-    public ArmorSO GetChestplate()
-    {
-        return chestplate;
-    }
+    //public ArmorSO GetChestplate()
+    //{
+    //    return chestplate;
+    //}
 
-    public ArmorSO GetLeggings()
-    {
-        return leggings;
-    }
+    //public ArmorSO GetLeggings()
+    //{
+    //    return leggings;
+    //}
 
-    public void UpgradeArmorPiece(ArmorSO newArmor)
-    {
-        if (newArmor.ArmorType == EArmorType.Helmet && newArmor.TierLevel > this.helmet.TierLevel)
-        {
-            this.helmet = newArmor;
-            UpdateTotalDEF();
-            OnUpgradeArmorEvent?.Invoke(newArmor);
-        }
-        else if (newArmor.ArmorType == EArmorType.Chestplate && newArmor.TierLevel > this.chestplate.TierLevel)
-        {
-            this.chestplate = newArmor;
-            UpdateTotalDEF();
-            OnUpgradeArmorEvent?.Invoke(newArmor);
-        }
-        else if (newArmor.ArmorType == EArmorType.Leggings && newArmor.TierLevel > this.leggings.TierLevel)
-        {
-            this.leggings = newArmor;
-            UpdateTotalDEF();
-            OnUpgradeArmorEvent?.Invoke(newArmor);
-        }
-    }
+    //public void UpgradeArmorPiece(ArmorSO newArmor)
+    //{
+    //    if (newArmor.ArmorType == EArmorType.Helmet && newArmor.TierLevel > this.helmet.TierLevel)
+    //    {
+    //        this.helmet = newArmor;
+    //        UpdateTotalDEF();
+    //        OnUpgradeArmorEvent?.Invoke(newArmor);
+    //    }
+    //    else if (newArmor.ArmorType == EArmorType.Chestplate && newArmor.TierLevel > this.chestplate.TierLevel)
+    //    {
+    //        this.chestplate = newArmor;
+    //        UpdateTotalDEF();
+    //        OnUpgradeArmorEvent?.Invoke(newArmor);
+    //    }
+    //    else if (newArmor.ArmorType == EArmorType.Leggings && newArmor.TierLevel > this.leggings.TierLevel)
+    //    {
+    //        this.leggings = newArmor;
+    //        UpdateTotalDEF();
+    //        OnUpgradeArmorEvent?.Invoke(newArmor);
+    //    }
+    //}
 
-    private bool IsArmorPieceDiscovered(EArmorType type, uint level)
-    {
-        if (type == EArmorType.Helmet && level <= this.helmet.TierLevel) return true;
-        else if (type == EArmorType.Chestplate && level <= this.chestplate.TierLevel) return true;
-        else if (type == EArmorType.Leggings && level <= this.leggings.TierLevel) return true;
-        else return false;
-    }
+    //private bool IsArmorPieceDiscovered(EArmorType type, uint level)
+    //{
+    //    if (type == EArmorType.Helmet && level <= this.helmet.TierLevel) return true;
+    //    else if (type == EArmorType.Chestplate && level <= this.chestplate.TierLevel) return true;
+    //    else if (type == EArmorType.Leggings && level <= this.leggings.TierLevel) return true;
+    //    else return false;
+    //}
 
-    public int GetTotalDEF()
-    {
-        return totalDEF;
-    }
+    //public int GetTotalDEF()
+    //{
+    //    return totalDEF;
+    //}
 
-    private void UpdateTotalDEF()
-    {
-        totalDEF = helmet.BaseValue + chestplate.BaseValue + leggings.BaseValue;
-    }
+    //private void UpdateTotalDEF()
+    //{
+    //    totalDEF = helmet.BaseValue + chestplate.BaseValue + leggings.BaseValue;
+    //}
     #endregion
 
 

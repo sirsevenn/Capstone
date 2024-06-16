@@ -74,35 +74,29 @@ public class HO_PlayerAI : HO_EntityAI
         if (randItem < hpPotionFinalWeight || (characterStats.GetCurrentHPInPercent() < 0.25 && numHPPotion > 0))
         {
             item = InventorySystem.Instance.GetOnePotionOfType(EPotionType.Health_Potion);
-            Debug.Log("pick hp");
         }
         else if (randItem < hpPotionFinalWeight + atkPotionFinalWeight)
         {
             item = InventorySystem.Instance.GetOnePotionOfType(EPotionType.Attack_Potion);
-            Debug.Log("pick atk");
         }
         else if (randItem < hpPotionFinalWeight + atkPotionFinalWeight + defPotionFinalWeight)
         {
             item = InventorySystem.Instance.GetOnePotionOfType(EPotionType.Defense_Potion);
-            Debug.Log("pick def");
         }
         else if (randItem < totalSum - waterScrollFinalWeight - earthScrollFinalWeight)
         {
             item = InventorySystem.Instance.GetOneScrollOfType(EElementalAttackType.Fire);
             isItemScroll = true;
-            Debug.Log("pick fire");
         }
         else if (randItem < totalSum - earthScrollFinalWeight)
         {
             item = InventorySystem.Instance.GetOneScrollOfType(EElementalAttackType.Water);
             isItemScroll = true;
-            Debug.Log("pick water");
         }
         else if (randItem < totalSum)
         {
             item = InventorySystem.Instance.GetOneScrollOfType(EElementalAttackType.Earth);
             isItemScroll = true;
-            Debug.Log("pick earth");
         }
 
         // Consume item and decide how player attacks

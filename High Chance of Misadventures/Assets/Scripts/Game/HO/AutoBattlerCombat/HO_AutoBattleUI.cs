@@ -46,9 +46,12 @@ public class HO_AutoBattleUI : MonoBehaviour
 
     private void Start()
     {
+        InventorySystem.Instance.RemoveAllBadItems();
+
         InitializePotionPanel(EPotionType.Health_Potion);
         InitializePotionPanel(EPotionType.Attack_Potion);
         InitializePotionPanel(EPotionType.Defense_Potion);
+
         InitializeScrollPanel(EElementalAttackType.Fire);
         InitializeScrollPanel(EElementalAttackType.Water);
         InitializeScrollPanel(EElementalAttackType.Earth);

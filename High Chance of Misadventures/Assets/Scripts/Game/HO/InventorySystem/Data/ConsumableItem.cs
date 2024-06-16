@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
@@ -10,10 +11,9 @@ public abstract class ConsumableItem
     [SerializeField] protected int finalValue;
 
 
-    public ConsumableItem(uint id, EEffectModifier modifierType)
+    public ConsumableItem(uint id)
     {
         this.itemID = id;
-        this.appliedModifierType = modifierType;
     }
 
     public uint ItemID

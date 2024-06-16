@@ -18,7 +18,6 @@ public class HO_CharacterStat
     [SerializeField] private int baseDEF;
     [SerializeField] private int changeInDEF;
     [SerializeField] private int totalDEF;
-    [SerializeField] private int defReduc;
 
 
     public void InitializeCharacterStat()
@@ -74,8 +73,7 @@ public class HO_CharacterStat
     {
         if (damage <= 0) return;
 
-        float DEF = (totalDEF == 0) ? 1 : totalDEF;
-        int reducedDMG = Mathf.RoundToInt(defReduc / DEF * damage);
+        int reducedDMG = (damage - totalDEF) <= 0 ? 0 : damage - totalDEF;
 
         currentHP -= isElemental ? damage : reducedDMG;
         currentHP = (currentHP <= 0) ? 0 : currentHP;
@@ -133,13 +131,6 @@ public class HO_CharacterStat
     {
         changeInDEF += increase;
         totalDEF = baseDEF + changeInDEF;
-    }
-
-    public void SetDEFReduc(int reduc)
-    {
-        if (reduc < 0) return;
-
-        defReduc = reduc;
     }
 
     public void ResetDEFToBase()

@@ -13,7 +13,6 @@ public class HO_EnemyDataSO : ScriptableObject
     [SerializeField] private int enemyHP;
     [SerializeField] private int enemyATK;
     [SerializeField] private int enemyDEF;
-    [SerializeField] private int enemyDEFReduc;
 
 
     public EEnemyType EnemyType
@@ -55,12 +54,6 @@ public class HO_EnemyDataSO : ScriptableObject
     public int EnemyDEF
     {
         get { return enemyDEF; }
-        private set { }
-    }
-
-    public int EnemyDEFReduc
-    {
-        get { return enemyDEFReduc; }
         private set { }
     }
 

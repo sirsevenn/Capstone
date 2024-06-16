@@ -4,19 +4,19 @@ using UnityEngine.SceneManagement;
 
 public class CraftingSystem : MonoBehaviour
 {
-    [Header("Crafting Properties")]
+    [Header("Dragging Properties")]
     [SerializeField] private bool isDraggingMaterial;
     [SerializeField] private CraftingMaterialSO currentDraggedMaterial;
 
-    [Space(20)]
+    [Space(10)] [Header("Crafting Properties")]
     [SerializeField] private CraftingMaterialSO selectedBaseMaterial;
-    [SerializeField] private CraftingMaterialSO[] selectedSupplementaryMaterials;
+    [SerializeField] private List<CraftingMaterialSO> selectedSupplementaryMaterials;
 
-    [Space(10)]
+    [Space(20)]
     [SerializeField] private CraftableSO itemToCraft;
+    [SerializeField] private uint currentFavorableOutcomes;
     [SerializeField] private float currentSuccessRate;
-    [SerializeField] private float currentEffectModifier;
-    [SerializeField] private int currentNumMaterials;
+    [SerializeField] private int currentTotalEffectValue;
 
     [Space(10)] [Header("Other References")]
     [SerializeField] private CraftingSystemUI UI;
@@ -52,19 +52,16 @@ public class CraftingSystem : MonoBehaviour
         currentDraggedMaterial = null;
 
         selectedBaseMaterial = null;
-        selectedSupplementaryMaterials = new CraftingMaterialSO[] { 
-            null,
-            null,
-            null
-        };
+        selectedSupplementaryMaterials = new();
+        selectedSupplementaryMaterials.Clear();
 
         itemToCraft = null;
+        currentFavorableOutcomes = 0;
         currentSuccessRate = 0f;
-        currentEffectModifier = 0f;
-        currentNumMaterials = 0;
+        currentTotalEffectValue = 0;
     }
 
-    #region UI Event Methods
+    #region Dragging Event Methods
     public void OnBeginDragMaterial(CraftingMaterialSO draggedMaterial)
     {
         if (isDraggingMaterial || currentDraggedMaterial != null) return;
@@ -96,16 +93,11 @@ public class CraftingSystem : MonoBehaviour
 
         bool hasEnoughMaterials = (count <= InventorySystem.Instance.GetMaterialAmount(draggedMaterial.MaterialType));
 
-        // Determine on which slots was the material dropped onto
-        int index = UI.IsDroppedMaterialOnBaseSlot(materialPos) ? 0 : UI.GetSupplementarySlotIndexFromHoveredMaterial(materialPos);
-
-        if (hasEnoughMaterials && index == 0 && selectedBaseMaterial == null)
+        // Determine if dropped material is on base or supplementary slots
+        if (hasEnoughMaterials && UI.IsDroppedMaterialOnBaseSlot(materialPos) && selectedBaseMaterial == null)
         {
             selectedBaseMaterial = draggedMaterial;
             itemToCraft = draggedMaterial.ItemToCraft;
-
-            currentSuccessRate += draggedMaterial.SuccessRate;
-            currentNumMaterials++;
 
             // Update output UI if player has already discovered it
             Sprite icon = InventorySystem.Instance.IsCraftableDiscovered(itemToCraft) ? itemToCraft.ItemIcon : null;
@@ -113,57 +105,62 @@ public class CraftingSystem : MonoBehaviour
             UI.SetSuccessRateBar(currentSuccessRate);
             UI.SetCraftingEffectBar(EEffectModifier.Unknown);
         }
-        else if (hasEnoughMaterials && selectedBaseMaterial != null && index > 0 && selectedSupplementaryMaterials[index - 1] == null)
+        else if (hasEnoughMaterials && selectedBaseMaterial != null && UI.IsDroppedMaterialOnCauldron(materialPos))
         {
-            selectedSupplementaryMaterials[index - 1] = draggedMaterial;
+            // Add material to list
+            selectedSupplementaryMaterials.Add(draggedMaterial);
 
-            currentSuccessRate *= currentNumMaterials;
-            currentSuccessRate += draggedMaterial.SuccessRate;
-            currentEffectModifier *= (currentNumMaterials - 1);
-            currentEffectModifier += (int)draggedMaterial.CraftingEffect;
-
-            currentNumMaterials++;
-            currentSuccessRate /= currentNumMaterials;
-            currentEffectModifier /= (currentNumMaterials - 1);
-
+            // Determine success rate and update UI
+            currentFavorableOutcomes += draggedMaterial.SupplementaryAmount;
+            currentSuccessRate = (float)currentFavorableOutcomes / (float)selectedBaseMaterial.BaseProbabilityValue;
+            currentSuccessRate = (currentSuccessRate > 1) ? 1 : currentSuccessRate;
             UI.SetSuccessRateBar(currentSuccessRate);
-            UI.SetCraftingEffectBar((EEffectModifier)Mathf.RoundToInt(currentEffectModifier));
-        }
-        else
-        {
-            index = -1;
+
+            // Calculate total effect value and update UI
+            if (itemToCraft is PotionSO)
+            {
+                PotionSO potionToCraft = (PotionSO)itemToCraft;
+                currentTotalEffectValue += potionToCraft.GetEffectValueFromModifier(draggedMaterial.CraftingEffect);
+                UI.SetCraftingEffectBar(potionToCraft.GetModifierFromEffectValue(currentTotalEffectValue));
+            }
+            else if (itemToCraft is ScrollSpellSO)
+            {
+                ScrollSpellSO scrollToCraft = (ScrollSpellSO)itemToCraft;
+                currentTotalEffectValue += scrollToCraft.GetEffectValueFromModifier(draggedMaterial.CraftingEffect);
+                UI.SetCraftingEffectBar(scrollToCraft.GetModifierFromEffectValue(currentTotalEffectValue));
+            }
         }
 
-        UI.OnEndDragMaterial(index);
+        UI.OnEndDragMaterial();
         currentDraggedMaterial = null;
         isDraggingMaterial = false;
     }
+    #endregion
 
+    #region Crafting Methods
     public void OnCraft()
     {
         if (itemToCraft == null) return;
 
         // If craftable is an armor, see if it is already discovered
-        if (itemToCraft is ArmorSO && 
-            InventorySystem.Instance.IsCraftableDiscovered(itemToCraft)) return;
+        //if (itemToCraft is ArmorSO && InventorySystem.Instance.IsCraftableDiscovered(itemToCraft)) return;
 
-        // Check if crafting is successful
+        // Check if crafting is successful 
         float randNum = Random.Range(0f, 1f);
-        bool isCraftingSuccessful = randNum < currentSuccessRate;
-        int modifier = Mathf.RoundToInt(currentEffectModifier);
+        bool isCraftingSuccessful = randNum <= currentSuccessRate;
 
         // Craft item if it is successful
-        if (isCraftingSuccessful && itemToCraft is ArmorSO)
+        //if (isCraftingSuccessful && itemToCraft is ArmorSO)
+        //{
+        //    CraftArmor((ArmorSO)itemToCraft);
+        //}
+        if (isCraftingSuccessful && itemToCraft is PotionSO)
         {
-            CraftArmor((ArmorSO)itemToCraft);
-        }
-        else if (isCraftingSuccessful && itemToCraft is PotionSO)
-        {
-            CraftPotion((PotionSO)itemToCraft, (EEffectModifier)modifier);
+            CraftPotion((PotionSO)itemToCraft);
         }
         else if (isCraftingSuccessful && itemToCraft is ScrollSpellSO)
         {
-            CraftScroll((ScrollSpellSO)itemToCraft, (EEffectModifier)modifier);
+            CraftScroll((ScrollSpellSO)itemToCraft);
         }
 
         // Recreate new selected material list WITH their total amount
@@ -193,46 +190,43 @@ public class CraftingSystem : MonoBehaviour
             InventorySystem.Instance.ReduceMaterials(material);
         }
 
-        // Reset selection slots and other trakers for crafting
+        // Reset selection slots and other trackers for crafting
         selectedBaseMaterial = null;
-        for (int i = 0; i < selectedSupplementaryMaterials.Length; i++)
-        {
-            selectedSupplementaryMaterials[i] = null;
-        }
+        selectedSupplementaryMaterials.Clear();
         
         itemToCraft = null;
+        currentFavorableOutcomes = 0;
         currentSuccessRate = 0f;
-        currentEffectModifier = 0f;
-        currentNumMaterials = 0;
+        currentTotalEffectValue = 0;
 
         // Reset UI
         UI.ResetCraftingUI();
     }
 
-    private void CraftArmor(ArmorSO armorToCraft)
-    {
-        InventorySystem.Instance.UpgradeArmorPiece(armorToCraft);
-    }
+    //private void CraftArmor(ArmorSO armorToCraft)
+    //{
+    //    InventorySystem.Instance.UpgradeArmorPiece(armorToCraft);
+    //}
 
-    private void CraftPotion(PotionSO potionToCraft, EEffectModifier effectModifier)
+    private void CraftPotion(PotionSO potionToCraft)
     {
         uint id = (uint)InventorySystem.Instance.GetNextPotionID();
-        Potion newPotion = new Potion(id, effectModifier, potionToCraft);
+        Potion newPotion = new Potion(id, currentTotalEffectValue, potionToCraft);
         InventorySystem.Instance.AddPotion(newPotion);
         InventorySystem.Instance.AddPotionToCatalogue(newPotion.PotionData.GetItemName());
     }
 
-    private void CraftScroll(ScrollSpellSO scrollToCraft, EEffectModifier effectModifier)
+    private void CraftScroll(ScrollSpellSO scrollToCraft)
     {
         uint id = (uint)InventorySystem.Instance.GetNextScrollID();
-        ScrollSpell newScroll = new ScrollSpell(id, effectModifier, scrollToCraft);
+        ScrollSpell newScroll = new ScrollSpell(id, currentTotalEffectValue, scrollToCraft);
         InventorySystem.Instance.AddScroll(newScroll);
         InventorySystem.Instance.AddScrollToCatalogue(newScroll.ScrollData.GetItemName());
     }
+    #endregion
 
     public void TransitionToBattleScene()
     {
         SceneManager.LoadScene("AutoBattleScene");
     }
-    #endregion
 }

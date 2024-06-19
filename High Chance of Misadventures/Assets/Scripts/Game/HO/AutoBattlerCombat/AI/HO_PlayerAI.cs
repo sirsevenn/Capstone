@@ -132,7 +132,7 @@ public class HO_PlayerAI : HO_EntityAI
     private float CalculateFinalWeight(int baseWeight, int numItem, bool isHPPotion = false)
     {
         float finalWeight = baseWeight * ((Mathf.Pow(2, numItem - 1) - 1) / Mathf.Pow(2, numItem - 1) + 1);
-        return (!isHPPotion || isHPPotion && characterStats.GetCurrentHPInPercent() < 0.9) ? finalWeight : 0f;
+        return (!isHPPotion || isHPPotion && characterStats.GetCurrentHPInPercent() < 0.65) ? finalWeight : 0f;
     }
 
     public override void EntityTakeDamage(int damage, bool isElemental)

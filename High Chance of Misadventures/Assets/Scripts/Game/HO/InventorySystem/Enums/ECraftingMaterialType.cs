@@ -9,5 +9,5 @@ public enum ECraftingMaterialType
     Ogre_Eye,
     Goblin_King_Crown,
     Royal_Blood,
-    Goblin_King_Ruby
+    Goblin_King_Gems
 }

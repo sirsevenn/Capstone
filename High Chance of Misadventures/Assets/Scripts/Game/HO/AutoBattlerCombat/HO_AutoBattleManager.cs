@@ -46,8 +46,17 @@ public class HO_AutoBattleManager : MonoBehaviour
 
     private void InitializeEnemy()
     {
-        int randIndex = Random.Range(0, currentRegion.EnemiesList.Count);
-        HO_EnemyDataSO data = currentRegion.EnemiesList[randIndex];
+        HO_EnemyDataSO data;
+
+        if (HO_ProgressTracker.Instance.IsBossRoom())
+        {
+            data = currentRegion.BossEnemy;
+        }
+        else
+        {
+            int randIndex = Random.Range(0, currentRegion.EnemiesList.Count);
+            data = currentRegion.EnemiesList[randIndex];
+        }
 
         GameObject enemy = GameObject.Instantiate(data.Model);
         enemyScript = enemy.AddComponent<HO_EnemyAI>();

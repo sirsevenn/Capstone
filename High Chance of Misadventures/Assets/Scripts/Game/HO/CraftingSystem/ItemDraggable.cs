@@ -3,31 +3,32 @@ using UnityEngine.EventSystems;
 
 public class ItemDraggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
 {
-    [SerializeField] private CraftingMaterialSO material;
+    [SerializeField] private CraftingMaterialSO materialData;
 
     public void SetMaterial(CraftingMaterialSO material)
     {
-        this.material = material;
+        materialData = material;
     }
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        if (material == null) return;
+        if (materialData == null) return;
 
-        CraftingSystem.Instance.OnBeginDragMaterial(material);
+        CraftingSystem.Instance.OnBeginDragMaterial(materialData);
+        CraftingSystem.Instance.OnUpdateBookDisplay(materialData);
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (material == null) return;
+        if (materialData == null) return;
 
-        CraftingSystem.Instance.OnDragMaterial(material, eventData.position);
+        CraftingSystem.Instance.OnDragMaterial(materialData, eventData.position);
     }
 
     public void OnEndDrag(PointerEventData eventData)
     {
-        if (material == null) return;
+        if (materialData == null) return;
 
-        CraftingSystem.Instance.OnEndDragMaterial(material, eventData.position);
+        CraftingSystem.Instance.OnEndDragMaterial(materialData, eventData.position);
     }
 }

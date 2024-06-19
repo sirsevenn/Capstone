@@ -75,6 +75,8 @@ public class HO_CharacterStat
 
         int reducedDMG = (damage - totalDEF) <= 0 ? 0 : damage - totalDEF;
 
+        Debug.Log("received " + (isElemental ? damage : reducedDMG) + "DMG");
+
         currentHP -= isElemental ? damage : reducedDMG;
         currentHP = (currentHP <= 0) ? 0 : currentHP;
     }

@@ -1,8 +1,9 @@
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
-public class CraftingItemPanelScript : MonoBehaviour
+public class CraftingItemPanelScript : MonoBehaviour, IPointerClickHandler
 {
     [Header("UI Properties")]
     [SerializeField] private Image itemImage;
@@ -96,5 +97,12 @@ public class CraftingItemPanelScript : MonoBehaviour
 
         CraftingMaterialSO materialInPanel = (CraftingMaterialSO)itemSO;
         return (materialToCheck.MaterialType == materialInPanel.MaterialType);
+    }
+
+    public void OnPointerClick(PointerEventData eventData)
+    {
+        if (itemSO is not CraftingMaterialSO) return;
+
+        CraftingSystem.Instance.OnUpdateBookDisplay((CraftingMaterialSO)itemSO);
     }
 }

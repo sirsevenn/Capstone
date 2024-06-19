@@ -61,7 +61,7 @@ public class CraftingSystem : MonoBehaviour
         currentTotalEffectValue = 0;
     }
 
-    #region Dragging Event Methods
+    #region Touch Input Event Methods
     public void OnBeginDragMaterial(CraftingMaterialSO draggedMaterial)
     {
         if (isDraggingMaterial || currentDraggedMaterial != null) return;
@@ -135,6 +135,11 @@ public class CraftingSystem : MonoBehaviour
         currentDraggedMaterial = null;
         isDraggingMaterial = false;
     }
+
+    public void OnUpdateBookDisplay(CraftingMaterialSO draggedMaterial)
+    {
+        UI.SetMaterialDataToBook(draggedMaterial);
+    }
     #endregion
 
     #region Crafting Methods
@@ -144,6 +149,9 @@ public class CraftingSystem : MonoBehaviour
 
         // If craftable is an armor, see if it is already discovered
         //if (itemToCraft is ArmorSO && InventorySystem.Instance.IsCraftableDiscovered(itemToCraft)) return;
+
+        // If there are no supplementary materials, crafting should not go through
+        if (selectedSupplementaryMaterials.Count == 0) return;
 
         // Check if crafting is successful 
         float randNum = Random.Range(0f, 1f);

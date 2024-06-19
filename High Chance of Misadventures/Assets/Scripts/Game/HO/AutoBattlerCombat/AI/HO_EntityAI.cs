@@ -41,8 +41,6 @@ public abstract class HO_EntityAI : MonoBehaviour
 
     public virtual void EntityTakeDamage(int damage, bool isElemental)
     {
-        Debug.Log(gameObject.name + " receive " + damage + "DMG");
-
         characterStats.TakeDamage(damage, isElemental);
     }
 

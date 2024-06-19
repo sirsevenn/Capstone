@@ -1,29 +1,21 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using static UnityEditor.PlayerSettings;
 
 public class CraftingSystemUI : MonoBehaviour
 {
-    [Header("Crafting UI References")]
+    [Header("Crafting Slot Properties")]
     [SerializeField] private int currentHighlightedSlot; // -1 nothing, 0 base, 1 cauldron
     [SerializeField] private Image baseSlotImage;
     [SerializeField] private Image baseSlotHighlight;
     [SerializeField] private Image cauldronHighlight;
 
-    [Space(10)]
-    [SerializeField] private GameObject outputPanel;
-    [SerializeField] private Image possibleOutputImage;
+    [Space(10)] [Header("Crafting Output References")]
+    [SerializeField] private CraftingOutputUI outputScript;
 
-    [Space(10)]
-    [SerializeField] private RectTransform successRateRedPortion;
-    [SerializeField] private RectTransform successRateGreenPortion;
-
-    [Space(10)]
-    [SerializeField] private GameObject craftingEffectPanel;
-    [SerializeField] private RectTransform craftingEffectTransform;
-    [SerializeField] private RectTransform craftingEffectRedPortion;
-    [SerializeField] private RectTransform craftingEffectGreenPortion;
+    [Space(10)] [Header("Description Book References")]
+    [SerializeField] private CraftingBookUI bookScript;
 
     [Space(10)] [Header("Dragged Material Properties")]
     [SerializeField] private Image draggedIcon;
@@ -31,22 +23,25 @@ public class CraftingSystemUI : MonoBehaviour
 
     [Space(10)] [Header("UI Default Values")]
     [SerializeField] private Color defaultSlotColor;
-    [SerializeField] private Sprite defaultOutputIcon;
+    [SerializeField] private Color defaultTabSelectedColor;
+    [SerializeField] private Color defaultTabUnselectedColor;
 
-    [Space(10)] [Header("Prefabs")]
-    [SerializeField] private GameObject itemPanelPrefab;
-
-    [Header("Parent References")]
+    [Header("Tab UI References")]
+    [SerializeField] private Image craftablesListButtonImage;
+    [SerializeField] private Image materialsListButtonImage;
     [SerializeField] private GameObject craftablesListTab;
     [SerializeField] private GameObject materialsListTab;
     [SerializeField] private Transform craftablesListParent;
     [SerializeField] private Transform materialsListParent;
 
     [Space(10)] [Header("Item Panel References")]
-    [SerializeField] private List<CraftingItemPanelScript> armorPanelsList;
+    //[SerializeField] private List<CraftingItemPanelScript> armorPanelsList;
     [SerializeField] private List<CraftingItemPanelScript> potionPanelsList;
     [SerializeField] private List<CraftingItemPanelScript> scrollPanelsList;
     [SerializeField] private List<CraftingItemPanelScript> materialPanelsList;
+
+    [Space(10)] [Header("Prefabs")]
+    [SerializeField] private GameObject itemPanelPrefab;
 
 
     #region Initialization
@@ -122,12 +117,18 @@ public class CraftingSystemUI : MonoBehaviour
     {
         craftablesListTab.gameObject.SetActive(true);
         materialsListTab.gameObject.SetActive(false);
+
+        craftablesListButtonImage.color = defaultTabSelectedColor;
+        materialsListButtonImage.color = defaultTabUnselectedColor;
     }
 
     public void EnableMaterialsListPanel()
     {
         craftablesListTab.gameObject.SetActive(false);
         materialsListTab.gameObject.SetActive(true);
+
+        craftablesListButtonImage.color = defaultTabUnselectedColor;
+        materialsListButtonImage.color = defaultTabSelectedColor;
     }
     #endregion
 
@@ -162,9 +163,7 @@ public class CraftingSystemUI : MonoBehaviour
         draggedIcon.gameObject.SetActive(false);
         draggedIcon.sprite = null;
     }
-    #endregion
 
-    #region Public UI Methods
     public bool IsDroppedMaterialOnBaseSlot(Vector2 pos)
     {
         RectTransform slotTransform = baseSlotHighlight.GetComponent<RectTransform>();
@@ -176,7 +175,9 @@ public class CraftingSystemUI : MonoBehaviour
         RectTransform cauldronTransform = cauldronHighlight.GetComponent<RectTransform>();
         return RectTransformUtility.RectangleContainsScreenPoint(cauldronTransform, pos) && !IsDroppedMaterialOnBaseSlot(pos);
     }
+    #endregion
 
+    #region Public UI Methods
     public void ResetCraftingUI()
     {
         baseSlotImage.sprite = null;
@@ -185,55 +186,17 @@ public class CraftingSystemUI : MonoBehaviour
         cauldronHighlight.enabled = false;
         currentHighlightedSlot = -1;
 
-        possibleOutputImage.sprite = defaultOutputIcon;
-        outputPanel.gameObject.SetActive(false);
-
-        SetSuccessRateBar(0f);
-        SetCraftingEffectBar(EEffectModifier.Unknown, true);
+        outputScript.ResetCraftingUI();
+        bookScript.ResetBook();
     }
 
-    public void SetIconOnOutputImage(Sprite outputIcon)
-    {
-        possibleOutputImage.sprite = (outputIcon == null) ? defaultOutputIcon : outputIcon;
-        outputPanel.gameObject.SetActive(true);
-    }
+    public void SetIconOnOutputImage(Sprite outputIcon) => outputScript.SetIconOnOutputImage(outputIcon);
 
-    public void SetSuccessRateBar(float successRate)
-    {
-        float height = successRateRedPortion.rect.height;
-        successRateGreenPortion.sizeDelta = new Vector2(successRateGreenPortion.rect.width, height * -(1 - successRate));
-    }
+    public void SetSuccessRateBar(float successRate) => outputScript.SetSuccessRateBar(successRate);
 
-    public void SetCraftingEffectBar(EEffectModifier effect, bool disablePanel = false)
-    {
-        craftingEffectPanel.gameObject.SetActive(!disablePanel);
-        craftingEffectRedPortion.sizeDelta = new Vector2(-craftingEffectTransform.rect.width, craftingEffectRedPortion.rect.height);
-        craftingEffectGreenPortion.sizeDelta = new Vector2(-craftingEffectTransform.rect.width, craftingEffectRedPortion.rect.height);
+    public void SetCraftingEffectBar(EEffectModifier effect, bool disablePanel = false) => outputScript.SetCraftingEffectBar(effect, disablePanel);
 
-        if (disablePanel) return;
-
-        switch (effect)
-        {
-            case EEffectModifier.Bad_Effect:
-                craftingEffectRedPortion.sizeDelta = new Vector2(-craftingEffectTransform.rect.width / 2f, craftingEffectRedPortion.rect.height);
-                break;
-
-            case EEffectModifier.No_Effect:
-                craftingEffectRedPortion.sizeDelta = new Vector2(-craftingEffectTransform.rect.width * 3 / 4f, craftingEffectRedPortion.rect.height);
-                break;
-
-            case EEffectModifier.Good_Effect:
-                craftingEffectGreenPortion.sizeDelta = new Vector2(-craftingEffectTransform.rect.width * 3 / 4f, craftingEffectGreenPortion.rect.height);
-                break;
-
-            case EEffectModifier.Strong_Effect:
-                craftingEffectGreenPortion.sizeDelta = new Vector2(-craftingEffectTransform.rect.width / 2f, craftingEffectGreenPortion.rect.height);
-                break;
-
-            default:
-                break;
-        }
-    }
+    public void SetMaterialDataToBook(CraftingMaterialSO materialData) => bookScript.SetMaterialDataToBook(materialData);
     #endregion
 
     #region Update Item Panels Methods

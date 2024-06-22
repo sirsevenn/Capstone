@@ -15,7 +15,11 @@ MonoBehaviour:
   itemIcon: {fileID: 21300000, guid: 4146fbe86ab1b9e43bc9ac383bdab799, type: 3}
   materialType: 6
   materialDescription: 
-  itemToCraft: {fileID: 11400000, guid: 531cd635d818e8243abdf27cb651e0b4, type: 2}
-  baseProbabilityValue: 14
-  supplementaryAmount: 4
-  craftingEffect: 1
+  consumableWeightsList:
+  - craftingEffect: 3
+    consumableToCraft: {fileID: 11400000, guid: f74cec8619a5dba4fa869cdcf8bad500,
+      type: 2}
+  - craftingEffect: 2
+    consumableToCraft: {fileID: 11400000, guid: 39be8eb73bc1ca44096bc4c3280a2dea,
+      type: 2}
+  particleMaterialColor: {r: 0, g: 0.49567252, b: 0.745283, a: 1}

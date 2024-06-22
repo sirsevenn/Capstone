@@ -315,10 +315,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6005ab7ea706ffb4f89c9a798ea76083, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  helmet: {fileID: 11400000, guid: 12f10d9199171bd4996641260316dbfb, type: 2}
-  chestplate: {fileID: 11400000, guid: 7715b13f707104742b083a0201af2fdf, type: 2}
-  leggings: {fileID: 11400000, guid: 60ff0bf5fad4ba149ae9bba73a62bb53, type: 2}
-  totalDEF: 0
   potionsList:
   - itemID: 0
     appliedModifierType: 4
@@ -2135,7 +2131,7 @@ MonoBehaviour:
   isAttackElemental: 0
   animator: {fileID: 0}
   animationHandler: {fileID: 0}
-  hpPotionWeight: 250
+  hpPotionWeight: 150
   atkPotionWeight: 25
   defPotionWeight: 20
   fireScrollWeight: 35

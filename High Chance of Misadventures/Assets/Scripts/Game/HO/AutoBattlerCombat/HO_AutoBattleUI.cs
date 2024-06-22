@@ -37,8 +37,8 @@ public class HO_AutoBattleUI : MonoBehaviour
         {
             Destroy(this.gameObject);
 
-            InventorySystem.Instance.OnUpdatePotionsEvent -= OnUpdatePotions;
-            InventorySystem.Instance.OnUpdateScrollsEvent -= OnUpdateScrolls;
+            //InventorySystem.Instance.OnUpdatePotionsEvent -= OnUpdatePotions;
+            //InventorySystem.Instance.OnUpdateScrollsEvent -= OnUpdateScrolls;
         }
     }
     #endregion
@@ -46,7 +46,7 @@ public class HO_AutoBattleUI : MonoBehaviour
 
     private void Start()
     {
-        InventorySystem.Instance.RemoveAllBadItems();
+        //InventorySystem.Instance.RemoveAllBadItems();
 
         InitializePotionPanel(EPotionType.Health_Potion);
         InitializePotionPanel(EPotionType.Attack_Potion);
@@ -55,39 +55,36 @@ public class HO_AutoBattleUI : MonoBehaviour
         InitializeScrollPanel(EElementalAttackType.Fire);
         InitializeScrollPanel(EElementalAttackType.Water);
         InitializeScrollPanel(EElementalAttackType.Earth);
-
-        InventorySystem.Instance.OnUpdatePotionsEvent += OnUpdatePotions;
-        InventorySystem.Instance.OnUpdateScrollsEvent += OnUpdateScrolls;
     }
 
     private void InitializePotionPanel(EPotionType type)
     {
-        int numItem = InventorySystem.Instance.GetPotionAmount(type);
-        if (numItem > 0)
-        {
-            Potion samplePotion = InventorySystem.Instance.GetOnePotionOfType(type);
+        //int numItem = InventorySystem.Instance.GetPotionAmount(type);
+        //if (numItem > 0)
+        //{
+        //    Potion samplePotion = InventorySystem.Instance.GetOnePotionOfType(type);
 
-            GameObject newItem = GameObject.Instantiate(inventoryItemPanelPrefab, inventoryParent);
-            AutoBattleItemPanelScript script = newItem.GetComponent<AutoBattleItemPanelScript>();
-            script.SetItemSO(samplePotion.PotionData);
-            script.UpdateItemNum(numItem);
-            potionsList.Add(script);
-        }
+        //    GameObject newItem = GameObject.Instantiate(inventoryItemPanelPrefab, inventoryParent);
+        //    AutoBattleItemPanelScript script = newItem.GetComponent<AutoBattleItemPanelScript>();
+        //    script.SetItemSO(samplePotion.PotionData);
+        //    script.UpdateItemNum(numItem);
+        //    potionsList.Add(script);
+        //}
     }
 
     private void InitializeScrollPanel(EElementalAttackType type)
     {
-        int numItem = InventorySystem.Instance.GetScrollAmount(type);
-        if (numItem > 0)
-        {
-            ScrollSpell sampleScroll = InventorySystem.Instance.GetOneScrollOfType(type);
+        //int numItem = InventorySystem.Instance.GetScrollAmount(type);
+        //if (numItem > 0)
+        //{
+        //    ScrollSpell sampleScroll = InventorySystem.Instance.GetOneScrollOfType(type);
 
-            GameObject newItem = GameObject.Instantiate(inventoryItemPanelPrefab, inventoryParent);
-            AutoBattleItemPanelScript script = newItem.GetComponent<AutoBattleItemPanelScript>();
-            script.SetItemSO(sampleScroll.ScrollData);
-            script.UpdateItemNum(numItem);
-            scrollsList.Add(script);
-        }
+        //    GameObject newItem = GameObject.Instantiate(inventoryItemPanelPrefab, inventoryParent);
+        //    AutoBattleItemPanelScript script = newItem.GetComponent<AutoBattleItemPanelScript>();
+        //    script.SetItemSO(sampleScroll.ScrollData);
+        //    script.UpdateItemNum(numItem);
+        //    scrollsList.Add(script);
+        //}
     }
 
     public void UpdatePlayerHP(float value)
@@ -97,49 +94,49 @@ public class HO_AutoBattleUI : MonoBehaviour
         playerHPBar.value = value;
     }
 
-    private void OnUpdatePotions(Potion potion, bool hasAddedNewPotion)
-    {
-        if (hasAddedNewPotion || potion == null) return;
+    //private void OnUpdatePotions(Potion potion, bool hasAddedNewPotion)
+    //{
+    //    if (hasAddedNewPotion || potion == null) return;
 
-        foreach (var potionUI in potionsList)
-        {
-            if (potionUI.IsSameItem(potion.PotionData))
-            {
-                int num = InventorySystem.Instance.GetPotionAmount(potion.PotionData.PotionType);
-                if (num > 0)
-                {
-                    potionUI.UpdateItemNum(num);
-                }
-                else
-                {
-                    DestroyImmediate(potionUI.gameObject);
-                }
+    //    foreach (var potionUI in potionsList)
+    //    {
+    //        if (potionUI.IsSameItem(potion.PotionData))
+    //        {
+    //            int num = InventorySystem.Instance.GetPotionAmount(potion.PotionData.PotionType);
+    //            if (num > 0)
+    //            {
+    //                potionUI.UpdateItemNum(num);
+    //            }
+    //            else
+    //            {
+    //                DestroyImmediate(potionUI.gameObject);
+    //            }
 
-                break;
-            }
-        }
-    }
+    //            break;
+    //        }
+    //    }
+    //}
 
-    private void OnUpdateScrolls(ScrollSpell scroll, bool hasAddedNewScroll)
-    {
-        if (hasAddedNewScroll || scroll == null) return;
+    //private void OnUpdateScrolls(ScrollSpell scroll, bool hasAddedNewScroll)
+    //{
+    //    if (hasAddedNewScroll || scroll == null) return;
 
-        foreach (var scrollUI in scrollsList)
-        {
-            if (scrollUI.IsSameItem(scroll.ScrollData))
-            {
-                int num = InventorySystem.Instance.GetScrollAmount(scroll.ScrollData.ElementalAttackType);
-                if (num > 0)
-                {
-                    scrollUI.UpdateItemNum(num);
-                }
-                else
-                {
-                    DestroyImmediate(scrollUI.gameObject);
-                }
+    //    foreach (var scrollUI in scrollsList)
+    //    {
+    //        if (scrollUI.IsSameItem(scroll.ScrollData))
+    //        {
+    //            int num = InventorySystem.Instance.GetScrollAmount(scroll.ScrollData.ElementalAttackType);
+    //            if (num > 0)
+    //            {
+    //                scrollUI.UpdateItemNum(num);
+    //            }
+    //            else
+    //            {
+    //                DestroyImmediate(scrollUI.gameObject);
+    //            }
 
-                break;
-            }
-        }
-    }
+    //            break;
+    //        }
+    //    }
+    //}
 }

@@ -15,7 +15,6 @@ public class ItemDraggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
         if (materialData == null) return;
 
         CraftingSystem.Instance.OnBeginDragMaterial(materialData);
-        CraftingSystem.Instance.OnUpdateBookDisplay(materialData);
     }
 
     public void OnDrag(PointerEventData eventData)

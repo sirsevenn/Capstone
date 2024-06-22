@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Crafting Material", menuName = "ScriptableObjects/HO/CraftingMaterial")]
@@ -10,11 +11,10 @@ public class CraftingMaterialSO : ItemSO
     [SerializeField] private string materialDescription;
 
     [Space(10)]
-    [SerializeField] private CraftableSO itemToCraft;
+    [SerializeField] private List<ConsumableWeight> consumableWeightsList;
 
-    [SerializeField] private uint baseProbabilityValue;
-    [SerializeField] private uint supplementaryAmount;
-    [SerializeField] private EEffectModifier craftingEffect;
+    [Space(20)]
+    [SerializeField] private Color particleMaterialColor;
 
 
     public ECraftingMaterialType MaterialType
@@ -29,28 +29,16 @@ public class CraftingMaterialSO : ItemSO
         private set { materialDescription = value; }
     }
 
-    public CraftableSO ItemToCraft
+    public List<ConsumableWeight> ConsumableWeightsList
     {
-        get { return itemToCraft; }
-        private set { itemToCraft = value; }
+        get { return consumableWeightsList; }
+        private set { }
     }
 
-    public uint BaseProbabilityValue
-    {
-        get { return baseProbabilityValue; }
-        private set { baseProbabilityValue = value; }
-    }
-
-    public uint SupplementaryAmount
-    {
-        get { return supplementaryAmount; }
-        private set { supplementaryAmount = value; }
-    }
-
-    public EEffectModifier CraftingEffect
-    {
-        get { return craftingEffect; }
-        private set { craftingEffect = value; }
+    public Color ParticleMaterialColor
+    { 
+        get { return particleMaterialColor; } 
+        private set { particleMaterialColor = value; }
     }
 
     public override string GetItemName()

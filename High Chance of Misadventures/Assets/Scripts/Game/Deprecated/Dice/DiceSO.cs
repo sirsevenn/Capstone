@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Dice_SO", menuName = "ScriptableObjects/Dice")]
+//[CreateAssetMenu(fileName = "Dice_SO", menuName = "ScriptableObjects/Dice")]
 public class DiceSO : ScriptableObject
 {
     [SerializeField] private DiceType diceType;

@@ -56,74 +56,77 @@ public class HO_PlayerAI : HO_EntityAI
         isAttackElemental = false;
 
         // Get final weights of the potions and scrolls
-        int numHPPotion = InventorySystem.Instance.GetPotionAmount(EPotionType.Health_Potion);
+        #region next time
+        //int numHPPotion = InventorySystem.Instance.GetPotionAmount(EPotionType.Health_Potion);
 
-        float hpPotionFinalWeight = CalculateFinalWeight(hpPotionWeight, numHPPotion, true);
-        float atkPotionFinalWeight = CalculateFinalWeight(atkPotionWeight, InventorySystem.Instance.GetPotionAmount(EPotionType.Attack_Potion));
-        float defPotionFinalWeight = CalculateFinalWeight(defPotionWeight, InventorySystem.Instance.GetPotionAmount(EPotionType.Defense_Potion));
-        float fireScrollFinalWeight = CalculateFinalWeight(fireScrollWeight, InventorySystem.Instance.GetScrollAmount(EElementalAttackType.Fire));
-        float waterScrollFinalWeight = CalculateFinalWeight(waterScrollWeight, InventorySystem.Instance.GetScrollAmount(EElementalAttackType.Water));
-        float earthScrollFinalWeight = CalculateFinalWeight(earthScrollWeight, InventorySystem.Instance.GetScrollAmount(EElementalAttackType.Earth));
+        //float hpPotionFinalWeight = CalculateFinalWeight(hpPotionWeight, numHPPotion, true);
+        //float atkPotionFinalWeight = CalculateFinalWeight(atkPotionWeight, InventorySystem.Instance.GetPotionAmount(EPotionType.Attack_Potion));
+        //float defPotionFinalWeight = CalculateFinalWeight(defPotionWeight, InventorySystem.Instance.GetPotionAmount(EPotionType.Defense_Potion));
+        //float fireScrollFinalWeight = CalculateFinalWeight(fireScrollWeight, InventorySystem.Instance.GetScrollAmount(EElementalAttackType.Fire));
+        //float waterScrollFinalWeight = CalculateFinalWeight(waterScrollWeight, InventorySystem.Instance.GetScrollAmount(EElementalAttackType.Water));
+        //float earthScrollFinalWeight = CalculateFinalWeight(earthScrollWeight, InventorySystem.Instance.GetScrollAmount(EElementalAttackType.Earth));
 
-        // Decide what item to use
-        ConsumableItem item = null;
-        bool isItemScroll = false;
-        float totalSum = hpPotionFinalWeight + atkPotionFinalWeight + defPotionFinalWeight + fireScrollFinalWeight + waterScrollFinalWeight + earthScrollFinalWeight;
-        float randItem = Random.Range(0, totalSum);
+        //// Decide what item to use
+        //Consumable item = null;
+        //bool isItemScroll = false;
+        //float totalSum = hpPotionFinalWeight + atkPotionFinalWeight + defPotionFinalWeight + fireScrollFinalWeight + waterScrollFinalWeight + earthScrollFinalWeight;
+        //float randItem = Random.Range(0, totalSum);
 
-        if (randItem < hpPotionFinalWeight || (characterStats.GetCurrentHPInPercent() < 0.25 && numHPPotion > 0))
-        {
-            item = InventorySystem.Instance.GetOnePotionOfType(EPotionType.Health_Potion);
-        }
-        else if (randItem < hpPotionFinalWeight + atkPotionFinalWeight)
-        {
-            item = InventorySystem.Instance.GetOnePotionOfType(EPotionType.Attack_Potion);
-        }
-        else if (randItem < hpPotionFinalWeight + atkPotionFinalWeight + defPotionFinalWeight)
-        {
-            item = InventorySystem.Instance.GetOnePotionOfType(EPotionType.Defense_Potion);
-        }
-        else if (randItem < totalSum - waterScrollFinalWeight - earthScrollFinalWeight)
-        {
-            item = InventorySystem.Instance.GetOneScrollOfType(EElementalAttackType.Fire);
-            isItemScroll = true;
-        }
-        else if (randItem < totalSum - earthScrollFinalWeight)
-        {
-            item = InventorySystem.Instance.GetOneScrollOfType(EElementalAttackType.Water);
-            isItemScroll = true;
-        }
-        else if (randItem < totalSum)
-        {
-            item = InventorySystem.Instance.GetOneScrollOfType(EElementalAttackType.Earth);
-            isItemScroll = true;
-        }
+        //if (randItem < hpPotionFinalWeight || (characterStats.GetCurrentHPInPercent() < 0.25 && numHPPotion > 0))
+        //{
+        //    item = InventorySystem.Instance.GetOnePotionOfType(EPotionType.Health_Potion);
+        //}
+        //else if (randItem < hpPotionFinalWeight + atkPotionFinalWeight)
+        //{
+        //    item = InventorySystem.Instance.GetOnePotionOfType(EPotionType.Attack_Potion);
+        //}
+        //else if (randItem < hpPotionFinalWeight + atkPotionFinalWeight + defPotionFinalWeight)
+        //{
+        //    item = InventorySystem.Instance.GetOnePotionOfType(EPotionType.Defense_Potion);
+        //}
+        //else if (randItem < totalSum - waterScrollFinalWeight - earthScrollFinalWeight)
+        //{
+        //    item = InventorySystem.Instance.GetOneScrollOfType(EElementalAttackType.Fire);
+        //    isItemScroll = true;
+        //}
+        //else if (randItem < totalSum - earthScrollFinalWeight)
+        //{
+        //    item = InventorySystem.Instance.GetOneScrollOfType(EElementalAttackType.Water);
+        //    isItemScroll = true;
+        //}
+        //else if (randItem < totalSum)
+        //{
+        //    item = InventorySystem.Instance.GetOneScrollOfType(EElementalAttackType.Earth);
+        //    isItemScroll = true;
+        //}
 
-        // Consume item and decide how player attacks
-        if (item != null && item is Potion)
-        {
-            Potion potion = (Potion)item;
-            InventorySystem.Instance.UsePotion(potion.ItemID, characterStats);
 
-            if (potion.PotionData.PotionType == EPotionType.Health_Potion)
-            {
-                HO_AutoBattleUI.Instance.UpdatePlayerHP(characterStats.GetCurrentHPInPercent());
-            }
-        } 
-        else if (item != null && item is ScrollSpell)
-        {
-            ScrollSpell scroll = (ScrollSpell)item;
-            InventorySystem.Instance.UseScroll(scroll.ItemID);
+        //// Consume item and decide how player attacks
+        //if (item != null && item is Potion)
+        //{
+        //    Potion potion = (Potion)item;
+        //    InventorySystem.Instance.UsePotion(potion.ItemID, characterStats);
 
-            currentAttackDMG = scroll.FinalValue;
-            isAttackElemental = true;
-        }
+        //    if (potion.PotionData.PotionType == EPotionType.Health_Potion)
+        //    {
+        //        HO_AutoBattleUI.Instance.UpdatePlayerHP(characterStats.GetCurrentHPInPercent());
+        //    }
+        //} 
+        //else if (item != null && item is ScrollSpell)
+        //{
+        //    ScrollSpell scroll = (ScrollSpell)item;
+        //    InventorySystem.Instance.UseScroll(scroll.ItemID);
 
-        if (!isItemScroll)
-        {
-            currentAttackDMG = characterStats.GetTotalATK();
-            isAttackElemental = false;
-        }
+        //    currentAttackDMG = scroll.FinalValue;
+        //    isAttackElemental = true;
+        //}
+
+        //if (!isItemScroll)
+        //{
+        //    currentAttackDMG = characterStats.GetTotalATK();
+        //    isAttackElemental = false;
+        //}
+        #endregion
 
         // Reset ATK stat after each turn
         characterStats.ResetATKToBase();
@@ -132,7 +135,7 @@ public class HO_PlayerAI : HO_EntityAI
     private float CalculateFinalWeight(int baseWeight, int numItem, bool isHPPotion = false)
     {
         float finalWeight = baseWeight * ((Mathf.Pow(2, numItem - 1) - 1) / Mathf.Pow(2, numItem - 1) + 1);
-        return (!isHPPotion || isHPPotion && characterStats.GetCurrentHPInPercent() < 0.65) ? finalWeight : 0f;
+        return (!isHPPotion || isHPPotion && characterStats.GetCurrentHPInPercent() < 0.75) ? finalWeight : 0f;
     }
 
     public override void EntityTakeDamage(int damage, bool isElemental)

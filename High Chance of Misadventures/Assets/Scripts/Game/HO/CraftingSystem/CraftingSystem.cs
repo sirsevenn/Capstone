@@ -9,17 +9,19 @@ public class CraftingSystem : MonoBehaviour
     [SerializeField] private CraftingMaterialSO currentDraggedMaterial;
 
     [Space(10)] [Header("Crafting Properties")]
-    [SerializeField] private CraftingMaterialSO selectedBaseMaterial;
-    [SerializeField] private List<CraftingMaterialSO> selectedSupplementaryMaterials;
+    [SerializeField] private int maxConsumablesToCraft;
+    [SerializeField] private int maxNumberPerConsumable;
+    [SerializeField] private CraftingMaterialSO[] droppedMaterials;
 
     [Space(20)]
-    [SerializeField] private CraftableSO itemToCraft;
-    [SerializeField] private uint currentFavorableOutcomes;
-    [SerializeField] private float currentSuccessRate;
-    [SerializeField] private int currentTotalEffectValue;
+    [SerializeField] private List<ConsumableSO> consumablesToCraftList;
+    [SerializeField] private List<int> weightsOnEachConsumableList;
+    [SerializeField] private float totalWeight;
 
     [Space(10)] [Header("Other References")]
-    [SerializeField] private CraftingSystemUI UI;
+    [SerializeField] private CraftingSystemDisplay craftingDisplay;
+    [SerializeField] private PotionDisplay potionDisplay;
+    [SerializeField] private CraftingParticles particlesScript;
 
 
     #region Singleton
@@ -46,20 +48,28 @@ public class CraftingSystem : MonoBehaviour
     }
     #endregion
 
+
     private void Start()
     {
         isDraggingMaterial = false;
         currentDraggedMaterial = null;
 
-        selectedBaseMaterial = null;
-        selectedSupplementaryMaterials = new();
-        selectedSupplementaryMaterials.Clear();
+        droppedMaterials = new CraftingMaterialSO[]
+        {
+            null, null, null
+        };
 
-        itemToCraft = null;
-        currentFavorableOutcomes = 0;
-        currentSuccessRate = 0f;
-        currentTotalEffectValue = 0;
+        consumablesToCraftList = new();
+        consumablesToCraftList.Clear();
+
+        weightsOnEachConsumableList = new();
+        weightsOnEachConsumableList.Clear();
+
+        maxConsumablesToCraft = (maxConsumablesToCraft == 0) ? 15 : maxConsumablesToCraft;
+        maxNumberPerConsumable = (maxNumberPerConsumable == 0) ? 10 : maxNumberPerConsumable;
+        totalWeight = 0f;
     }
+
 
     #region Touch Input Event Methods
     public void OnBeginDragMaterial(CraftingMaterialSO draggedMaterial)
@@ -68,14 +78,17 @@ public class CraftingSystem : MonoBehaviour
 
         isDraggingMaterial = true;
         currentDraggedMaterial = draggedMaterial;
-        UI.OnBeginDragMaterial(draggedMaterial.ItemIcon);
+        craftingDisplay.OnBeginDragMaterial(draggedMaterial.ItemIcon);
     }
 
     public void OnDragMaterial(CraftingMaterialSO draggedMaterial, Vector2 materialPos)
     {
         if (!isDraggingMaterial || currentDraggedMaterial != draggedMaterial) return;
 
-        UI.OnDragMaterial(materialPos);
+        int index = craftingDisplay.GetSlotIndexFromHoveredMaterial(materialPos);
+        bool isHighlighted = (index != -1) && (droppedMaterials[index] == null);
+
+        craftingDisplay.OnDragMaterial(materialPos, index, isHighlighted);
     }
 
     public void OnEndDragMaterial(CraftingMaterialSO draggedMaterial, Vector2 materialPos)
@@ -83,155 +96,160 @@ public class CraftingSystem : MonoBehaviour
         if (!isDraggingMaterial || currentDraggedMaterial != draggedMaterial) return;
 
         // Check if there are enough materials to add
-        int count = 1; 
-        count += (selectedBaseMaterial != null && selectedBaseMaterial.MaterialType == draggedMaterial.MaterialType) ? 1 : 0;
-
-        foreach (var selectedMaterial in selectedSupplementaryMaterials)
+        int count = 0; 
+        foreach (var droppedMaterial in droppedMaterials)
         {
-            if (selectedMaterial != null && selectedMaterial.MaterialType == draggedMaterial.MaterialType) count++;
+            if (droppedMaterial != null && droppedMaterial.MaterialType == draggedMaterial.MaterialType) count++;
         }
 
         bool hasEnoughMaterials = (count <= InventorySystem.Instance.GetMaterialAmount(draggedMaterial.MaterialType));
 
-        // Determine if dropped material is on base or supplementary slots
-        if (hasEnoughMaterials && UI.IsDroppedMaterialOnBaseSlot(materialPos) && selectedBaseMaterial == null)
+        // Determine if it is on top of an open slot
+        int slotIndex = craftingDisplay.GetSlotIndexFromHoveredMaterial(materialPos);
+        bool isValidDropMaterial = hasEnoughMaterials && slotIndex != -1 && droppedMaterials[slotIndex] == null;
+
+        if (isValidDropMaterial)
         {
-            selectedBaseMaterial = draggedMaterial;
-            itemToCraft = draggedMaterial.ItemToCraft;
+            droppedMaterials[slotIndex] = draggedMaterial;
 
-            // Update output UI if player has already discovered it
-            Sprite icon = InventorySystem.Instance.IsCraftableDiscovered(itemToCraft) ? itemToCraft.ItemIcon : null;
-            UI.SetIconOnOutputImage(icon);
-            UI.SetSuccessRateBar(currentSuccessRate);
-            UI.SetCraftingEffectBar(EEffectModifier.Unknown);
-        }
-        else if (hasEnoughMaterials && selectedBaseMaterial != null && UI.IsDroppedMaterialOnCauldron(materialPos))
-        {
-            // Add material to list
-            selectedSupplementaryMaterials.Add(draggedMaterial);
-
-            // Determine success rate and update UI
-            currentFavorableOutcomes += draggedMaterial.SupplementaryAmount;
-            currentSuccessRate = (float)currentFavorableOutcomes / (float)selectedBaseMaterial.BaseProbabilityValue;
-            currentSuccessRate = (currentSuccessRate > 1) ? 1 : currentSuccessRate;
-            UI.SetSuccessRateBar(currentSuccessRate);
-
-            // Calculate total effect value and update UI
-            if (itemToCraft is PotionSO)
+            // Enable certain particles on the cauldron
+            particlesScript.PlayMaterialParticle(slotIndex, draggedMaterial.ParticleMaterialColor);
+            if (consumablesToCraftList.Count == 0)
             {
-                PotionSO potionToCraft = (PotionSO)itemToCraft;
-                currentTotalEffectValue += potionToCraft.GetEffectValueFromModifier(draggedMaterial.CraftingEffect);
-                UI.SetCraftingEffectBar(potionToCraft.GetModifierFromEffectValue(currentTotalEffectValue));
+                particlesScript.PlayFireParticle();
             }
-            else if (itemToCraft is ScrollSpellSO)
+
+            // Keep track of the consumables that the dropped material can craft
+            foreach (var currentConsumableWeight in draggedMaterial.ConsumableWeightsList)
             {
-                ScrollSpellSO scrollToCraft = (ScrollSpellSO)itemToCraft;
-                currentTotalEffectValue += scrollToCraft.GetEffectValueFromModifier(draggedMaterial.CraftingEffect);
-                UI.SetCraftingEffectBar(scrollToCraft.GetModifierFromEffectValue(currentTotalEffectValue));
+                int consumableIndex = consumablesToCraftList.FindIndex(x => x.ConsumableType == currentConsumableWeight.ConsumableToCraft.ConsumableType);
+                int effectValue = Consumable.ConvertEffectIntoValue(currentConsumableWeight.CraftingEffect);
+                totalWeight += effectValue;
+
+                if (consumableIndex == -1)
+                {
+                    consumablesToCraftList.Add(currentConsumableWeight.ConsumableToCraft);
+                    weightsOnEachConsumableList.Add(effectValue);
+                }
+                else
+                {
+                    weightsOnEachConsumableList[consumableIndex] += effectValue;
+                }
             }
         }
 
-        UI.OnEndDragMaterial();
+        // Cleanup
+        craftingDisplay.OnEndDragMaterial(isValidDropMaterial);
         currentDraggedMaterial = null;
         isDraggingMaterial = false;
     }
-
-    public void OnUpdateBookDisplay(CraftingMaterialSO draggedMaterial)
-    {
-        UI.SetMaterialDataToBook(draggedMaterial);
-    }
     #endregion
+
 
     #region Crafting Methods
     public void OnCraft()
     {
-        if (itemToCraft == null) return;
+        if (droppedMaterials.Length == 0 && consumablesToCraftList.Count == 0) return;
 
-        // If craftable is an armor, see if it is already discovered
-        //if (itemToCraft is ArmorSO && InventorySystem.Instance.IsCraftableDiscovered(itemToCraft)) return;
+        // Determine the amount of all consumables, then craft them
+        List<int> amountForEachConsumableList = CalculateAmountOfConsumablesToCraft();
 
-        // If there are no supplementary materials, crafting should not go through
-        if (selectedSupplementaryMaterials.Count == 0) return;
-
-        // Check if crafting is successful 
-        float randNum = Random.Range(0f, 1f);
-        bool isCraftingSuccessful = randNum <= currentSuccessRate;
-
-        // Craft item if it is successful
-        //if (isCraftingSuccessful && itemToCraft is ArmorSO)
-        //{
-        //    CraftArmor((ArmorSO)itemToCraft);
-        //}
-        if (isCraftingSuccessful && itemToCraft is PotionSO)
+        for (int i = 0; i < consumablesToCraftList.Count; i++)
         {
-            CraftPotion((PotionSO)itemToCraft);
-        }
-        else if (isCraftingSuccessful && itemToCraft is ScrollSpellSO)
-        {
-            CraftScroll((ScrollSpellSO)itemToCraft);
+            ConsumableSO consumable = consumablesToCraftList[i];
+
+            for (int j = 0; j < amountForEachConsumableList[i]; j++)
+            {
+                uint id = (uint)InventorySystem.Instance.GetNextConsumableID();
+                Consumable newConsumable = new Consumable(id, consumable);
+                InventorySystem.Instance.AddConsumable(newConsumable);
+                InventorySystem.Instance.AddConsumableToCatalogue(newConsumable.ConsumableData.GetItemName());
+            }
+
+            potionDisplay.UpdateItemDisplay(consumable.ConsumableType);
         }
 
         // Recreate new selected material list WITH their total amount
-        List<CraftingMaterial> selectedMaterialsWithAmountList = new() {
-            new CraftingMaterial(selectedBaseMaterial, 1)
-        };
+        List<CraftingMaterial> droppedMaterialsWithAmountList = new();
 
-        foreach (var selectedMaterial in selectedSupplementaryMaterials)
+        foreach (var droppedMaterial in droppedMaterials)
         {
-            if (selectedMaterial == null) continue;
+            if (droppedMaterial == null) continue;
 
             // Add material to the amount list
-            int index = selectedMaterialsWithAmountList.FindIndex(x => x.MaterialData.MaterialType == selectedMaterial.MaterialType);
+            int index = droppedMaterialsWithAmountList.FindIndex(x => x.MaterialData.MaterialType == droppedMaterial.MaterialType);
             if (index == -1)
             {
-                selectedMaterialsWithAmountList.Add(new CraftingMaterial(selectedMaterial, 1));
+                droppedMaterialsWithAmountList.Add(new CraftingMaterial(droppedMaterial, 1));
             }
             else
             {
-                selectedMaterialsWithAmountList[index].Amount++;
+                droppedMaterialsWithAmountList[index].Amount++;
             }
         }
 
         // Reduce the materials from the inventory
-        foreach (var material in selectedMaterialsWithAmountList)
+        foreach (var material in droppedMaterialsWithAmountList)
         {
             InventorySystem.Instance.ReduceMaterials(material);
         }
 
         // Reset selection slots and other trackers for crafting
-        selectedBaseMaterial = null;
-        selectedSupplementaryMaterials.Clear();
-        
-        itemToCraft = null;
-        currentFavorableOutcomes = 0;
-        currentSuccessRate = 0f;
-        currentTotalEffectValue = 0;
+        for (int i = 0; i < droppedMaterials.Length; i++)
+        {
+            droppedMaterials[i] = null;
+        }
 
-        // Reset UI
-        UI.ResetCraftingUI();
+        consumablesToCraftList.Clear();
+        weightsOnEachConsumableList.Clear();
+        totalWeight = 0f;
+
+        // Reset properties from other scripts
+        craftingDisplay.ResetCraftingUI();
+        particlesScript.ResetAllParticles();
     }
 
-    //private void CraftArmor(ArmorSO armorToCraft)
-    //{
-    //    InventorySystem.Instance.UpgradeArmorPiece(armorToCraft);
-    //}
-
-    private void CraftPotion(PotionSO potionToCraft)
+    private List<int> CalculateAmountOfConsumablesToCraft()
     {
-        uint id = (uint)InventorySystem.Instance.GetNextPotionID();
-        Potion newPotion = new Potion(id, currentTotalEffectValue, potionToCraft);
-        InventorySystem.Instance.AddPotion(newPotion);
-        InventorySystem.Instance.AddPotionToCatalogue(newPotion.PotionData.GetItemName());
-    }
+        List<int> returnList = new();
+        int totalAmount = 0; // keep track in case it exceeds the max num crafted items
+        int excessAmount = 0; // keep track in case it exceeds the max num of the same item
+        int indexWithHighestAmount = -1;
+        float percentOfOneAmount = 1f / (float)maxConsumablesToCraft;
 
-    private void CraftScroll(ScrollSpellSO scrollToCraft)
-    {
-        uint id = (uint)InventorySystem.Instance.GetNextScrollID();
-        ScrollSpell newScroll = new ScrollSpell(id, currentTotalEffectValue, scrollToCraft);
-        InventorySystem.Instance.AddScroll(newScroll);
-        InventorySystem.Instance.AddScrollToCatalogue(newScroll.ScrollData.GetItemName());
+        for (int i = 0; i < weightsOnEachConsumableList.Count; i++)
+        {
+            // Determine amount of the same item to craft based on its weight percentage
+            float percentage = (float)weightsOnEachConsumableList[i] / totalWeight;
+            int amount = Mathf.RoundToInt(percentage / percentOfOneAmount);
+            //int amount = Mathf.RoundToInt(percentage / percentOfOneAmount) + excessAmount;
+
+            // Check if amount already exceeds maxNumberPerConsumable; reduce any excess from the original amount
+            int currentAmountInInventory = InventorySystem.Instance.GetConsumableAmount(consumablesToCraftList[i].ConsumableType);
+            excessAmount = (amount + currentAmountInInventory - maxNumberPerConsumable) < 0 ? 0 : (amount + currentAmountInInventory - maxNumberPerConsumable);
+            amount -= excessAmount;
+            totalAmount += amount;
+
+            returnList.Add(amount);
+
+            if (indexWithHighestAmount == -1 || amount > returnList[indexWithHighestAmount])
+            {
+                indexWithHighestAmount = i;
+            }
+        }
+
+        if (totalAmount > maxConsumablesToCraft)
+        {
+            int diff = totalAmount - maxConsumablesToCraft;
+            Debug.Log("too much to craft " + diff);
+
+            returnList[indexWithHighestAmount] -= diff;
+        }
+
+        return returnList;
     }
     #endregion
+
 
     public void TransitionToBattleScene()
     {

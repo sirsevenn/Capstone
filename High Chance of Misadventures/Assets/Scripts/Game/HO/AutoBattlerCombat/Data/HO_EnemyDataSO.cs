@@ -13,6 +13,8 @@ public class HO_EnemyDataSO : ScriptableObject
     [SerializeField] private int enemyHP;
     [SerializeField] private int enemyATK;
     [SerializeField] private int enemyDEF;
+    [SerializeField] private EElementalAttackType weakToElement;
+    [SerializeField] private EElementalAttackType resistantToElement;
 
 
     public EEnemyType EnemyType
@@ -54,6 +56,18 @@ public class HO_EnemyDataSO : ScriptableObject
     public int EnemyDEF
     {
         get { return enemyDEF; }
+        private set { }
+    }
+
+    public EElementalAttackType WeakToElement
+    {
+        get { return weakToElement; }
+        private set { }
+    }
+
+    public EElementalAttackType ResistantToElement
+    {
+        get { return resistantToElement; }
         private set { }
     }
 

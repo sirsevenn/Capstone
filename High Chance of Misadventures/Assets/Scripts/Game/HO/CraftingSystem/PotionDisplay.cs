@@ -12,16 +12,16 @@ public class PotionDisplay : MonoBehaviour
     [SerializeField] private int numActiveDefensePotions;
 
     [Space(10)] [Header("Fire Scrolls")]
-    [SerializeField] private List<GameObject> fireScrollsList;
-    [SerializeField] private int numActiveFireScrolls;
+    [SerializeField] private List<GameObject> firePotionsList;
+    [SerializeField] private int numActiveFirePotions;
 
     [Space(10)] [Header("Water Scrolls")]
-    [SerializeField] private List<GameObject> waterScrollsList;
-    [SerializeField] private int numActiveWaterScrolls;
+    [SerializeField] private List<GameObject> waterPotionsList;
+    [SerializeField] private int numActiveWaterPotions;
 
     [Space(10)] [Header("Earth Scrolls")]
-    [SerializeField] private List<GameObject> earthScrollsList;
-    [SerializeField] private int numActiveEarthScrolls;
+    [SerializeField] private List<GameObject> earthPotionsList;
+    [SerializeField] private int numActiveEarthPotions;
 
 
     private void Start()
@@ -29,9 +29,9 @@ public class PotionDisplay : MonoBehaviour
         ResetDisplay();
         numActiveHealthPotions = 0;
         numActiveDefensePotions = 0;
-        numActiveFireScrolls = 0;
-        numActiveWaterScrolls = 0;
-        numActiveEarthScrolls = 0;
+        numActiveFirePotions = 0;
+        numActiveWaterPotions = 0;
+        numActiveEarthPotions = 0;
     }
 
     public void ResetDisplay()
@@ -46,17 +46,17 @@ public class PotionDisplay : MonoBehaviour
             defensePotion.SetActive(false);
         }
 
-        foreach (var fireScroll in fireScrollsList)
+        foreach (var fireScroll in firePotionsList)
         { 
             fireScroll.SetActive(false); 
         }
 
-        foreach (var waterScroll in waterScrollsList)
+        foreach (var waterScroll in waterPotionsList)
         {
             waterScroll.SetActive(false);
         }
 
-        foreach (var  earthScroll in earthScrollsList)
+        foreach (var  earthScroll in earthPotionsList)
         {
             earthScroll.SetActive(false);
         }
@@ -81,18 +81,18 @@ public class PotionDisplay : MonoBehaviour
                 break;
 
             case EConsumableType.Fire_Potion:
-                itemList = fireScrollsList;
-                currentActive = numActiveFireScrolls;
+                itemList = firePotionsList;
+                currentActive = numActiveFirePotions;
                 break;
 
             case EConsumableType.Water_Potion:
-                itemList = waterScrollsList;
-                currentActive = numActiveWaterScrolls;
+                itemList = waterPotionsList;
+                currentActive = numActiveWaterPotions;
                 break;
 
             case EConsumableType.Earth_Potion:
-                itemList = earthScrollsList;
-                currentActive = numActiveEarthScrolls;
+                itemList = earthPotionsList;
+                currentActive = numActiveEarthPotions;
                 break;
 
             default:

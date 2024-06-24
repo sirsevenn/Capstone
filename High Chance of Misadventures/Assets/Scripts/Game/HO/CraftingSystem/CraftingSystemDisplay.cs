@@ -8,22 +8,22 @@ public class CraftingSystemDisplay : MonoBehaviour
     [SerializeField] private int currentHighlightedSlotIndex; 
     [SerializeField] private List<Image> dropSlotHighlights;
     [SerializeField] private List<Image> dropSlotIcons;
+    [SerializeField] private Sprite defaultSlotIcon;
 
     [Space(10)] [Header("Dragged Material Properties")]
     [SerializeField] private Image draggedIcon;
     [SerializeField] private RectTransform draggedIconTransform;
 
-    [Space(10)] [Header("UI Default Values")]
-    [SerializeField] private Color defaultSlotColor;
-
-    [Header("Tab UI References")]
+    [Space(10)] [Header("Other UI Properties")]
     [SerializeField] private Transform materialsListParent;
-
-    [Space(10)] [Header("Item Panel References")]
     [SerializeField] private List<CraftingItemPanelScript> materialPanelsList;
-
-    [Space(10)] [Header("Prefabs")]
     [SerializeField] private GameObject itemPanelPrefab;
+
+    [Space(10)] [Header("Camera Settings")]
+    [SerializeField] private Camera mainCam;
+    [SerializeField] private float defaultScreenRatio;
+    [SerializeField] private float minmaxRatioDiff;
+    [SerializeField] private float changeInFOV;
 
 
     #region Initialization
@@ -31,6 +31,7 @@ public class CraftingSystemDisplay : MonoBehaviour
     {
         ResetCraftingUI();
         InitializeItemPanels();
+        SetupCamera();
         draggedIcon.gameObject.SetActive(false);
 
         InventorySystem.Instance.OnUpdateMaterialsEvent += UpdateMaterialPanel;
@@ -51,6 +52,14 @@ public class CraftingSystemDisplay : MonoBehaviour
             script.UpdatePanelInfo(material.MaterialData, material.Amount);
             materialPanelsList.Add(script);
         }
+    }
+
+    private void SetupCamera()
+    {
+        float currentScreenRatio = (float)Screen.width / (float)Screen.height;
+        float diff = Mathf.Clamp(defaultScreenRatio - currentScreenRatio, -minmaxRatioDiff, minmaxRatioDiff);
+        diff *= changeInFOV / minmaxRatioDiff;
+        mainCam.fieldOfView += diff;
     }
     #endregion
 
@@ -83,7 +92,6 @@ public class CraftingSystemDisplay : MonoBehaviour
         if (isValidDropMaterial)
         {
             dropSlotIcons[currentHighlightedSlotIndex].sprite = draggedIcon.sprite;
-            dropSlotIcons[currentHighlightedSlotIndex].color = Color.white;
         }
 
         if (currentHighlightedSlotIndex != -1)
@@ -122,8 +130,8 @@ public class CraftingSystemDisplay : MonoBehaviour
 
         foreach (var slotIcon in dropSlotIcons)
         {
-            slotIcon.sprite = null;
-            slotIcon.color = defaultSlotColor;
+            slotIcon.sprite = defaultSlotIcon;
+            slotIcon.color = Color.white;
         }
     }
     #endregion

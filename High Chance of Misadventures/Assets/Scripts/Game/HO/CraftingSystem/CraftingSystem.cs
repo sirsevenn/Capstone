@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 public class CraftingSystem : MonoBehaviour
 {
@@ -11,6 +10,7 @@ public class CraftingSystem : MonoBehaviour
     [Space(10)] [Header("Crafting Properties")]
     [SerializeField] private int maxConsumablesToCraft;
     [SerializeField] private int maxNumberPerConsumable;
+    [SerializeField] private bool isCauldronFiredUp;
     [SerializeField] private CraftingMaterialSO[] droppedMaterials;
 
     [Space(20)]
@@ -54,20 +54,16 @@ public class CraftingSystem : MonoBehaviour
         isDraggingMaterial = false;
         currentDraggedMaterial = null;
 
+        maxConsumablesToCraft = (maxConsumablesToCraft == 0) ? 15 : maxConsumablesToCraft;
+        maxNumberPerConsumable = (maxNumberPerConsumable == 0) ? 10 : maxNumberPerConsumable;
+
         droppedMaterials = new CraftingMaterialSO[]
         {
             null, null, null
         };
 
-        consumablesToCraftList = new();
-        consumablesToCraftList.Clear();
-
         weightsOnEachConsumableList = new();
-        weightsOnEachConsumableList.Clear();
-
-        maxConsumablesToCraft = (maxConsumablesToCraft == 0) ? 15 : maxConsumablesToCraft;
-        maxNumberPerConsumable = (maxNumberPerConsumable == 0) ? 10 : maxNumberPerConsumable;
-        totalWeight = 0f;
+        ResetCraftingTrackers();
     }
 
 
@@ -96,7 +92,7 @@ public class CraftingSystem : MonoBehaviour
         if (!isDraggingMaterial || currentDraggedMaterial != draggedMaterial) return;
 
         // Check if there are enough materials to add
-        int count = 0; 
+        int count = 1; 
         foreach (var droppedMaterial in droppedMaterials)
         {
             if (droppedMaterial != null && droppedMaterial.MaterialType == draggedMaterial.MaterialType) count++;
@@ -114,9 +110,10 @@ public class CraftingSystem : MonoBehaviour
 
             // Enable certain particles on the cauldron
             particlesScript.PlayMaterialParticle(slotIndex, draggedMaterial.ParticleMaterialColor);
-            if (consumablesToCraftList.Count == 0)
+            if (!isCauldronFiredUp)
             {
                 particlesScript.PlayFireParticle();
+                isCauldronFiredUp = true;
             }
 
             // Keep track of the consumables that the dropped material can craft
@@ -124,16 +121,17 @@ public class CraftingSystem : MonoBehaviour
             {
                 int consumableIndex = consumablesToCraftList.FindIndex(x => x.ConsumableType == currentConsumableWeight.ConsumableToCraft.ConsumableType);
                 int effectValue = Consumable.ConvertEffectIntoValue(currentConsumableWeight.CraftingEffect);
-                totalWeight += effectValue;
 
-                if (consumableIndex == -1)
+                if (consumableIndex != -1)
                 {
-                    consumablesToCraftList.Add(currentConsumableWeight.ConsumableToCraft);
-                    weightsOnEachConsumableList.Add(effectValue);
-                }
-                else
-                {
+                    int consumableWeight = weightsOnEachConsumableList[consumableIndex] + effectValue;
+                    if (consumableWeight < 0)
+                    {
+                        effectValue += -consumableWeight;
+                    }
+
                     weightsOnEachConsumableList[consumableIndex] += effectValue;
+                    totalWeight += effectValue;
                 }
             }
         }
@@ -149,7 +147,7 @@ public class CraftingSystem : MonoBehaviour
     #region Crafting Methods
     public void OnCraft()
     {
-        if (droppedMaterials.Length == 0 && consumablesToCraftList.Count == 0) return;
+        if (!isCauldronFiredUp) return;
 
         // Determine the amount of all consumables, then craft them
         List<int> amountForEachConsumableList = CalculateAmountOfConsumablesToCraft();
@@ -163,7 +161,6 @@ public class CraftingSystem : MonoBehaviour
                 uint id = (uint)InventorySystem.Instance.GetNextConsumableID();
                 Consumable newConsumable = new Consumable(id, consumable);
                 InventorySystem.Instance.AddConsumable(newConsumable);
-                InventorySystem.Instance.AddConsumableToCatalogue(newConsumable.ConsumableData.GetItemName());
             }
 
             potionDisplay.UpdateItemDisplay(consumable.ConsumableType);
@@ -200,9 +197,7 @@ public class CraftingSystem : MonoBehaviour
             droppedMaterials[i] = null;
         }
 
-        consumablesToCraftList.Clear();
-        weightsOnEachConsumableList.Clear();
-        totalWeight = 0f;
+        ResetCraftingTrackers();
 
         // Reset properties from other scripts
         craftingDisplay.ResetCraftingUI();
@@ -215,6 +210,7 @@ public class CraftingSystem : MonoBehaviour
         int totalAmount = 0; // keep track in case it exceeds the max num crafted items
         int excessAmount = 0; // keep track in case it exceeds the max num of the same item
         int indexWithHighestAmount = -1;
+        int indexWithLowestAmount = -1;
         float percentOfOneAmount = 1f / (float)maxConsumablesToCraft;
 
         for (int i = 0; i < weightsOnEachConsumableList.Count; i++)
@@ -236,23 +232,49 @@ public class CraftingSystem : MonoBehaviour
             {
                 indexWithHighestAmount = i;
             }
+
+            if (amount != 0 && (indexWithLowestAmount == -1 || amount < returnList[indexWithLowestAmount]))
+            {
+                indexWithLowestAmount = i;
+            }
         }
 
         if (totalAmount > maxConsumablesToCraft)
         {
             int diff = totalAmount - maxConsumablesToCraft;
-            Debug.Log("too much to craft " + diff);
+            //returnList[indexWithHighestAmount] -= diff;
+            returnList[indexWithHighestAmount]--;
 
-            returnList[indexWithHighestAmount] -= diff;
+            Debug.Log("too much to craft " + diff);
+        }
+        else if (totalAmount < maxConsumablesToCraft)
+        {
+            int diff = totalAmount - maxConsumablesToCraft;
+            //returnList[indexWithLowestAmount] -= diff;
+            returnList[indexWithLowestAmount]++;
+
+            Debug.Log("too less to craft " + diff);
         }
 
         return returnList;
+    }
+
+    private void ResetCraftingTrackers()
+    {
+        weightsOnEachConsumableList.Clear();
+        for (int i = 0; i < consumablesToCraftList.Count; i++)
+        {
+            weightsOnEachConsumableList.Add(50);
+        }
+
+        totalWeight = 250f;
+        isCauldronFiredUp = false;
     }
     #endregion
 
 
     public void TransitionToBattleScene()
     {
-        SceneManager.LoadScene("AutoBattleScene");
+        HO_GameManager.Instance.TransitionToBattleScene();
     }
 }

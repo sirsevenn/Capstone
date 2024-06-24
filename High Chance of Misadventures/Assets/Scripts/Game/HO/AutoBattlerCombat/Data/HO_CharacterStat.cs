@@ -19,8 +19,30 @@ public class HO_CharacterStat
     [SerializeField] private int changeInDEF;
     [SerializeField] private int totalDEF;
 
+    [Space(10)] [Header("Other Properties")]
+    public EElementalAttackType WeakToElement;
+    public EElementalAttackType ResistantToElement;
 
-    public void InitializeCharacterStat()
+
+    public void CopyStats(HO_CharacterStat newStats)
+    {
+        baseHP = newStats.baseHP;
+        changeInHP = newStats.changeInHP;
+        currentHP = newStats.currentHP;
+
+        baseATK = newStats.baseATK;
+        changeInATK = newStats.changeInATK;
+        totalATK = newStats.totalATK;
+
+        baseDEF = newStats.baseDEF;
+        changeInDEF = newStats.changeInDEF;
+        totalDEF = newStats.totalDEF;
+
+        WeakToElement = newStats.WeakToElement;
+        ResistantToElement = newStats.ResistantToElement;
+    }
+
+    public void InitializeCharacterStats()
     {
         ResetHP();
         totalATK = baseATK + changeInATK;
@@ -69,15 +91,39 @@ public class HO_CharacterStat
         
     }
 
-    public void TakeDamage(int damage, bool isElemental)
+    public void TakeDamage(int damage, EElementalAttackType attackElementalType)
     {
         if (damage <= 0) return;
 
-        int reducedDMG = (damage - totalDEF) <= 0 ? 0 : damage - totalDEF;
+        int modifiedDMG = 0;
 
-        Debug.Log("received " + (isElemental ? damage : reducedDMG) + "DMG");
+        if (attackElementalType == WeakToElement)
+        {
+            modifiedDMG = Mathf.FloorToInt(damage * 1.5f);
+            currentHP -= modifiedDMG;
+            //Debug.Log("weak");
+        }
+        else if (attackElementalType == ResistantToElement)
+        {
+            modifiedDMG = Mathf.FloorToInt(damage * 0.3f);
+            currentHP -= modifiedDMG;
+            //Debug.Log("resistant");
+        }
+        else if (attackElementalType != EElementalAttackType.Unknown)
+        {
+            modifiedDMG = damage;
+            currentHP -= modifiedDMG;
+            //Debug.Log("just element");
+        }
+        else
+        {
+            modifiedDMG = (damage - totalDEF) <= 0 ? 0 : damage - totalDEF;
+            currentHP -= modifiedDMG;
+            //Debug.Log("normal ");
+        }
 
-        currentHP -= isElemental ? damage : reducedDMG;
+        Debug.Log("received " + modifiedDMG + "DMG   " + (attackElementalType == EElementalAttackType.Unknown ? "normal" : attackElementalType.ToString()));
+
         currentHP = (currentHP <= 0) ? 0 : currentHP;
     }
     #endregion

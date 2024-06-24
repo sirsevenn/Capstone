@@ -1,8 +1,9 @@
 public enum ECraftingEffect
 {
     Unknown,
-    Bad_Effect = 1,
-    Poor_Effect = 2,
-    Good_Effect = 3,
-    Strong_Effect = 4
+    Worst_Effect = 1,
+    Bad_Effect = 2,
+    No_Effect = 3,
+    Good_Effect = 4,
+    Great_Effect = 5
 }

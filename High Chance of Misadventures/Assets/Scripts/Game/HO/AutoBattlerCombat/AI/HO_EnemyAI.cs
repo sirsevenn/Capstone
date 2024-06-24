@@ -1,10 +1,9 @@
+using DG.Tweening;
 using UnityEngine;
 
 [RequireComponent(typeof(WorldSpaceHealthBar))]
 public class HO_EnemyAI : HO_EntityAI
 {
-    [SerializeField] private WorldSpaceHealthBar healthBar;
-
     [Header("Enemy Properties")] 
     [SerializeField] private HO_EnemyDataSO enemyData;
 
@@ -18,23 +17,26 @@ public class HO_EnemyAI : HO_EntityAI
     public void SetEnemyData(HO_EnemyDataSO data)
     {
         enemyData = data;
-
-        characterStats = new();
-        characterStats.SetBaseHP(enemyData.EnemyHP);
-        characterStats.SetBaseATK(enemyData.EnemyATK);
-        characterStats.SetBaseDEF(enemyData.EnemyDEF);
-        characterStats.InitializeCharacterStat();
     }
 
     public override void OnEntityTurn()
     {
         currentAttackDMG = characterStats.GetTotalATK();
-        isAttackElemental = false;
+        attackElementalType = EElementalAttackType.Unknown;
     }
 
-    public override void TriggerAttackAnimation()
+    public override void TriggerAttackAnimation(Vector3 opponentPos, float meleeDistanceOffset, float animDuration)
     {
+        Vector3 offsetDir = transform.position - opponentPos;
+        offsetDir.Normalize();
+
         animator.SetTrigger(enemyData.AttackAnimTrigger);
+        transform.DOJump(opponentPos + offsetDir * meleeDistanceOffset, 1, 1, animDuration).SetEase(Ease.Linear);
+    }
+
+    public override void TriggerEndAttackAnimation(Vector3 originalPos, float animDuration)
+    {
+        transform.DOJump(originalPos, 1, 1, animDuration).SetEase(Ease.Linear);
     }
 
     public override void TriggerHurtAnimation()
@@ -47,9 +49,9 @@ public class HO_EnemyAI : HO_EntityAI
         animator.SetTrigger(enemyData.DeathAnimTrigger);
     }
 
-    public  override void EntityTakeDamage(int damage, bool isElemental)
+    public  override void EntityTakeDamage(int damage, EElementalAttackType attackElementalType)
     {
-        base.EntityTakeDamage(damage, isElemental);  
+        base.EntityTakeDamage(damage, attackElementalType);  
         healthBar.UpdateHP(characterStats.GetCurrentHPInPercent());
     }
 }

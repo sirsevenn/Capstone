@@ -7,41 +7,51 @@ public abstract class HO_EntityAI : MonoBehaviour
 
     [Space(10)] [Header("Attack Properties")]
     [SerializeField] protected int currentAttackDMG;
-    [SerializeField] protected bool isAttackElemental;
+    [SerializeField] protected EElementalAttackType attackElementalType;
 
     [Space(10)] [Header("Component References")]
     [SerializeField] protected Animator animator;
+    [SerializeField] protected WorldSpaceHealthBar healthBar;
 
 
     protected virtual void Awake()
     {
         currentAttackDMG = 0;
-        isAttackElemental = false;
+        attackElementalType = EElementalAttackType.Unknown;
 
         animator = GetComponent<Animator>();
     }
 
     public abstract void OnEntityTurn();
 
-    public abstract void TriggerAttackAnimation();
+    public abstract void TriggerAttackAnimation(Vector3 opponentPos, float meleeDistanceOffset, float animDuration);
+
+    public abstract void TriggerEndAttackAnimation(Vector3 originalPos, float animDuration);
 
     public abstract void TriggerHurtAnimation();
 
     public abstract void TriggerDeathAnimation();
+
+    public void CopyStats(HO_CharacterStat newStat)
+    {
+        characterStats = new();
+        characterStats.CopyStats(newStat);
+        healthBar.UpdateHP(characterStats.GetCurrentHPInPercent());
+    }
 
     public int GetCurrentAttackDamage()
     {
         return currentAttackDMG;
     }
 
-    public bool IsAttackElemental()
+    public EElementalAttackType GetAttackElementalType()
     {
-        return isAttackElemental;
+        return attackElementalType;
     }
 
-    public virtual void EntityTakeDamage(int damage, bool isElemental)
+    public virtual void EntityTakeDamage(int damage, EElementalAttackType attackElementalType)
     {
-        characterStats.TakeDamage(damage, isElemental);
+        characterStats.TakeDamage(damage, attackElementalType);
     }
 
     public bool IsEntityKilled()

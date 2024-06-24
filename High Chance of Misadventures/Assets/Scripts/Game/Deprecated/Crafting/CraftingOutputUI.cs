@@ -52,11 +52,11 @@ public class CraftingOutputUI : MonoBehaviour
 
         switch (effect)
         {
-            case ECraftingEffect.Bad_Effect:
+            case ECraftingEffect.Worst_Effect:
                 craftingEffectRedPortion.sizeDelta = new Vector2(-craftingEffectTransform.rect.width / 2f, craftingEffectRedPortion.rect.height);
                 break;
 
-            case ECraftingEffect.Poor_Effect:
+            case ECraftingEffect.Bad_Effect:
                 craftingEffectRedPortion.sizeDelta = new Vector2(-craftingEffectTransform.rect.width * 3 / 4f, craftingEffectRedPortion.rect.height);
                 break;
 
@@ -64,7 +64,7 @@ public class CraftingOutputUI : MonoBehaviour
                 craftingEffectGreenPortion.sizeDelta = new Vector2(-craftingEffectTransform.rect.width * 3 / 4f, craftingEffectGreenPortion.rect.height);
                 break;
 
-            case ECraftingEffect.Strong_Effect:
+            case ECraftingEffect.Great_Effect:
                 craftingEffectGreenPortion.sizeDelta = new Vector2(-craftingEffectTransform.rect.width / 2f, craftingEffectGreenPortion.rect.height);
                 break;
 

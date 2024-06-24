@@ -1,16 +1,21 @@
+using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
-using UnityEngine.EventSystems;
 
 public class CraftingItemPanelScript : MonoBehaviour
 {
-    [Header("UI Properties")]
+    [Header("General UI Properties")]
     [SerializeField] private Image itemImage;
     [Tooltip("Level for the Armor, or Quantity for the Potions and Materials")]
     [SerializeField] private TMP_Text itemNumberText;
     [SerializeField] private TMP_Text itemNameText;
     [SerializeField] private TMP_Text itemDescriptionText;
+
+    [Space(10)]
+    [Header("Weight Details Properties")]
+    [SerializeField] private List<Sprite> effectSpitesList;
+    [SerializeField] private List<Image> effectIconUIList;
 
     [Header("Item Properties")]
     [SerializeField] private ItemSO itemSO;
@@ -22,6 +27,12 @@ public class CraftingItemPanelScript : MonoBehaviour
         itemNumberText.text = quantity.ToString();
         itemNameText.text = material.GetItemName();
         itemDescriptionText.text = material.MaterialDescription;
+
+        for (int i = 0; i < effectIconUIList.Count; i++)
+        {
+            int index = (int)material.ConsumableWeightsList[i].CraftingEffect - 1;
+            effectIconUIList[i].sprite = effectSpitesList[index];
+        }
 
         itemSO = material;
         draggableScript.SetMaterial(material);

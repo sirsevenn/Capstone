@@ -9,7 +9,6 @@ public class InventorySystem : MonoBehaviour
 
     [Space(10)] [Header("Craftables Properties")]
     [SerializeField] private List<Consumable> consumablesList;
-    [SerializeField] private List<string> consumablesCatalogue;
 
 
     public event Action<CraftingMaterial, bool> OnUpdateMaterialsEvent;
@@ -42,11 +41,6 @@ public class InventorySystem : MonoBehaviour
     #endregion
 
 
-    public bool IsCraftableDiscovered(ConsumableSO consumable)
-    {
-        return consumablesCatalogue.Contains(consumable.GetItemName());
-    }
-
     //public void RemoveAllBadItems()
     //{
     //    for (int i = 0; i < potionsList.Count; i++)
@@ -61,6 +55,12 @@ public class InventorySystem : MonoBehaviour
     //        }
     //    }
     //}
+
+    public void ResetInventory()
+    {
+        craftingMaterialsList.Clear();
+        consumablesList.Clear();
+    }
 
 
     #region Consumable Methods
@@ -151,12 +151,6 @@ public class InventorySystem : MonoBehaviour
         consumablesList.Remove(consumable);
         consumablesList.Sort((x, y) => x.ItemID.CompareTo(y.ItemID));
         OnUpdateConsumablesEvent?.Invoke(consumable, false);
-    }
-
-    public void AddConsumableToCatalogue(string consumableName)
-    {
-        if (consumablesCatalogue.Contains(consumableName)) return;
-        consumablesCatalogue.Add(consumableName);
     }
     #endregion
 

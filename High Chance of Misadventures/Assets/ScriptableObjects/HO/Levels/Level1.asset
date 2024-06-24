@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b6b085fb8720d049abcefee6a282f3e, type: 3}
+  m_Name: Level1
+  m_EditorClassIdentifier: 
+  levelID: 1
+  speechList:
+  - "This battle is harder \nthan I thought!"
+  - "I didn't bring enough \nHealth Potions with me"
+  - "I must retreat for now \nor I'll lose"
+  environment: {fileID: 2603565881939543737, guid: b9131f5922b2b5b45aa19119376a2a50,
+    type: 3}
+  playerStats:
+    baseHP: 100
+    changeInHP: 0
+    currentHP: 30
+    baseATK: 15
+    changeInATK: 0
+    totalATK: 15
+    baseDEF: 5
+    changeInDEF: 0
+    totalDEF: 5
+    WeakToElement: 1
+    ResistantToElement: 2
+  materialsList:
+  - materialData: {fileID: 11400000, guid: fee477a7cbe6cef43a2efe53ceeff30f, type: 2}
+    Amount: 3
+  - materialData: {fileID: 11400000, guid: e3f77875c6c05444cbce66ca83c552f4, type: 2}
+    Amount: 3
+  - materialData: {fileID: 11400000, guid: 053028975a891c34dbc5059f54e49460, type: 2}
+    Amount: 3
+  enemyStats:
+    baseHP: 70
+    changeInHP: 0
+    currentHP: 70
+    baseATK: 14
+    changeInATK: 0
+    totalATK: 14
+    baseDEF: 10
+    changeInDEF: 0
+    totalDEF: 10
+    WeakToElement: 2
+    ResistantToElement: 3
+  enemyData: {fileID: 11400000, guid: ef1fb8c2a1f32f7439ba494af37b2f6f, type: 2}

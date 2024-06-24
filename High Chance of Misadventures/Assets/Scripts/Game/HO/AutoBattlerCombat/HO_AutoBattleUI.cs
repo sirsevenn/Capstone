@@ -1,142 +1,75 @@
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class HO_AutoBattleUI : MonoBehaviour
 {
-    [Header("Player UI")]
-    [SerializeField] private Slider playerHPBar;
-
-    [Space(10)] [Header("Inventory UI")]
+    [Header("Inventory UI")]
     [SerializeField] private RectTransform inventoryParent;
     [SerializeField] private GameObject inventoryItemPanelPrefab;
+    [SerializeField] List<AutoBattleItemPanelScript> consumablesList;
 
-    [Space(10)] [Header("Item Panels Tracker")]
-    [SerializeField] List<AutoBattleItemPanelScript> potionsList;
-    [SerializeField] List<AutoBattleItemPanelScript> scrollsList;
-
-
-    #region Singleton
-    public static HO_AutoBattleUI Instance;
-
-    private void Awake()
-    {
-        if (Instance != null && Instance != this)
-        {
-            Destroy(this.gameObject);
-        }
-        else
-        {
-            Instance = this;
-        }
-    }
-
-    private void OnDestroy()
-    {
-        if (Instance != null && Instance == this)
-        {
-            Destroy(this.gameObject);
-
-            //InventorySystem.Instance.OnUpdatePotionsEvent -= OnUpdatePotions;
-            //InventorySystem.Instance.OnUpdateScrollsEvent -= OnUpdateScrolls;
-        }
-    }
-    #endregion
+    [Space(10)] [Header("Cutscene UI")]
+    [SerializeField] private TMP_Text speechBubble;
 
 
     private void Start()
     {
-        //InventorySystem.Instance.RemoveAllBadItems();
+        InitializeItemPanel(EConsumableType.Health_Potion);
+        InitializeItemPanel(EConsumableType.Defense_Potion);
+        InitializeItemPanel(EConsumableType.Fire_Potion);
+        InitializeItemPanel(EConsumableType.Water_Potion);
+        InitializeItemPanel(EConsumableType.Earth_Potion);
 
-        InitializePotionPanel(EPotionType.Health_Potion);
-        InitializePotionPanel(EPotionType.Attack_Potion);
-        InitializePotionPanel(EPotionType.Defense_Potion);
-
-        InitializeScrollPanel(EElementalAttackType.Fire);
-        InitializeScrollPanel(EElementalAttackType.Water);
-        InitializeScrollPanel(EElementalAttackType.Earth);
+        InventorySystem.Instance.OnUpdateConsumablesEvent += OnUpdateConsumables;
     }
 
-    private void InitializePotionPanel(EPotionType type)
+    private void InitializeItemPanel(EConsumableType consumableType)
     {
-        //int numItem = InventorySystem.Instance.GetPotionAmount(type);
-        //if (numItem > 0)
-        //{
-        //    Potion samplePotion = InventorySystem.Instance.GetOnePotionOfType(type);
+        int numItem = InventorySystem.Instance.GetConsumableAmount(consumableType);
+        if (numItem > 0)
+        {
+            Consumable sampleConsumable = InventorySystem.Instance.GetOneConsumableOfType(consumableType);
 
-        //    GameObject newItem = GameObject.Instantiate(inventoryItemPanelPrefab, inventoryParent);
-        //    AutoBattleItemPanelScript script = newItem.GetComponent<AutoBattleItemPanelScript>();
-        //    script.SetItemSO(samplePotion.PotionData);
-        //    script.UpdateItemNum(numItem);
-        //    potionsList.Add(script);
-        //}
+            GameObject newItem = GameObject.Instantiate(inventoryItemPanelPrefab, inventoryParent);
+            AutoBattleItemPanelScript script = newItem.GetComponent<AutoBattleItemPanelScript>();
+            script.SetItemSO(sampleConsumable.ConsumableData);
+            script.UpdateItemNum(numItem);
+            consumablesList.Add(script);
+        }
     }
 
-    private void InitializeScrollPanel(EElementalAttackType type)
+    public void DisableUI()
     {
-        //int numItem = InventorySystem.Instance.GetScrollAmount(type);
-        //if (numItem > 0)
-        //{
-        //    ScrollSpell sampleScroll = InventorySystem.Instance.GetOneScrollOfType(type);
-
-        //    GameObject newItem = GameObject.Instantiate(inventoryItemPanelPrefab, inventoryParent);
-        //    AutoBattleItemPanelScript script = newItem.GetComponent<AutoBattleItemPanelScript>();
-        //    script.SetItemSO(sampleScroll.ScrollData);
-        //    script.UpdateItemNum(numItem);
-        //    scrollsList.Add(script);
-        //}
+        inventoryParent.gameObject.SetActive(false);
     }
 
-    public void UpdatePlayerHP(float value)
+    public void UpdateSpeechBubble(string newText)
     {
-        if (value < 0 || value > 1) return;
-
-        playerHPBar.value = value;
+        speechBubble.text = newText; 
     }
 
-    //private void OnUpdatePotions(Potion potion, bool hasAddedNewPotion)
-    //{
-    //    if (hasAddedNewPotion || potion == null) return;
+    private void OnUpdateConsumables(Consumable consumable, bool hasAddedNewConsumable)
+    {
+        if (hasAddedNewConsumable || consumable == null) return;
 
-    //    foreach (var potionUI in potionsList)
-    //    {
-    //        if (potionUI.IsSameItem(potion.PotionData))
-    //        {
-    //            int num = InventorySystem.Instance.GetPotionAmount(potion.PotionData.PotionType);
-    //            if (num > 0)
-    //            {
-    //                potionUI.UpdateItemNum(num);
-    //            }
-    //            else
-    //            {
-    //                DestroyImmediate(potionUI.gameObject);
-    //            }
+        foreach (var consumableUI in consumablesList)
+        {
+            if (consumableUI.IsSameItem(consumable.ConsumableData))
+            {
+                int num = InventorySystem.Instance.GetConsumableAmount(consumable.ConsumableData.ConsumableType);
+                if (num > 0)
+                {
+                    consumableUI.UpdateItemNum(num);
+                }
+                else
+                {
+                    DestroyImmediate(consumableUI.gameObject);
+                }
 
-    //            break;
-    //        }
-    //    }
-    //}
-
-    //private void OnUpdateScrolls(ScrollSpell scroll, bool hasAddedNewScroll)
-    //{
-    //    if (hasAddedNewScroll || scroll == null) return;
-
-    //    foreach (var scrollUI in scrollsList)
-    //    {
-    //        if (scrollUI.IsSameItem(scroll.ScrollData))
-    //        {
-    //            int num = InventorySystem.Instance.GetScrollAmount(scroll.ScrollData.ElementalAttackType);
-    //            if (num > 0)
-    //            {
-    //                scrollUI.UpdateItemNum(num);
-    //            }
-    //            else
-    //            {
-    //                DestroyImmediate(scrollUI.gameObject);
-    //            }
-
-    //            break;
-    //        }
-    //    }
-    //}
+                break;
+            }
+        }
+    }
 }

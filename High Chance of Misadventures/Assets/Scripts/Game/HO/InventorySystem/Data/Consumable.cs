@@ -31,19 +31,22 @@ public class Consumable
     {
         switch (effectType)
         {
-            case ECraftingEffect.Bad_Effect:
-                return 5;
+            case ECraftingEffect.Worst_Effect:
+                return -20;
 
-            case ECraftingEffect.Poor_Effect:
-                return 10;
+            case ECraftingEffect.Bad_Effect:
+                return -10;
+
+            case ECraftingEffect.No_Effect:
+                return 0;
 
             case ECraftingEffect.Good_Effect:
-                return 20;
+                return 10;
 
-            case ECraftingEffect.Strong_Effect:
-                return 30;
+            case ECraftingEffect.Great_Effect:
+                return 20;
         }
 
-        return -1;
+        return 0;
     }
 }

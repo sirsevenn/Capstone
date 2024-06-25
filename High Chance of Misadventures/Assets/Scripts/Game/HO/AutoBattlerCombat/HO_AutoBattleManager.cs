@@ -129,8 +129,8 @@ public class HO_AutoBattleManager : MonoBehaviour
 
 
             entityWithTurn.OnEntityTurn();
-            entityWithTurn.TriggerAttackAnimation(attackPos, meleeDistanceOffset, 0.5f);
-            yield return new WaitForSeconds(1f);
+            entityWithTurn.TriggerAttackAnimation(attackPos, meleeDistanceOffset, 0.75f);
+            yield return new WaitForSeconds(0.75f);
 
             opposingEntity.EntityTakeDamage(entityWithTurn.GetCurrentAttackDamage(), entityWithTurn.GetAttackElementalType());
             if (opposingEntity.IsEntityKilled())
@@ -143,11 +143,13 @@ public class HO_AutoBattleManager : MonoBehaviour
             {
                 opposingEntity.TriggerHurtAnimation();
             }
+            yield return new WaitForSeconds(0.1f);
 
-            entityWithTurn.TriggerEndAttackAnimation(startPos, 0.5f);
-            yield return new WaitForSeconds(1f);
+            entityWithTurn.TriggerEndAttackAnimation(startPos, 0.75f);
+            yield return new WaitForSeconds(0.75f);
 
             isPlayersTurn = !isPlayersTurn;
+            yield return new WaitForSeconds(0.1f);
         }
 
         yield return new WaitForSeconds(2f);

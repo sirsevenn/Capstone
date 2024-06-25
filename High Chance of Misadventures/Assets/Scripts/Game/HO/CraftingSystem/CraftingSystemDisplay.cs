@@ -31,7 +31,7 @@ public class CraftingSystemDisplay : MonoBehaviour
     {
         ResetCraftingUI();
         InitializeItemPanels();
-        SetupCamera();
+        AdjustCameraFOV();
         draggedIcon.gameObject.SetActive(false);
 
         InventorySystem.Instance.OnUpdateMaterialsEvent += UpdateMaterialPanel;
@@ -54,7 +54,7 @@ public class CraftingSystemDisplay : MonoBehaviour
         }
     }
 
-    private void SetupCamera()
+    private void AdjustCameraFOV()
     {
         float currentScreenRatio = (float)Screen.width / (float)Screen.height;
         float diff = Mathf.Clamp(defaultScreenRatio - currentScreenRatio, -minmaxRatioDiff, minmaxRatioDiff);

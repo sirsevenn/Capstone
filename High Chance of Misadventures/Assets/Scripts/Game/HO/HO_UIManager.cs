@@ -59,16 +59,16 @@ public class HO_UIManager : UIManager
 
         switch (attackType)
         {
-            case ActionType.Heavy:
-                icon = heavyIcon;
+            case ActionType.Fire:
+                icon = fireIcon;
                 color = heavyColor;
                 break;
-            case ActionType.Light:
-                icon = lightIcon;
+            case ActionType.Earth:
+                icon = earthIcon;
                 color = lightColor;
                 break;
-            case ActionType.Parry:
-                icon = parryIcon;
+            case ActionType.Water:
+                icon = waterIcon;
                 color = parryColor;
                 break;
             default:

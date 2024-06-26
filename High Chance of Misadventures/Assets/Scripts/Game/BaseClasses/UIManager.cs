@@ -8,9 +8,9 @@ public class UIManager : MonoBehaviour
 
 
     [Header("Action Icons")]
-    [SerializeField] protected Sprite heavyIcon;
-    [SerializeField] protected Sprite lightIcon;
-    [SerializeField] protected Sprite parryIcon;
+    [SerializeField] protected Sprite fireIcon;
+    [SerializeField] protected Sprite earthIcon;
+    [SerializeField] protected Sprite waterIcon;
 
     [Header("Color Hex Codes")]
     [SerializeField] protected Color heavyColor;
@@ -20,17 +20,17 @@ public class UIManager : MonoBehaviour
 
     public Sprite GetHeavyIcon()
     {
-        return heavyIcon;
+        return fireIcon;
     }
 
     public Sprite GetLightIcon()
     {
-        return lightIcon;
+        return earthIcon;
     }
 
     public Sprite GetParryIcon()
     {
-        return parryIcon;
+        return waterIcon;
     }
 
     public Color GetHeavyColor()

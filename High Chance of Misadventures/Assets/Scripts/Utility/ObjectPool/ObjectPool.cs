@@ -5,8 +5,9 @@ using UnityEngine;
 public enum EnemyType
 {
     None,
-    Goblin,
-    Minotaur,
+    EnemyType1,
+    EnemyType2,
+    EnemyType3,
     Boss
 }
 
@@ -36,17 +37,21 @@ public class ObjectPool : MonoBehaviour
 
     //Prefabs
     [Header("Prefabs")]
-    public GameObject goblinPrefab;
-    public GameObject minotaurPrefab;
+    public GameObject EnemyType1Prefab;
+    public GameObject EnemyType2Prefab;
+    public GameObject EnemyType3Prefab;
     public GameObject bossPrefab;
 
     [Space(20)]
 
-    public List<GameObject> inactivePool_Goblin = new List<GameObject>();
-    public List<GameObject> activePool_Goblin = new List<GameObject>();
+    public List<GameObject> inactivePool_EnemyType1 = new List<GameObject>();
+    public List<GameObject> activePool_EnemyType1 = new List<GameObject>();
 
-    public List<GameObject> inactivePool_Minotaur = new List<GameObject>();
-    public List<GameObject> activePool_Minotaur = new List<GameObject>();
+    public List<GameObject> inactivePool_EnemyType2 = new List<GameObject>();
+    public List<GameObject> activePool_EnemyType2 = new List<GameObject>();
+
+    public List<GameObject> inactivePool_EnemyType3 = new List<GameObject>();
+    public List<GameObject> activePool_EnemyType3 = new List<GameObject>();
 
     public List<GameObject> inactivePool_Boss = new List<GameObject>();
     public List<GameObject> activePool_Boss = new List<GameObject>();
@@ -55,15 +60,22 @@ public class ObjectPool : MonoBehaviour
     {
         for (int i = 0; i < maxEnemyCountPerType; i++)
         {
-            GameObject clone = Instantiate(goblinPrefab, poolLocation, Quaternion.identity, this.transform);
-            inactivePool_Goblin.Add(clone);
+            GameObject clone = Instantiate(EnemyType1Prefab, poolLocation, Quaternion.identity, this.transform);
+            inactivePool_EnemyType1.Add(clone);
             clone.GetComponent<Poolable>().ResetPoolableObject();
         }
 
         for (int i = 0; i < maxEnemyCountPerType; i++)
         {
-            GameObject clone = Instantiate(minotaurPrefab, poolLocation, Quaternion.identity, this.transform);
-            inactivePool_Minotaur.Add(clone);
+            GameObject clone = Instantiate(EnemyType2Prefab, poolLocation, Quaternion.identity, this.transform);
+            inactivePool_EnemyType2.Add(clone);
+            clone.GetComponent<Poolable>().ResetPoolableObject();
+        }
+
+        for (int i = 0; i < maxEnemyCountPerType; i++)
+        {
+            GameObject clone = Instantiate(EnemyType3Prefab, poolLocation, Quaternion.identity, this.transform);
+            inactivePool_EnemyType3.Add(clone);
             clone.GetComponent<Poolable>().ResetPoolableObject();
         }
 
@@ -82,25 +94,32 @@ public class ObjectPool : MonoBehaviour
             case EnemyType.None:
                 break;
 
-            case EnemyType.Goblin:
+            case EnemyType.EnemyType1:
 
-                clone = inactivePool_Goblin[0];
-                activePool_Goblin.Add(clone);
-                inactivePool_Goblin.Remove(clone);
+                clone = inactivePool_EnemyType1[0];
+                activePool_EnemyType1.Add(clone);
+                inactivePool_EnemyType1.Remove(clone);
                 break;
 
-            case EnemyType.Minotaur:
+            case EnemyType.EnemyType2:
 
-                clone = inactivePool_Minotaur[0];
-                activePool_Minotaur.Add(clone);
-                inactivePool_Minotaur.Remove(clone);
+                clone = inactivePool_EnemyType2[0];
+                activePool_EnemyType2.Add(clone);
+                inactivePool_EnemyType2.Remove(clone);
+                break;
+
+            case EnemyType.EnemyType3:
+
+                clone = inactivePool_EnemyType3[0];
+                activePool_EnemyType3.Add(clone);
+                inactivePool_EnemyType3.Remove(clone);
                 break;
 
             case EnemyType.Boss:
 
                 clone = inactivePool_Boss[0];
-                activePool_Goblin.Add(clone);
-                inactivePool_Goblin.Remove(clone);
+                activePool_EnemyType1.Add(clone);
+                inactivePool_EnemyType1.Remove(clone);
                 break;
         }
 
@@ -113,29 +132,42 @@ public class ObjectPool : MonoBehaviour
 
     public void ResetObjectPools()
     {
-        int index = activePool_Goblin.Count;
+        int index = activePool_EnemyType1.Count;
         for (int i = 0; i < index; i++)
         {
             
-            GameObject clone = activePool_Goblin[0];
+            GameObject clone = activePool_EnemyType1[0];
             clone.GetComponent<Poolable>().ResetPoolableObject();
             clone.transform.parent = this.transform;
 
-            inactivePool_Goblin.Add(clone);
-            activePool_Goblin.Remove(clone);
+            inactivePool_EnemyType1.Add(clone);
+            activePool_EnemyType1.Remove(clone);
       
         }
 
-        index = activePool_Minotaur.Count;
+        index = activePool_EnemyType2.Count;
         for (int i = 0; i < index; i++)
         {
 
-            GameObject clone = activePool_Minotaur[0];
+            GameObject clone = activePool_EnemyType2[0];
             clone.GetComponent<Poolable>().ResetPoolableObject();
             clone.transform.parent = this.transform;
 
-            inactivePool_Minotaur.Add(clone);
-            activePool_Minotaur.Remove(clone);
+            inactivePool_EnemyType2.Add(clone);
+            activePool_EnemyType2.Remove(clone);
+
+        }
+
+        index = activePool_EnemyType3.Count;
+        for (int i = 0; i < index; i++)
+        {
+
+            GameObject clone = activePool_EnemyType3[0];
+            clone.GetComponent<Poolable>().ResetPoolableObject();
+            clone.transform.parent = this.transform;
+
+            inactivePool_EnemyType3.Add(clone);
+            activePool_EnemyType3.Remove(clone);
 
         }
 

@@ -37,15 +37,15 @@ public class ProbabilityManager : MonoBehaviour
         Debug.Log("random value: " + random + ", heavy value: " + heavyValue + " parry Value: " + parryValue + " light Value: " + lightValue);
         if (random >= 0 && random < heavyValue)
         {
-            return ActionType.Heavy;
+            return ActionType.Fire;
         }
         else if (random >= heavyValue && random < (heavyValue + lightValue))
         {
-            return ActionType.Light;
+            return ActionType.Earth;
         }
         else if (random >= (heavyValue + lightValue) && random < 100)
         {
-            return ActionType.Parry;
+            return ActionType.Water;
         }
 
         return ActionType.None;

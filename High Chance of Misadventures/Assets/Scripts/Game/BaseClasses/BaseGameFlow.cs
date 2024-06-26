@@ -6,6 +6,7 @@ using UnityEngine.EventSystems;
 using DG.Tweening;
 using Cinemachine;
 using UnityEngine.Playables;
+using UnityEngine.SceneManagement;
 
 
 public class BaseGameFlow : MonoBehaviour
@@ -31,8 +32,9 @@ public class BaseGameFlow : MonoBehaviour
 
 
     [Header("Enemy Spawn Rates")]
-    [SerializeField] private float goblinSpawnRate = 0.7f;
-    [SerializeField] private float minotaurSpawnRate = 0.3f;
+    [SerializeField] private float EnemyType1SpawnRate = 0.4f;
+    [SerializeField] private float EnemyType2SpawnRate = 0.3f;
+    [SerializeField] private float EnemyType3SpawnRate = 0.3f;
 
     [Header("Game Settings")]
     [SerializeField] private GameType gameType;
@@ -120,13 +122,17 @@ public class BaseGameFlow : MonoBehaviour
                 //decide which enemies to spawn
                 EnemyType type = EnemyType.None;
                 float randomValue = Random.value;
-                if (randomValue >= 0.0f && randomValue < goblinSpawnRate)
+                if (randomValue >= 0.0f && randomValue < EnemyType1SpawnRate)
                 {
-                    type = EnemyType.Goblin;
+                    type = EnemyType.EnemyType1;
                 }
-                else if (randomValue >= goblinSpawnRate && randomValue < goblinSpawnRate + minotaurSpawnRate)
+                else if (randomValue >= EnemyType1SpawnRate && randomValue < EnemyType1SpawnRate + EnemyType2SpawnRate)
                 {
-                    type = EnemyType.Minotaur;
+                    type = EnemyType.EnemyType2;
+                }
+                else if (randomValue >= EnemyType1SpawnRate + EnemyType2SpawnRate && randomValue < EnemyType1SpawnRate + EnemyType2SpawnRate + EnemyType3SpawnRate)
+                {
+                    type = EnemyType.EnemyType3;
                 }
 
                 int index = -1;
@@ -144,11 +150,14 @@ public class BaseGameFlow : MonoBehaviour
                 {
                     case EnemyType.None:
                         break;
-                    case EnemyType.Goblin:
-                        clone = ObjectPool.Instance.GetObject(EnemyType.Goblin, spawnPoints[index].transform);
+                    case EnemyType.EnemyType1:
+                        clone = ObjectPool.Instance.GetObject(EnemyType.EnemyType1, spawnPoints[index].transform);
                         break;
-                    case EnemyType.Minotaur:
-                        clone = ObjectPool.Instance.GetObject(EnemyType.Minotaur, spawnPoints[index].transform);
+                    case EnemyType.EnemyType2:
+                        clone = ObjectPool.Instance.GetObject(EnemyType.EnemyType2, spawnPoints[index].transform);
+                        break;
+                    case EnemyType.EnemyType3:
+                        clone = ObjectPool.Instance.GetObject(EnemyType.EnemyType3, spawnPoints[index].transform);
                         break;
                 }
                
@@ -220,11 +229,11 @@ public class BaseGameFlow : MonoBehaviour
         else
         {
             camera1.Priority = 0;
-            camera2.Priority = 0;
-            camera3.Priority = 1;
+            camera2.Priority = 1;
+            camera3.Priority = 0;
 
+            DOVirtual.Float(farFog, nearFog, fogExitDuration, StartFogEffect);
             OnEndGame();  //LO_UIManager_PVP.Instance.EndGame(true);
-            playerAnimationHandler.PlayVictoryAnimation();
             
         }
         
@@ -258,5 +267,6 @@ public class BaseGameFlow : MonoBehaviour
     public void ReturnToGuild(int sceneIndex)
     {
         SceneLoader.ChangeScene(sceneIndex);
+        SceneManager.LoadScene("MainMenu");
     }
 }

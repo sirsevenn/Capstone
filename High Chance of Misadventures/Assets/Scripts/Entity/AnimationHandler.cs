@@ -5,6 +5,11 @@ using UnityEngine;
 public class AnimationHandler : MonoBehaviour
 {
     [SerializeField] private Animator animator;
+
+    [SerializeField] private ParticleSystem fireVFX;
+    [SerializeField] private ParticleSystem waterVFX;
+    [SerializeField] private ParticleSystem earthVFX;
+
     public Animator GetAnimator()
     {
         return animator;
@@ -12,18 +17,27 @@ public class AnimationHandler : MonoBehaviour
 
     public void PlayAnimation(ActionType action)
     {
+        fireVFX.Clear();
+        fireVFX.Stop();
+        waterVFX.Clear();
+        waterVFX.Stop();
+        earthVFX.Clear();
+        earthVFX.Stop();
+
         switch (action)
         {
-            case ActionType.Heavy:
-                animator.SetTrigger("Heavy");
+            case ActionType.Fire:
+                fireVFX.Play();
                 break;
-            case ActionType.Parry:
-                animator.SetTrigger("Parry");
+            case ActionType.Water:
+                waterVFX.Play();
                 break;
-            case ActionType.Light:
-                animator.SetTrigger("Light");
+            case ActionType.Earth:
+                earthVFX.Play();
                 break;
         }
+
+        animator.SetTrigger("Attack");
     }
 
     public void PlayerMove()
@@ -50,5 +64,8 @@ public class AnimationHandler : MonoBehaviour
     {
         animator.Rebind();
         animator.Update(0f);
+        fireVFX.Stop();
+        waterVFX.Stop();
+        earthVFX.Stop();
     }
 }

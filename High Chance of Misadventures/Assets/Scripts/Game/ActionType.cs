@@ -4,23 +4,24 @@ using System;
 public enum ActionType
 {
     None,
-    Heavy,
-    Parry,
-    Light
+    Fire,
+    Water,
+    Earth
 }
 
 public enum CombatResult
 {
     None,
-    PlayerHeavyWin,
-    PlayerHeavyTie,
-    PlayerHeavyLose,
-    PlayerLightWin,
-    PlayerLightTie,
-    PlayerLightLose,
-    PlayerParryWin,
-    PlayerParryTie,
-    PlayerParryLose
+    PlayerFireWin,
+    PlayerFireTie,
+    PlayerFireLose,
+    PlayerEarthWin,
+    PlayerEarthTie,
+    PlayerEarthLose,
+    PlayerWaterWin,
+    PlayerWaterTie,
+    PlayerWaterLose
+
 }
 
 public enum GameType

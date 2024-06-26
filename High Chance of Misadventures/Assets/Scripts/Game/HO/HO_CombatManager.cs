@@ -19,13 +19,13 @@ public class HO_CombatManager : BaseCombatManager
         switch (type)
         {
             case 0:
-                playerAction = ActionType.Heavy;
+                playerAction = ActionType.Fire;
                 break;
             case 1:
-                playerAction = ActionType.Light;
+                playerAction = ActionType.Earth;
                 break;
             case 2:
-                playerAction = ActionType.Parry;
+                playerAction = ActionType.Water;
                 break;
         }
 
@@ -37,15 +37,15 @@ public class HO_CombatManager : BaseCombatManager
 
         if(random >= 0 && random < data.heavyAttackProbability)
         {
-            enemyAction = ActionType.Heavy;
+            enemyAction = ActionType.Fire;
         }
         else if(random >= data.heavyAttackProbability && random < (data.heavyAttackProbability + data.lightAttackProbability))
         {
-            enemyAction = ActionType.Light;
+            enemyAction = ActionType.Earth;
         }
         else if(random >= (data.heavyAttackProbability + data.lightAttackProbability) && random < (data.heavyAttackProbability + data.lightAttackProbability + data.parryAttackProbability))
         {
-            enemyAction = ActionType.Parry;
+            enemyAction = ActionType.Water;
         }
 
         if (uiManager != null)

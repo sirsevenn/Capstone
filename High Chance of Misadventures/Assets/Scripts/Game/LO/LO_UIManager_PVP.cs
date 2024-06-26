@@ -120,13 +120,13 @@ public class LO_UIManager_PVP : UIManager
             {
                 switch (inventoryPiece.actionType)
                 {
-                    case ActionType.Heavy:
+                    case ActionType.Fire:
                         InventoryManager.Instance.DeductItem(0);
                         break;
-                    case ActionType.Light:
+                    case ActionType.Earth:
                         InventoryManager.Instance.DeductItem(1);
                         break;
-                    case ActionType.Parry:
+                    case ActionType.Water:
                         InventoryManager.Instance.DeductItem(2);
                         break;
                 }
@@ -419,20 +419,20 @@ public class LO_UIManager_PVP : UIManager
                 {
                     case 0:
                         inventoryPieces[i].ActivatePiece();
-                        inventoryPieces[i].actionType = ActionType.Heavy;
-                        inventoryPieces[i].icon.sprite = heavyIcon;
+                        inventoryPieces[i].actionType = ActionType.Fire;
+                        inventoryPieces[i].icon.sprite = fireIcon;
                         inventoryPieces[i].pieceImage.color = heavyColor;
                         break;
                     case 1:
                         inventoryPieces[i].ActivatePiece();
-                        inventoryPieces[i].actionType = ActionType.Light;
-                        inventoryPieces[i].icon.sprite = lightIcon;
+                        inventoryPieces[i].actionType = ActionType.Earth;
+                        inventoryPieces[i].icon.sprite = earthIcon;
                         inventoryPieces[i].pieceImage.color = lightColor;
                         break;
                     case 2:
                         inventoryPieces[i].ActivatePiece();
-                        inventoryPieces[i].actionType = ActionType.Parry;
-                        inventoryPieces[i].icon.sprite = parryIcon;
+                        inventoryPieces[i].actionType = ActionType.Water;
+                        inventoryPieces[i].icon.sprite = waterIcon;
                         inventoryPieces[i].pieceImage.color = parryColor;
                         break;
                 }

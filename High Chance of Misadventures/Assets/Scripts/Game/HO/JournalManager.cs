@@ -195,7 +195,7 @@ public class JournalManager : MonoBehaviour
 
         JournalDataType heavyData;
         heavyData.enemyType = currentEnemyType;
-        heavyData.attackType = ActionType.Heavy;
+        heavyData.attackType = ActionType.Fire;
 
         tally = recordedTallies[heavyData];
         heavyTallyText.text = tally.ToString();
@@ -206,7 +206,7 @@ public class JournalManager : MonoBehaviour
 
         JournalDataType lightData;
         lightData.enemyType = currentEnemyType;
-        lightData.attackType = ActionType.Light;
+        lightData.attackType = ActionType.Earth;
 
         tally = recordedTallies[lightData];
         lightTallyText.text = tally.ToString();
@@ -217,7 +217,7 @@ public class JournalManager : MonoBehaviour
 
         JournalDataType parryData;
         parryData.enemyType = currentEnemyType;
-        parryData.attackType = ActionType.Parry;
+        parryData.attackType = ActionType.Water;
 
         tally = recordedTallies[parryData];
         parryTallyText.text = tally.ToString();

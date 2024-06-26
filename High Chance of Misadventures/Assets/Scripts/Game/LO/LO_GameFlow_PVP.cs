@@ -4,6 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 using Cinemachine;
 using UnityEngine.Playables;
+using UnityEngine.SceneManagement;
 
 public class LO_GameFlow_PVP : BaseGameFlow
 {
@@ -108,6 +109,13 @@ public class LO_GameFlow_PVP : BaseGameFlow
     {
         base.OnEndGame();
         LO_UIManager_PVP.Instance.EndGame(true);
+
+        int sceneIndex = SceneManager.GetActiveScene().buildIndex;
+        string level = "Level" + sceneIndex;
+        Debug.Log(level);
+        PlayerPrefs.SetInt(level, 1);
+        PlayerPrefs.Save();
+
     }
 
 

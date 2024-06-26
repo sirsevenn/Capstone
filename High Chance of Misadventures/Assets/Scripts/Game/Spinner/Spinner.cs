@@ -91,13 +91,13 @@ public class Spinner : MonoBehaviour
             switch (counter)
             {
                 case 0:
-                    spinnerPieces[i].ChangePiece(ActionType.Heavy, redIcon, redColor);
+                    spinnerPieces[i].ChangePiece(ActionType.Fire, redIcon, redColor);
                     break;
                 case 1:
-                    spinnerPieces[i].ChangePiece(ActionType.Light, greenIcon, greenColor);
+                    spinnerPieces[i].ChangePiece(ActionType.Earth, greenIcon, greenColor);
                     break;
                 case 2:
-                    spinnerPieces[i].ChangePiece(ActionType.Parry, blueIcon, blueColor);
+                    spinnerPieces[i].ChangePiece(ActionType.Water, blueIcon, blueColor);
                     break;
             }
 
@@ -123,19 +123,19 @@ public class Spinner : MonoBehaviour
             if (counter == 0 && heavy > 0)
             {
                 heavy--;
-                spinnerPieces[i].ChangePiece(ActionType.Heavy, LO_UIManager_PVP.Instance.GetHeavyIcon(), LO_UIManager_PVP.Instance.GetHeavyColor());
+                spinnerPieces[i].ChangePiece(ActionType.Fire, LO_UIManager_PVP.Instance.GetHeavyIcon(), LO_UIManager_PVP.Instance.GetHeavyColor());
        
             }
             else if (counter == 1 && light > 0)
             {
                 light--;
-                spinnerPieces[i].ChangePiece(ActionType.Light, LO_UIManager_PVP.Instance.GetLightIcon(), LO_UIManager_PVP.Instance.GetLightColor());
+                spinnerPieces[i].ChangePiece(ActionType.Earth, LO_UIManager_PVP.Instance.GetLightIcon(), LO_UIManager_PVP.Instance.GetLightColor());
          
             }
             else if (counter == 2 && parry > 0)
             {
                 parry--;
-                spinnerPieces[i].ChangePiece(ActionType.Parry, LO_UIManager_PVP.Instance.GetParryIcon(), LO_UIManager_PVP.Instance.GetParryColor());
+                spinnerPieces[i].ChangePiece(ActionType.Water, LO_UIManager_PVP.Instance.GetParryIcon(), LO_UIManager_PVP.Instance.GetParryColor());
 
             }
             else

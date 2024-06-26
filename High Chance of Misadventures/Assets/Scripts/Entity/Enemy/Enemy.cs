@@ -49,7 +49,7 @@ public class Enemy : Entity
     public void Decay()
     {
         hp.CloseHpBar();
-        transform.DOMoveY(-1, 5);
+        transform.DOMoveY(-3, 5);
     }
 
     public virtual EnemyData GetEnemyData()

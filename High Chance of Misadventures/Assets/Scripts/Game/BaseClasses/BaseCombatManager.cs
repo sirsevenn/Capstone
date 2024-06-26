@@ -80,12 +80,12 @@ public class BaseCombatManager : MonoBehaviour
         offset.Normalize();
 
         currentEnemy.transform.DOJump(targetPos + offset * offsetMultiplier, 1, 1, 0.5f).SetEase(Ease.Linear);
-        player.transform.DOJump(targetPos - offset * offsetMultiplier, 1, 1, 0.5f).SetEase(Ease.Linear).OnComplete(() => { CombatProper(playerStartPos, enemyStartPos); } );
+        player.transform.DOJump(targetPos - offset * offsetMultiplier, 1, 1, 0.5f).SetEase(Ease.Linear).OnComplete(() => { StartCoroutine(CombatProper(playerStartPos, enemyStartPos)); } );
 
-        PlayerAnimation(playerAction);
-        EnemyAnimation(enemyAction);
+   
 
     }
+
     protected virtual void OnEnemyDeath()
     {
 
@@ -96,19 +96,22 @@ public class BaseCombatManager : MonoBehaviour
 
     }
 
-    protected void CombatProper(Vector3 playerStartPos, Vector3 enemyStartPos)
+    protected IEnumerator CombatProper(Vector3 playerStartPos, Vector3 enemyStartPos)
     {
+        PlayerAnimation(playerAction);
+        EnemyAnimation(enemyAction);
+
         MatchResult result = MatchResult.None;
         switch (playerAction)
         {
 
-            case ActionType.Heavy:
+            case ActionType.Fire:
 
-                if (enemyAction == ActionType.Heavy)
+                if (enemyAction == ActionType.Fire)
                 {
                     result = MatchResult.Draw;
                 }
-                else if (enemyAction == ActionType.Light)
+                else if (enemyAction == ActionType.Water)
                 {
                     result = MatchResult.Lose;
                 }
@@ -118,13 +121,13 @@ public class BaseCombatManager : MonoBehaviour
                 }
                 break;
 
-            case ActionType.Parry:
+            case ActionType.Water:
 
-                if (enemyAction == ActionType.Parry)
+                if (enemyAction == ActionType.Water)
                 {
                     result = MatchResult.Draw;
                 }
-                else if (enemyAction == ActionType.Heavy)
+                else if (enemyAction == ActionType.Earth)
                 {
                     result = MatchResult.Lose;
                 }
@@ -135,13 +138,13 @@ public class BaseCombatManager : MonoBehaviour
 
                 break;
 
-            case ActionType.Light:
+            case ActionType.Earth:
 
-                if (enemyAction == ActionType.Light)
+                if (enemyAction == ActionType.Earth)
                 {
                     result = MatchResult.Draw;
                 }
-                else if (enemyAction == ActionType.Parry)
+                else if (enemyAction == ActionType.Fire)
                 {
                     result = MatchResult.Lose;
                 }
@@ -153,6 +156,8 @@ public class BaseCombatManager : MonoBehaviour
                 break;
 
         }
+
+        yield return new WaitForSeconds(0.5f);
 
         Health health;
         switch (result)

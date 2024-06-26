@@ -33,31 +33,31 @@ public class DialogueManager : MonoBehaviour
             case CombatResult.None:
                 Debug.Log("NO RESULT");
                 break;
-            case CombatResult.PlayerHeavyWin:
+            case CombatResult.PlayerFireWin:
                 dialogue.text = heavyText[0];
                 break;
-            case CombatResult.PlayerHeavyTie:
+            case CombatResult.PlayerFireTie:
                 dialogue.text = heavyText[1];
                 break;
-            case CombatResult.PlayerHeavyLose:
+            case CombatResult.PlayerFireLose:
                 dialogue.text = heavyText[2];
                 break;
-            case CombatResult.PlayerLightWin:
+            case CombatResult.PlayerEarthWin:
                 dialogue.text = lightText[0];
                 break;
-            case CombatResult.PlayerLightTie:
+            case CombatResult.PlayerEarthTie:
                 dialogue.text = lightText[1];
                 break;
-            case CombatResult.PlayerLightLose:
+            case CombatResult.PlayerEarthLose:
                 dialogue.text = lightText[2];
                 break;
-            case CombatResult.PlayerParryWin:
+            case CombatResult.PlayerWaterWin:
                 dialogue.text = parryText[0];
                 break;
-            case CombatResult.PlayerParryTie:
+            case CombatResult.PlayerWaterTie:
                 dialogue.text = parryText[1];
                 break;
-            case CombatResult.PlayerParryLose:
+            case CombatResult.PlayerWaterLose:
                 dialogue.text = parryText[2];
                 break;
 

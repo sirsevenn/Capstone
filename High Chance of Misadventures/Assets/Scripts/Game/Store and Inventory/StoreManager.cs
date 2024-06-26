@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.SceneManagement;
 
 public class StoreManager : MonoBehaviour
 {
@@ -11,7 +12,7 @@ public class StoreManager : MonoBehaviour
 
     [Header("ItemStore")]
     [SerializeField] private List<ItemHolder> itemHolders = new List<ItemHolder>();
-    [SerializeField] private int pieceCost = 5;
+    [SerializeField] private int pieceCost = 25;
 
     [Header("Page Settings")]
     [SerializeField] private GameObject armorPage;
@@ -39,11 +40,6 @@ public class StoreManager : MonoBehaviour
     [SerializeField] private TMP_Text LegsName;
     [SerializeField] private TMP_Text LegsDefense;
     [SerializeField] private TMP_Text LegsCost;
-
-
-
-
-
 
     #region PageManagement
     private void CloseAllPages()
@@ -80,7 +76,8 @@ public class StoreManager : MonoBehaviour
 
     public void ProceedToFight()
     {
-        SceneLoader.ChangeScene(0);
+        int sceneToLoad = PlayerPrefs.GetInt("CurrentLevel", -3);
+        SceneManager.LoadScene(sceneToLoad + 1);
     }
 
     private void InitializeItemPage()
@@ -144,7 +141,7 @@ public class StoreManager : MonoBehaviour
                 if (!CanPurchase(pieceCost)) { return; }
                 break;
             case 3:
-                if (!CanPurchase(10)) { return; }
+                if (!CanPurchase(100)) { return; }
                 break;
         }
 

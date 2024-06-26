@@ -22,7 +22,7 @@ public abstract class HO_EntityAI : MonoBehaviour
         animator = GetComponent<Animator>();
     }
 
-    public abstract void OnEntityTurn();
+    public abstract void OnEntityTurn(EElementalAttackType weakToElement, EElementalAttackType resistantToElement);
 
     public abstract void TriggerAttackAnimation(Vector3 opponentPos, float meleeDistanceOffset, float animDuration);
 
@@ -31,6 +31,10 @@ public abstract class HO_EntityAI : MonoBehaviour
     public abstract void TriggerHurtAnimation();
 
     public abstract void TriggerDeathAnimation();
+
+    public EElementalAttackType WeakToElement => characterStats.WeakToElement;
+
+    public EElementalAttackType ResistantToElement => characterStats.ResistantToElement;
 
     public void CopyStats(HO_CharacterStat newStat)
     {

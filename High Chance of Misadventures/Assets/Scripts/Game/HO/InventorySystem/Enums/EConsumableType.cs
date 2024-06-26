@@ -1,9 +1,9 @@
 public enum EConsumableType
 {
     Unknown,
-    Health_Potion,
-    Defense_Potion,
-    Fire_Potion,
-    Water_Potion,
-    Earth_Potion
+    Health_Potion = 1,
+    Defense_Potion = 2,
+    Fire_Potion = 3,
+    Water_Potion = 4,
+    Earth_Potion = 5
 }

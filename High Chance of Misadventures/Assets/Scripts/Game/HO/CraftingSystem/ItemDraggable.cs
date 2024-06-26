@@ -14,8 +14,6 @@ public class ItemDraggable : MonoBehaviour, IBeginDragHandler, IDragHandler, IEn
     {
         if (materialData == null) return;
 
-        if (InventorySystem.Instance.GetMaterialAmount(materialData.MaterialType) == 0) return;
-
         CraftingSystem.Instance.OnBeginDragMaterial(materialData);
     }
 

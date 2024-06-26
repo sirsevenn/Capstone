@@ -59,7 +59,8 @@ public class HO_AutoBattleManager : MonoBehaviour
         if (currentPhase == ELevelPhase.Cutscene)
         {
             UI.DisableUI();
-            InitializeInventory();
+            InventorySystem.Instance.ResetConsumables();
+            currentLevel.AddMaterialsToInventory();
 
             playerScript.transform.position = playerBattlePos;
             dollyCamera.enabled = true;
@@ -82,12 +83,6 @@ public class HO_AutoBattleManager : MonoBehaviour
 
         enemyScript.transform.position = enemyBattlePos;
         enemyScript.transform.Rotate(new Vector3(0, 180, 0));
-    }
-
-    private void InitializeInventory()
-    {
-        InventorySystem.Instance.ResetInventory();
-        currentLevel.AddMaterialsToInventory();
     }
 
     #region Cutscene Methods
@@ -128,7 +123,7 @@ public class HO_AutoBattleManager : MonoBehaviour
             Vector3 attackPos = isPlayersTurn ? enemyBattlePos : playerBattlePos;
 
 
-            entityWithTurn.OnEntityTurn();
+            entityWithTurn.OnEntityTurn(opposingEntity.WeakToElement, opposingEntity.ResistantToElement);
             entityWithTurn.TriggerAttackAnimation(attackPos, meleeDistanceOffset, 0.75f);
             yield return new WaitForSeconds(0.75f);
 
@@ -176,7 +171,7 @@ public class HO_AutoBattleManager : MonoBehaviour
             else
             {
                 HO_GameManager.Instance.TransitionToCraftingScene();
-                InitializeInventory();
+                InventorySystem.Instance.ResetConsumables();
             }
         }
     }

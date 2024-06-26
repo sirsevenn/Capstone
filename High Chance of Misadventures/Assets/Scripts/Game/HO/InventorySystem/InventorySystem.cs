@@ -5,13 +5,13 @@ using UnityEngine;
 public class InventorySystem : MonoBehaviour
 {
     [Header("Crafting Material Properties")]
-    [SerializeField] private List<CraftingMaterial> craftingMaterialsList;
+    [SerializeField] private List<CraftingMaterialSO> craftingMaterialsList;
 
     [Space(10)] [Header("Craftables Properties")]
     [SerializeField] private List<Consumable> consumablesList;
 
 
-    public event Action<CraftingMaterial, bool> OnUpdateMaterialsEvent;
+    public event Action<CraftingMaterialSO, bool> OnUpdateMaterialsEvent;
     public event Action<Consumable, bool> OnUpdateConsumablesEvent;
 
 
@@ -56,12 +56,6 @@ public class InventorySystem : MonoBehaviour
     //    }
     //}
 
-    public void ResetInventory()
-    {
-        craftingMaterialsList.Clear();
-        consumablesList.Clear();
-    }
-
 
     #region Consumable Methods
     public bool HasConsumable(EConsumableType type)
@@ -77,6 +71,11 @@ public class InventorySystem : MonoBehaviour
             if (consumable.ConsumableData.ConsumableType == type) numConsumables++;
         }
         return numConsumables;
+    }
+
+    public int GetTotalConsumablesInInventory()
+    {
+        return consumablesList.Count;
     }
 
     public Consumable GetOneConsumableOfType(EConsumableType type)
@@ -96,6 +95,17 @@ public class InventorySystem : MonoBehaviour
             if (consumable.ConsumableData.ConsumableType == type) returnList.Add(consumable);
         }
         return returnList;
+    }
+
+    public Consumable GetOneSpellOfType(EElementalAttackType element)
+    {
+        foreach (var consumable in consumablesList)
+        {
+            ElementalSpellSO spell = consumable.ConsumableData as ElementalSpellSO;
+
+            if (spell != null && spell.ElementalType == element) return consumable;
+        }
+        return null;
     }
 
     public Consumable GetConsumableByID(uint id)
@@ -136,21 +146,9 @@ public class InventorySystem : MonoBehaviour
         OnUpdateConsumablesEvent?.Invoke(consumable, false);
     }
 
-    public void ConsumeConsumable(uint id, HO_CharacterStat stat)
+    public void ResetConsumables()
     {
-        Consumable consumable = consumablesList.Find(x => x.ItemID == id);
-
-        //switch (potion.PotionData.PotionType)
-        //{
-        //    case EPotionType.Health_Potion: stat.Heal(potion.FinalValue); break;
-        //    case EPotionType.Attack_Potion: stat.ModifyATK(potion.FinalValue); break;
-        //    case EPotionType.Defense_Potion: stat.ModifyDEF(potion.FinalValue); break;
-        //    default: break;
-        //}
-
-        consumablesList.Remove(consumable);
-        consumablesList.Sort((x, y) => x.ItemID.CompareTo(y.ItemID));
-        OnUpdateConsumablesEvent?.Invoke(consumable, false);
+        consumablesList.Clear();
     }
     #endregion
 
@@ -158,58 +156,70 @@ public class InventorySystem : MonoBehaviour
     #region Crafting Materials Methods
     public bool HasMaterial(ECraftingMaterialType material)
     {
-        return craftingMaterialsList.Exists(x => x.MaterialData.MaterialType == material);
+        return craftingMaterialsList.Exists(x => x.MaterialType == material);
     }
 
-    public uint GetMaterialAmount(ECraftingMaterialType material)
+    //public uint GetMaterialAmount(ECraftingMaterialType material)
+    //{
+    //    CraftingMaterial selectedMaterial = craftingMaterialsList.Find(x => x.MaterialData.MaterialType == material);
+    //    return selectedMaterial.Amount;
+    //}
+
+    public CraftingMaterialSO GetCraftingMaterial(ECraftingMaterialType material)
     {
-        CraftingMaterial selectedMaterial = craftingMaterialsList.Find(x => x.MaterialData.MaterialType == material);
-        return selectedMaterial.Amount;
+        return craftingMaterialsList.Find(x => x.MaterialType == material);
     }
 
-    public CraftingMaterial GetCraftingMaterial(ECraftingMaterialType material)
-    {
-        return craftingMaterialsList.Find(x => x.MaterialData.MaterialType == material);
-    }
-
-    public List<CraftingMaterial> GetCraftingMaterialsList()
+    public List<CraftingMaterialSO> GetCraftingMaterialsList()
     {
         return craftingMaterialsList;
     }
 
-    public void AddMaterials(CraftingMaterial materials)
+    public void AddMaterials(CraftingMaterialSO material)
     {
-        if (materials.MaterialData.MaterialType == ECraftingMaterialType.Unknown) return;
+        if (material.MaterialType == ECraftingMaterialType.Unknown) return;
 
-        int index = craftingMaterialsList.FindIndex(x => x.MaterialData.MaterialType == materials.MaterialData.MaterialType);
+        //int index = craftingMaterialsList.FindIndex(x => x.MaterialData.MaterialType == materials.MaterialData.MaterialType);
 
-        if (index != -1)
+        //if (index != -1)
+        //{
+        //    craftingMaterialsList[index].Amount += materials.Amount;
+        //    OnUpdateMaterialsEvent?.Invoke(craftingMaterialsList[index], true);
+        //}
+        //else
+        //{
+        //    craftingMaterialsList.Add(materials);
+        //    OnUpdateMaterialsEvent?.Invoke(materials, true);
+        //}
+
+        if (!craftingMaterialsList.Exists(x => x.MaterialType == material.MaterialType))
         {
-            craftingMaterialsList[index].Amount += materials.Amount;
-            OnUpdateMaterialsEvent?.Invoke(craftingMaterialsList[index], true);
-        }
-        else
-        {
-            craftingMaterialsList.Add(materials);
-            OnUpdateMaterialsEvent?.Invoke(materials, true);
+            craftingMaterialsList.Add(material);
+            OnUpdateMaterialsEvent?.Invoke(material, true);
         }
     }
 
-    public void ReduceMaterials(CraftingMaterial materials)
+    public void ReduceMaterials(CraftingMaterialSO material)
     {
-        if (materials.MaterialData.MaterialType == ECraftingMaterialType.Unknown) return;
+        if (material.MaterialType == ECraftingMaterialType.Unknown) return;
 
-        int index = craftingMaterialsList.FindIndex(x => x.MaterialData.MaterialType == materials.MaterialData.MaterialType);
+        //int index = craftingMaterialsList.FindIndex(x => x.MaterialData.MaterialType == materials.MaterialData.MaterialType);
 
-        if (index != -1 && craftingMaterialsList[index].Amount >= materials.Amount)
+        //if (index != -1 && craftingMaterialsList[index].Amount >= materials.Amount)
+        //{
+        //    craftingMaterialsList[index].Amount -= materials.Amount;
+        //    OnUpdateMaterialsEvent?.Invoke(craftingMaterialsList[index], false);
+
+        //    if (craftingMaterialsList[index].Amount == 0) 
+        //    {
+        //        craftingMaterialsList.RemoveAt(index);
+        //    }
+        //}
+
+        if (craftingMaterialsList.Exists(x => x.MaterialType == material.MaterialType))
         {
-            craftingMaterialsList[index].Amount -= materials.Amount;
-            OnUpdateMaterialsEvent?.Invoke(craftingMaterialsList[index], false);
-
-            if (craftingMaterialsList[index].Amount == 0) 
-            {
-                craftingMaterialsList.RemoveAt(index);
-            }
+            craftingMaterialsList.Remove(material);
+            OnUpdateMaterialsEvent?.Invoke(material, false);
         }
     }
     #endregion

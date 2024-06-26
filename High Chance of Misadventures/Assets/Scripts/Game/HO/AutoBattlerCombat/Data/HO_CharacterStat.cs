@@ -100,30 +100,28 @@ public class HO_CharacterStat
         if (attackElementalType == WeakToElement)
         {
             modifiedDMG = Mathf.FloorToInt(damage * 1.5f);
-            currentHP -= modifiedDMG;
             //Debug.Log("weak");
         }
         else if (attackElementalType == ResistantToElement)
         {
-            modifiedDMG = Mathf.FloorToInt(damage * 0.3f);
-            currentHP -= modifiedDMG;
+            modifiedDMG = Mathf.FloorToInt(damage * 0.5f);
             //Debug.Log("resistant");
         }
         else if (attackElementalType != EElementalAttackType.Unknown)
         {
             modifiedDMG = damage;
-            currentHP -= modifiedDMG;
             //Debug.Log("just element");
         }
         else
         {
             modifiedDMG = (damage - totalDEF) <= 0 ? 0 : damage - totalDEF;
-            currentHP -= modifiedDMG;
             //Debug.Log("normal ");
         }
 
-        Debug.Log("received " + modifiedDMG + "DMG   " + (attackElementalType == EElementalAttackType.Unknown ? "normal" : attackElementalType.ToString()));
 
+        //Debug.Log("received " + modifiedDMG + "DMG   " + (attackElementalType == EElementalAttackType.Unknown ? "normal" : attackElementalType.ToString()));
+
+        currentHP -= modifiedDMG;
         currentHP = (currentHP <= 0) ? 0 : currentHP;
     }
     #endregion

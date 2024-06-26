@@ -1,13 +1,13 @@
 public enum ECraftingMaterialType
 {
     Unknown,
-    Goblin_Ear,
-    Goblin_Tongue,
-    Minotaur_Horn,
-    Minotaur_Hooves,
-    Ogre_Tooth,
-    Ogre_Eye,
-    Goblin_King_Crown,
-    Royal_Blood,
-    Goblin_King_Gems
+    Volcanic_Ash,
+    Coral,
+    Geode,
+    Blood,
+    Leather,
+    Shark_Tooth,
+    Treant_Bark,
+    Infected_Blood,
+    Turtle_Shell
 }

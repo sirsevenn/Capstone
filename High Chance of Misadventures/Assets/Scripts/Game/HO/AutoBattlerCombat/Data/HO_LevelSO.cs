@@ -12,7 +12,7 @@ public class HO_LevelSO : ScriptableObject
 
     [Space(10)] [Header("Player Properties")] 
     [SerializeField] private HO_CharacterStat playerStats;
-    [SerializeField] private List<CraftingMaterial> materialsList;
+    [SerializeField] private List<CraftingMaterialSO> materialsList;
 
     [Space(10)] [Header("Enemy Properties")] 
     [SerializeField] private HO_CharacterStat enemyStats;
@@ -59,7 +59,7 @@ public class HO_LevelSO : ScriptableObject
     {
         foreach (var material in materialsList)
         {
-            InventorySystem.Instance.AddMaterials(new CraftingMaterial(material.MaterialData, material.Amount));
+            InventorySystem.Instance.AddMaterials(material);
         }
     }
 }

@@ -25,6 +25,11 @@ public class HO_AutoBattleUI : MonoBehaviour
         InventorySystem.Instance.OnUpdateConsumablesEvent += OnUpdateConsumables;
     }
 
+    private void OnDestroy()
+    {
+        InventorySystem.Instance.OnUpdateConsumablesEvent -= OnUpdateConsumables;
+    }
+
     private void InitializeItemPanel(EConsumableType consumableType)
     {
         int numItem = InventorySystem.Instance.GetConsumableAmount(consumableType);
@@ -65,6 +70,7 @@ public class HO_AutoBattleUI : MonoBehaviour
                 }
                 else
                 {
+                    consumablesList.Remove(consumableUI);
                     DestroyImmediate(consumableUI.gameObject);
                 }
 

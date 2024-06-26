@@ -6,6 +6,7 @@ public class HO_GameManager : MonoBehaviour
 {
     [Header("Level Properties")]
     [SerializeField] private List<HO_LevelSO> levelsList;
+    [SerializeField] private HO_LevelSO currentLevel;
     [SerializeField] private int currentLevelIndex;
     [SerializeField] private ELevelPhase currentLevelPhase;
 
@@ -48,6 +49,7 @@ public class HO_GameManager : MonoBehaviour
         currentLevelIndex = 0;
         currentLevelPhase = ELevelPhase.Cutscene;
         currentPlayerLives = maxPlayerLives;
+        currentLevel = levelsList[currentLevelIndex];
     }
 
     public HO_LevelSO GetCurrentLevel()
@@ -80,6 +82,7 @@ public class HO_GameManager : MonoBehaviour
         else if (currentLevelPhase == ELevelPhase.Battle)
         {
             currentLevelIndex++;
+            currentLevel = levelsList[currentLevelIndex];
             currentLevelPhase = ELevelPhase.Cutscene;
             currentPlayerLives = maxPlayerLives;
         }

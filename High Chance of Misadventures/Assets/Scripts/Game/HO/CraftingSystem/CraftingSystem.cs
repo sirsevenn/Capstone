@@ -20,8 +20,9 @@ public class CraftingSystem : MonoBehaviour
 
     [Space(10)] [Header("Other References")]
     [SerializeField] private CraftingSystemDisplay craftingDisplay;
-    [SerializeField] private PotionDisplay potionDisplay;
     [SerializeField] private CraftingParticles particlesScript;
+    [SerializeField] private PotionShelfRack middleShelfRack;
+    [SerializeField] private PotionShelfRack leftShelfRack;
 
 
     #region Singleton
@@ -91,18 +92,9 @@ public class CraftingSystem : MonoBehaviour
     {
         if (!isDraggingMaterial || currentDraggedMaterial != draggedMaterial) return;
 
-        // Check if there are enough materials to add
-        int count = 1; 
-        foreach (var droppedMaterial in droppedMaterials)
-        {
-            if (droppedMaterial != null && droppedMaterial.MaterialType == draggedMaterial.MaterialType) count++;
-        }
-
-        bool hasEnoughMaterials = (count <= InventorySystem.Instance.GetMaterialAmount(draggedMaterial.MaterialType));
-
         // Determine if it is on top of an open slot
         int slotIndex = craftingDisplay.GetSlotIndexFromHoveredMaterial(materialPos);
-        bool isValidDropMaterial = hasEnoughMaterials && slotIndex != -1 && droppedMaterials[slotIndex] == null;
+        bool isValidDropMaterial = slotIndex != -1 && droppedMaterials[slotIndex] == null;
 
         if (isValidDropMaterial)
         {
@@ -149,6 +141,10 @@ public class CraftingSystem : MonoBehaviour
     {
         if (!isCauldronFiredUp) return;
 
+        // Reset inventory 
+        InventorySystem.Instance.ResetConsumables();
+
+
         // Determine the amount of all consumables, then craft them
         List<int> amountForEachConsumableList = CalculateAmountOfConsumablesToCraft();
 
@@ -162,34 +158,19 @@ public class CraftingSystem : MonoBehaviour
                 Consumable newConsumable = new Consumable(id, consumable);
                 InventorySystem.Instance.AddConsumable(newConsumable);
             }
-
-            potionDisplay.UpdateItemDisplay(consumable.ConsumableType);
         }
 
-        // Recreate new selected material list WITH their total amount
-        List<CraftingMaterial> droppedMaterialsWithAmountList = new();
 
-        foreach (var droppedMaterial in droppedMaterials)
+        // Update both shelf rack; left - previous set of potions, middle - newly crafted set of potions
+        leftShelfRack.UpdateShelfRack(middleShelfRack.GetNumActivePotions());
+        
+        Dictionary<EConsumableType, int> newPotionDisplay = new();
+        for (int i = 0; i < consumablesToCraftList.Count; i++)
         {
-            if (droppedMaterial == null) continue;
-
-            // Add material to the amount list
-            int index = droppedMaterialsWithAmountList.FindIndex(x => x.MaterialData.MaterialType == droppedMaterial.MaterialType);
-            if (index == -1)
-            {
-                droppedMaterialsWithAmountList.Add(new CraftingMaterial(droppedMaterial, 1));
-            }
-            else
-            {
-                droppedMaterialsWithAmountList[index].Amount++;
-            }
+            newPotionDisplay.Add(consumablesToCraftList[i].ConsumableType, amountForEachConsumableList[i]);
         }
+        middleShelfRack.UpdateShelfRack(newPotionDisplay);
 
-        // Reduce the materials from the inventory
-        foreach (var material in droppedMaterialsWithAmountList)
-        {
-            InventorySystem.Instance.ReduceMaterials(material);
-        }
 
         // Reset selection slots and other trackers for crafting
         for (int i = 0; i < droppedMaterials.Length; i++)
@@ -199,6 +180,7 @@ public class CraftingSystem : MonoBehaviour
 
         ResetCraftingTrackers();
 
+
         // Reset properties from other scripts
         craftingDisplay.ResetCraftingUI();
         particlesScript.ResetAllParticles();
@@ -207,8 +189,7 @@ public class CraftingSystem : MonoBehaviour
     private List<int> CalculateAmountOfConsumablesToCraft()
     {
         List<int> returnList = new();
-        int totalAmount = 0; // keep track in case it exceeds the max num crafted items
-        int excessAmount = 0; // keep track in case it exceeds the max num of the same item
+        int totalAmount = 0; 
         int indexWithHighestAmount = -1;
         int indexWithLowestAmount = -1;
         float percentOfOneAmount = 1f / (float)maxConsumablesToCraft;
@@ -218,12 +199,6 @@ public class CraftingSystem : MonoBehaviour
             // Determine amount of the same item to craft based on its weight percentage
             float percentage = (float)weightsOnEachConsumableList[i] / totalWeight;
             int amount = Mathf.RoundToInt(percentage / percentOfOneAmount);
-            //int amount = Mathf.RoundToInt(percentage / percentOfOneAmount) + excessAmount;
-
-            // Check if amount already exceeds maxNumberPerConsumable; reduce any excess from the original amount
-            int currentAmountInInventory = InventorySystem.Instance.GetConsumableAmount(consumablesToCraftList[i].ConsumableType);
-            excessAmount = (amount + currentAmountInInventory - maxNumberPerConsumable) < 0 ? 0 : (amount + currentAmountInInventory - maxNumberPerConsumable);
-            amount -= excessAmount;
             totalAmount += amount;
 
             returnList.Add(amount);

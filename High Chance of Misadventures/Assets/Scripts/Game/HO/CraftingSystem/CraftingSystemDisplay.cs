@@ -49,7 +49,7 @@ public class CraftingSystemDisplay : MonoBehaviour
         {
             GameObject newMaterialPanel = GameObject.Instantiate(itemPanelPrefab, materialsListParent);
             CraftingItemPanelScript script = newMaterialPanel.GetComponent<CraftingItemPanelScript>();
-            script.UpdatePanelInfo(material.MaterialData, material.Amount);
+            script.UpdatePanelInfo(material);
             materialPanelsList.Add(script);
         }
     }
@@ -137,23 +137,27 @@ public class CraftingSystemDisplay : MonoBehaviour
     #endregion
 
     #region Inventory Event Methods
-    private void UpdateMaterialPanel(CraftingMaterial newMaterial, bool hasAddedNewMaterial) 
+    private void UpdateMaterialPanel(CraftingMaterialSO materialToCheck, bool hasAddedNewMaterial) 
     {
-        if (newMaterial == null) return;
+        if (materialToCheck == null) return;
 
         foreach (var materialPanel in materialPanelsList)
         {
-            if (newMaterial.Amount > 0 && materialPanel.IsTheSameMaterialInPanel(newMaterial.MaterialData))
-            {
-                materialPanel.UpdatePanelInfo(newMaterial.MaterialData, newMaterial.Amount);
-                return;
-            }
-            else if (newMaterial.Amount == 0 && materialPanel.IsTheSameMaterialInPanel(newMaterial.MaterialData))
+            if (!hasAddedNewMaterial && materialPanel.IsTheSameMaterialInPanel(materialToCheck))
             {
                 //materialPanel.gameObject.SetActive(false);
                 DestroyImmediate(materialPanel.gameObject);
                 return;
             }
+        }
+
+        if (hasAddedNewMaterial)
+        {
+            GameObject newMaterialPanel = GameObject.Instantiate(itemPanelPrefab, materialsListParent);
+            CraftingItemPanelScript script = newMaterialPanel.GetComponent<CraftingItemPanelScript>();
+            script.UpdatePanelInfo(materialToCheck);
+            materialPanelsList.Add(script);
+            return;
         }
     }
     #endregion

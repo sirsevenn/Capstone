@@ -21,10 +21,10 @@ public class CraftingItemPanelScript : MonoBehaviour
     [SerializeField] private ItemSO itemSO;
     [SerializeField] private ItemDraggable draggableScript;
 
-    public void UpdatePanelInfo(CraftingMaterialSO material, uint quantity)
+    public void UpdatePanelInfo(CraftingMaterialSO material)
     {
         itemImage.sprite = material.ItemIcon;
-        itemNumberText.text = quantity.ToString();
+        //itemNumberText.text = "";
         itemNameText.text = material.GetItemName();
         itemDescriptionText.text = material.MaterialDescription;
 

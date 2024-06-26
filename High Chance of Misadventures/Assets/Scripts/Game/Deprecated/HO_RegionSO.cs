@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "New Region", menuName = "ScriptableObjects/HO/Region")]
+[CreateAssetMenu(fileName = "New Region", menuName = "ScriptableObjects/Deprecated/Region")]
 public class HO_RegionSO : ScriptableObject
 {
     [Header("Region Properties")]

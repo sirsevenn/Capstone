@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//[CreateAssetMenu(fileName = "New Scroll", menuName = "ScriptableObjects/HO/Scroll")]
+[CreateAssetMenu(fileName = "New Scroll", menuName = "ScriptableObjects/Deprecated/Scroll")]
 public class ScrollSpellSO : CraftableSO
 {
     [Space(10)] [Header("Armor Properties")]

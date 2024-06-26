@@ -1,0 +1,54 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b6b085fb8720d049abcefee6a282f3e, type: 3}
+  m_Name: Level2
+  m_EditorClassIdentifier: 
+  levelID: 2
+  speechList:
+  - 'Oh no! This seems to
+
+    be the boss room!'
+  - "I didn't prepare enough \nitems to fight the boss!"
+  - "I must retreat for now \nor I'll lose"
+  environment: {fileID: 2603565881939543737, guid: b9131f5922b2b5b45aa19119376a2a50,
+    type: 3}
+  playerStats:
+    baseHP: 100
+    changeInHP: 0
+    currentHP: 100
+    baseATK: 15
+    changeInATK: 0
+    totalATK: 15
+    baseDEF: 5
+    changeInDEF: 0
+    totalDEF: 5
+    WeakToElement: 1
+    ResistantToElement: 2
+  materialsList:
+  - {fileID: 11400000, guid: fee477a7cbe6cef43a2efe53ceeff30f, type: 2}
+  - {fileID: 11400000, guid: e3f77875c6c05444cbce66ca83c552f4, type: 2}
+  - {fileID: 11400000, guid: 053028975a891c34dbc5059f54e49460, type: 2}
+  - {fileID: 11400000, guid: 97d2fb6c4c97d9042844ea1c6382d4dc, type: 2}
+  - {fileID: 11400000, guid: 552d461c2db647a489bac2a2b6fea6b1, type: 2}
+  enemyStats:
+    baseHP: 150
+    changeInHP: 0
+    currentHP: 150
+    baseATK: 15
+    changeInATK: 0
+    totalATK: 15
+    baseDEF: 8
+    changeInDEF: 0
+    totalDEF: 8
+    WeakToElement: 2
+    ResistantToElement: 1
+  enemyData: {fileID: 11400000, guid: dd84d127e69f95d4383242fdd7dc0803, type: 2}

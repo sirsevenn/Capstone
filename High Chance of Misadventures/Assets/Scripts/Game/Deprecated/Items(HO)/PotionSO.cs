@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-//[CreateAssetMenu(fileName = "New Potion", menuName = "ScriptableObjects/HO/Potion")]
+[CreateAssetMenu(fileName = "New Potion", menuName = "ScriptableObjects/Deprecated/Potion")]
 public class PotionSO : CraftableSO
 {
     [Space(10)] [Header("Potion Properties")]

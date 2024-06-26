@@ -19,7 +19,7 @@ public class HO_EnemyAI : HO_EntityAI
         enemyData = data;
     }
 
-    public override void OnEntityTurn()
+    public override void OnEntityTurn(EElementalAttackType weakToElement, EElementalAttackType resistantToElement)
     {
         currentAttackDMG = characterStats.GetTotalATK();
         attackElementalType = EElementalAttackType.Unknown;

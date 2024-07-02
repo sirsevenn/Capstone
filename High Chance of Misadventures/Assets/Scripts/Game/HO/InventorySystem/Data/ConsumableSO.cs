@@ -5,6 +5,7 @@ public class ConsumableSO : ItemSO
 {
     [Space(10)] [Header("Consumable Properties")]
     [SerializeField] private EConsumableType consumableType;
+    [SerializeField] private Color itemSpriteColor;
 
     [TextArea(4, 10)]
     [SerializeField] private string consumableDescription;
@@ -20,6 +21,12 @@ public class ConsumableSO : ItemSO
     {
         get { return consumableType; }
         private set { consumableType = value; }
+    }
+
+    public Color ItemSpriteColor
+    {
+        get { return itemSpriteColor; }
+        private set { itemSpriteColor = value; }
     }
 
     public string ConsumableDescription

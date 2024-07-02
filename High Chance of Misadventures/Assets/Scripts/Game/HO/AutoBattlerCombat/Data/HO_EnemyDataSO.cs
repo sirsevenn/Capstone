@@ -6,6 +6,7 @@ public class HO_EnemyDataSO : ScriptableObject
     [Header("General Enemy Properties")]
     [SerializeField] private EEnemyType enemyType;
     [SerializeField] private GameObject model;
+    [SerializeField] private float attackAnimDuration;
     [SerializeField] private string attackAnimTrigger;
     [SerializeField] private string deathAnimTrigger;
 
@@ -26,6 +27,12 @@ public class HO_EnemyDataSO : ScriptableObject
     public GameObject Model
     { 
         get { return model; } 
+        private set { }
+    }
+
+    public float AttackAnimDuration
+    {
+        get { return attackAnimDuration; }
         private set { }
     }
 

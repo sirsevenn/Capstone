@@ -1,7 +1,5 @@
 using DG.Tweening;
 using System;
-using System.Net;
-using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(AnimationHandler))]
@@ -19,12 +17,14 @@ public class HO_PlayerAI : HO_EntityAI
     [SerializeField] private ParticleSystem healingEffect;
     [SerializeField] private GameObject defenseForceField;
 
+    [Space(10)] [Header("Animation Properties")]
+    [SerializeField] private float attackAnimDuration;
+
 
     protected override void Awake()
     {
         base.Awake();
         animationHandler = GetComponent<AnimationHandler>();
-        healthBar = GetComponent<WorldSpaceHealthBar>();
     }
 
     private void Start()
@@ -53,6 +53,7 @@ public class HO_PlayerAI : HO_EntityAI
             offsetDir.Normalize();
 
             animationHandler.PlayAnimation(ActionType.Heavy);
+            animator.SetFloat("Speed", attackAnimDuration / animDuration);
             transform.DOJump(opponentPos + offsetDir * meleeDistanceOffset, 1, 1, animDuration).SetEase(Ease.Linear);
         }
         else
@@ -190,7 +191,6 @@ public class HO_PlayerAI : HO_EntityAI
     public override void EntityTakeDamage(int damage, EElementalAttackType attackElementalType)
     {
         base.EntityTakeDamage(damage, attackElementalType);
-        healthBar.UpdateHP(characterStats.GetCurrentHPInPercent());
         defenseForceField.SetActive(false);
     }
 }

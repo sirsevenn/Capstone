@@ -12,6 +12,7 @@ public abstract class HO_EntityAI : MonoBehaviour
     [Space(10)] [Header("Component References")]
     [SerializeField] protected Animator animator;
     [SerializeField] protected WorldSpaceHealthBar healthBar;
+    [SerializeField] protected WorldSpaceDamageNumber damageNumber;
 
 
     protected virtual void Awake()
@@ -20,6 +21,8 @@ public abstract class HO_EntityAI : MonoBehaviour
         attackElementalType = EElementalAttackType.Unknown;
 
         animator = GetComponent<Animator>();
+        healthBar = GetComponent<WorldSpaceHealthBar>();
+        damageNumber = GetComponent<WorldSpaceDamageNumber>();
     }
 
     public abstract void OnEntityTurn(EElementalAttackType weakToElement, EElementalAttackType resistantToElement);
@@ -55,7 +58,9 @@ public abstract class HO_EntityAI : MonoBehaviour
 
     public virtual void EntityTakeDamage(int damage, EElementalAttackType attackElementalType)
     {
-        characterStats.TakeDamage(damage, attackElementalType);
+        int dmg = characterStats.TakeDamage(damage, attackElementalType);
+        healthBar.UpdateHP(characterStats.GetCurrentHPInPercent());
+        damageNumber.OnTakeDamage(dmg);
     }
 
     public bool IsEntityKilled()

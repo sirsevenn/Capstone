@@ -1,3 +1,5 @@
+using DG.Tweening;
+using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -9,9 +11,10 @@ public class AutoBattleItemPanelScript : MonoBehaviour
     [SerializeField] private TMP_Text itemNum;
 
     [Header("Item Properties")]
-    [SerializeField] private ItemSO itemSO;
+    [SerializeField] private ConsumableSO itemSO;
 
-    public void SetItemSO(ItemSO itemData)
+
+    public void SetItemSO(ConsumableSO itemData)
     {
         itemSO = itemData;
         itemIcon.sprite = itemSO.ItemIcon;

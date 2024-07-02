@@ -1,3 +1,4 @@
+using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -11,6 +12,8 @@ public class CraftingSystem : MonoBehaviour
     [SerializeField] private int maxConsumablesToCraft;
     [SerializeField] private int maxNumberPerConsumable;
     [SerializeField] private bool isCauldronFiredUp;
+
+    [Space(10)]
     [SerializeField] private CraftingMaterialSO[] droppedMaterials;
 
     [Space(20)]
@@ -19,10 +22,11 @@ public class CraftingSystem : MonoBehaviour
     [SerializeField] private float totalWeight;
 
     [Space(10)] [Header("Other References")]
+    [SerializeField] private bool areInputsEnabled;
     [SerializeField] private CraftingSystemDisplay craftingDisplay;
     [SerializeField] private CraftingParticles particlesScript;
-    [SerializeField] private PotionShelfRack middleShelfRack;
-    [SerializeField] private PotionShelfRack leftShelfRack;
+    [SerializeField] private PotionShelfRackManager shelfRackManager;
+    [SerializeField] private Collider leverCollider;
 
 
     #region Singleton
@@ -45,6 +49,7 @@ public class CraftingSystem : MonoBehaviour
         if (Instance != null && Instance == this)
         {
             Destroy(this.gameObject);
+            GestureManager.Instance.OnSwipeEvent -= OnSwipe;
         }
     }
     #endregion
@@ -63,15 +68,19 @@ public class CraftingSystem : MonoBehaviour
             null, null, null
         };
 
+        areInputsEnabled = true;
+
         weightsOnEachConsumableList = new();
         ResetCraftingTrackers();
+
+        GestureManager.Instance.OnSwipeEvent += OnSwipe;
     }
 
 
     #region Touch Input Event Methods
     public void OnBeginDragMaterial(CraftingMaterialSO draggedMaterial)
     {
-        if (isDraggingMaterial || currentDraggedMaterial != null) return;
+        if (!areInputsEnabled || isDraggingMaterial || currentDraggedMaterial != null) return;
 
         isDraggingMaterial = true;
         currentDraggedMaterial = draggedMaterial;
@@ -80,7 +89,7 @@ public class CraftingSystem : MonoBehaviour
 
     public void OnDragMaterial(CraftingMaterialSO draggedMaterial, Vector2 materialPos)
     {
-        if (!isDraggingMaterial || currentDraggedMaterial != draggedMaterial) return;
+        if (!areInputsEnabled || !isDraggingMaterial || currentDraggedMaterial != draggedMaterial) return;
 
         int index = craftingDisplay.GetSlotIndexFromHoveredMaterial(materialPos);
         bool isHighlighted = (index != -1) && (droppedMaterials[index] == null);
@@ -90,7 +99,7 @@ public class CraftingSystem : MonoBehaviour
 
     public void OnEndDragMaterial(CraftingMaterialSO draggedMaterial, Vector2 materialPos)
     {
-        if (!isDraggingMaterial || currentDraggedMaterial != draggedMaterial) return;
+        if (!areInputsEnabled || !isDraggingMaterial || currentDraggedMaterial != draggedMaterial) return;
 
         // Determine if it is on top of an open slot
         int slotIndex = craftingDisplay.GetSlotIndexFromHoveredMaterial(materialPos);
@@ -139,38 +148,22 @@ public class CraftingSystem : MonoBehaviour
     #region Crafting Methods
     public void OnCraft()
     {
-        if (!isCauldronFiredUp) return;
+        if (!areInputsEnabled || !isCauldronFiredUp || !shelfRackManager.IsMiddleShelfRackEmmpty()) return;
 
-        // Reset inventory 
+        // Reset inventory and disable inputs
         InventorySystem.Instance.ResetConsumables();
+        areInputsEnabled = false;
 
-
-        // Determine the amount of all consumables, then craft them
+        // Determine the amount of all potions, then add the to middle shelf rack
         List<int> amountForEachConsumableList = CalculateAmountOfConsumablesToCraft();
-
-        for (int i = 0; i < consumablesToCraftList.Count; i++)
-        {
-            ConsumableSO consumable = consumablesToCraftList[i];
-
-            for (int j = 0; j < amountForEachConsumableList[i]; j++)
-            {
-                uint id = (uint)InventorySystem.Instance.GetNextConsumableID();
-                Consumable newConsumable = new Consumable(id, consumable);
-                InventorySystem.Instance.AddConsumable(newConsumable);
-            }
-        }
-
-
-        // Update both shelf rack; left - previous set of potions, middle - newly crafted set of potions
-        leftShelfRack.UpdateShelfRack(middleShelfRack.GetNumActivePotions());
-        
         Dictionary<EConsumableType, int> newPotionDisplay = new();
+
         for (int i = 0; i < consumablesToCraftList.Count; i++)
         {
             newPotionDisplay.Add(consumablesToCraftList[i].ConsumableType, amountForEachConsumableList[i]);
         }
-        middleShelfRack.UpdateShelfRack(newPotionDisplay);
 
+        shelfRackManager.FillUpMiddleShelfRack(newPotionDisplay);
 
         // Reset selection slots and other trackers for crafting
         for (int i = 0; i < droppedMaterials.Length; i++)
@@ -179,7 +172,6 @@ public class CraftingSystem : MonoBehaviour
         }
 
         ResetCraftingTrackers();
-
 
         // Reset properties from other scripts
         craftingDisplay.ResetCraftingUI();
@@ -220,7 +212,7 @@ public class CraftingSystem : MonoBehaviour
             //returnList[indexWithHighestAmount] -= diff;
             returnList[indexWithHighestAmount]--;
 
-            Debug.Log("too much to craft " + diff);
+            //Debug.Log("too much to craft " + diff);
         }
         else if (totalAmount < maxConsumablesToCraft)
         {
@@ -228,7 +220,7 @@ public class CraftingSystem : MonoBehaviour
             //returnList[indexWithLowestAmount] -= diff;
             returnList[indexWithLowestAmount]++;
 
-            Debug.Log("too less to craft " + diff);
+            //Debug.Log("too less to craft " + diff);
         }
 
         return returnList;
@@ -247,9 +239,53 @@ public class CraftingSystem : MonoBehaviour
     }
     #endregion
 
+    private void OnSwipe(object send, SwipeEventArgs args)
+    {
+        if (!areInputsEnabled) return;
+
+        Ray ray = Camera.main.ScreenPointToRay(args.SwipePos);
+        RaycastHit hit;
+
+        if (leverCollider.Raycast(ray, out hit, 100f))
+        {
+            if (args.SwipeDirection == SwipeEventArgs.SwipeDirections.LEFT)
+            {
+                areInputsEnabled = false;
+                shelfRackManager.MoveShelfRacks(true);
+            }
+            else if (args.SwipeDirection == SwipeEventArgs.SwipeDirections.RIGHT && shelfRackManager.CanMoveShelfRacksToTheRight(false))
+            {
+                areInputsEnabled = false;
+                shelfRackManager.MoveShelfRacks(false);
+            }
+        }
+    }
+
+    public void EnableInputs(bool isEnabled)
+    {
+        areInputsEnabled = isEnabled;
+    }
 
     public void TransitionToBattleScene()
     {
+        if (!areInputsEnabled) return;
+
+        // Add potions to inventory
+        Dictionary<EConsumableType, int> numPotions = shelfRackManager.GetNumPotionsFromMiddleShelfRack();
+
+        for (int i = 0; i < consumablesToCraftList.Count; i++)
+        {
+            ConsumableSO consumable = consumablesToCraftList[i];
+
+            for (int j = 0; j < numPotions[consumable.ConsumableType]; j++)
+            {
+                uint id = (uint)InventorySystem.Instance.GetNextConsumableID();
+                Consumable newConsumable = new Consumable(id, consumable);
+                InventorySystem.Instance.AddConsumable(newConsumable);
+            }
+        }
+
+        // Trasition to next scene
         HO_GameManager.Instance.TransitionToBattleScene();
     }
 }

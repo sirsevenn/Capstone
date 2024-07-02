@@ -8,12 +8,6 @@ public class HO_EnemyAI : HO_EntityAI
     [SerializeField] private HO_EnemyDataSO enemyData;
 
 
-    protected override void Awake()
-    {
-        base.Awake();
-        healthBar = GetComponent<WorldSpaceHealthBar>();
-    }
-
     public void SetEnemyData(HO_EnemyDataSO data)
     {
         enemyData = data;
@@ -31,6 +25,7 @@ public class HO_EnemyAI : HO_EntityAI
         offsetDir.Normalize();
 
         animator.SetTrigger(enemyData.AttackAnimTrigger);
+        animator.SetFloat("Speed", enemyData.AttackAnimDuration / animDuration);
         transform.DOJump(opponentPos + offsetDir * meleeDistanceOffset, 1, 1, animDuration).SetEase(Ease.Linear);
     }
 
@@ -47,11 +42,5 @@ public class HO_EnemyAI : HO_EntityAI
     public override void TriggerDeathAnimation()
     {
         animator.SetTrigger(enemyData.DeathAnimTrigger);
-    }
-
-    public  override void EntityTakeDamage(int damage, EElementalAttackType attackElementalType)
-    {
-        base.EntityTakeDamage(damage, attackElementalType);  
-        healthBar.UpdateHP(characterStats.GetCurrentHPInPercent());
     }
 }

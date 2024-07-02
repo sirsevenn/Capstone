@@ -81,8 +81,12 @@ public class HO_GameManager : MonoBehaviour
         }
         else if (currentLevelPhase == ELevelPhase.Battle)
         {
-            currentLevelIndex++;
-            currentLevel = levelsList[currentLevelIndex];
+            if (currentPlayerLives != 0)
+            {
+                currentLevelIndex++;
+                currentLevel = levelsList[currentLevelIndex];
+            }
+
             currentLevelPhase = ELevelPhase.Cutscene;
             currentPlayerLives = maxPlayerLives;
         }

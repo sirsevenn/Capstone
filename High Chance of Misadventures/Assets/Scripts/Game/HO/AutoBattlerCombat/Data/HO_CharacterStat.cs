@@ -91,9 +91,9 @@ public class HO_CharacterStat
         
     }
 
-    public void TakeDamage(int damage, EElementalAttackType attackElementalType)
+    public int TakeDamage(int damage, EElementalAttackType attackElementalType)
     {
-        if (damage <= 0) return;
+        if (damage <= 0) return - 1;
 
         int modifiedDMG = 0;
 
@@ -123,6 +123,8 @@ public class HO_CharacterStat
 
         currentHP -= modifiedDMG;
         currentHP = (currentHP <= 0) ? 0 : currentHP;
+
+        return modifiedDMG;
     }
     #endregion
 

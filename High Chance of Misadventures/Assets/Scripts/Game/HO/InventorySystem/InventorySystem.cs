@@ -73,7 +73,7 @@ public class InventorySystem : MonoBehaviour
         return numConsumables;
     }
 
-    public int GetTotalConsumablesInInventory()
+    public int GetConsumablesTotalAmount()
     {
         return consumablesList.Count;
     }

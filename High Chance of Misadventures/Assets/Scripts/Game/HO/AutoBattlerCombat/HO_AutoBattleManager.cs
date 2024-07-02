@@ -14,6 +14,7 @@ public class HO_AutoBattleManager : MonoBehaviour
     [SerializeField] private Vector3 playerBattlePos;
     [SerializeField] private Vector3 enemyBattlePos;
     [SerializeField] private float meleeDistanceOffset;
+    [SerializeField] private float turnDuration;
 
     [Space(10)] [Header("Cutscene Properties")]
     [SerializeField] private PlayableDirector cutsceneDirector;
@@ -28,8 +29,10 @@ public class HO_AutoBattleManager : MonoBehaviour
     [Space(10)]
     [SerializeField] private bool isBattleSimulationFinished;
     [SerializeField] private bool didPlayerWin;
+    [SerializeField] private bool isGameOver;
 
 
+    #region Initialization
     private void Awake()
     {
         dollyCamera.enabled = false;
@@ -38,11 +41,8 @@ public class HO_AutoBattleManager : MonoBehaviour
 
     private void Start()
     {
-        // Determine the current level and its phase
-        currentLevel = HO_GameManager.Instance.GetCurrentLevel();
-        ELevelPhase currentPhase = HO_GameManager.Instance.GetCurrenetLevelPhase();
-
         // Initialize environment and enemy
+        currentLevel = HO_GameManager.Instance.GetCurrentLevel();
         environmentModel = GameObject.Instantiate(currentLevel.Environment, Vector3.zero, Quaternion.identity);
         InitializeEnemy(currentLevel);
 
@@ -54,8 +54,11 @@ public class HO_AutoBattleManager : MonoBehaviour
         currentSpeechIndex = 0;
         isBattleSimulationFinished = false;
         didPlayerWin = false;
+        turnDuration = (turnDuration == 0) ? 0.55f : turnDuration;
 
         // Check phase to determine what happens next
+        ELevelPhase currentPhase = HO_GameManager.Instance.GetCurrenetLevelPhase();
+
         if (currentPhase == ELevelPhase.Cutscene)
         {
             UI.DisableUI();
@@ -70,6 +73,14 @@ public class HO_AutoBattleManager : MonoBehaviour
         {
             StartCoroutine(PlayerEnterAnimation());
         }
+
+        // Subscription to some events
+        InventorySystem.Instance.OnUpdateConsumablesEvent += OnUpdateConsumables;
+    }
+
+    private void OnDestroy()
+    {
+        InventorySystem.Instance.OnUpdateConsumablesEvent -= OnUpdateConsumables;
     }
 
     private void InitializeEnemy(HO_LevelSO currentLevel)
@@ -84,6 +95,7 @@ public class HO_AutoBattleManager : MonoBehaviour
         enemyScript.transform.position = enemyBattlePos;
         enemyScript.transform.Rotate(new Vector3(0, 180, 0));
     }
+    #endregion
 
     #region Cutscene Methods
     public void OnUpdateSpeechBubble()
@@ -122,11 +134,14 @@ public class HO_AutoBattleManager : MonoBehaviour
             Vector3 startPos = isPlayersTurn ? playerBattlePos : enemyBattlePos;
             Vector3 attackPos = isPlayersTurn ? enemyBattlePos : playerBattlePos;
 
+            float halfTurnDuration = turnDuration / 2f;
+
 
             entityWithTurn.OnEntityTurn(opposingEntity.WeakToElement, opposingEntity.ResistantToElement);
-            entityWithTurn.TriggerAttackAnimation(attackPos, meleeDistanceOffset, 0.75f);
-            yield return new WaitForSeconds(0.75f);
+            entityWithTurn.TriggerAttackAnimation(attackPos, meleeDistanceOffset, halfTurnDuration);
+            yield return new WaitForSeconds(halfTurnDuration);
 
+            
             opposingEntity.EntityTakeDamage(entityWithTurn.GetCurrentAttackDamage(), entityWithTurn.GetAttackElementalType());
             if (opposingEntity.IsEntityKilled())
             {
@@ -140,8 +155,10 @@ public class HO_AutoBattleManager : MonoBehaviour
             }
             yield return new WaitForSeconds(0.1f);
 
-            entityWithTurn.TriggerEndAttackAnimation(startPos, 0.75f);
-            yield return new WaitForSeconds(0.75f);
+
+            entityWithTurn.TriggerEndAttackAnimation(startPos, halfTurnDuration);
+            yield return new WaitForSeconds(halfTurnDuration);
+
 
             isPlayersTurn = !isPlayersTurn;
             yield return new WaitForSeconds(0.1f);
@@ -149,31 +166,37 @@ public class HO_AutoBattleManager : MonoBehaviour
 
         yield return new WaitForSeconds(2f);
 
-        if (didPlayerWin)
-        {
-            if (HO_GameManager.Instance.IsLastLevel())
-            {
-                // game over
-            }
-            else
-            {
-                HO_GameManager.Instance.TransitionToBattleScene();
-            }
-        }
-        else
-        {
-            bool isGameOver = HO_GameManager.Instance.DecreasePlayerLife();
 
-            if (isGameOver)
-            {
-                // game over
-            }
-            else
-            {
-                HO_GameManager.Instance.TransitionToCraftingScene();
-                InventorySystem.Instance.ResetConsumables();
-            }
+        isGameOver = HO_GameManager.Instance.DecreasePlayerLife();
+
+        if (didPlayerWin || isGameOver)
+        {
+            UI.EnableEndLevelPanel(didPlayerWin, HO_GameManager.Instance.IsLastLevel());
         }
+        else // if lost but not yet game over
+        {
+            HO_GameManager.Instance.TransitionToCraftingScene();
+            InventorySystem.Instance.ResetConsumables();
+        }
+    }
+
+    private void OnUpdateConsumables(Consumable consumable, bool hasAddedNewConsumable) => UI.OnUpdateConsumables(consumable, hasAddedNewConsumable, turnDuration);
+    #endregion
+
+    #region End Level Methods
+    public void TransitionToNextLevel()
+    {
+        if ((didPlayerWin && !HO_GameManager.Instance.IsLastLevel()) ||  // player wins but hasnt beaten the game yet
+            (!didPlayerWin && isGameOver))                               // player lost completely
+        {
+            HO_GameManager.Instance.TransitionToBattleScene();
+
+        }
+    }
+
+    public void TransitionToMainMenu()
+    {
+
     }
     #endregion
 }

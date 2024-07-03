@@ -1133,7 +1133,7 @@ GameObject:
   - component: {fileID: 185866480}
   - component: {fileID: 185866479}
   m_Layer: 5
-  m_Name: DamageNumberCanvas
+  m_Name: HealthNumberCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1153,7 +1153,7 @@ RectTransform:
   m_Children:
   - {fileID: 1285659752}
   m_Father: {fileID: 1749665465}
-  m_RootOrder: 4
+  m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -1863,7 +1863,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 3
-      scalar: 0.45
+      scalar: 0.32
       minScalar: 0.15
       maxCurve:
         serializedVersion: 2
@@ -9945,8 +9945,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 24
+  m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -10536,7 +10536,7 @@ RectTransform:
   m_Children:
   - {fileID: 1119005108}
   m_Father: {fileID: 1749665465}
-  m_RootOrder: 3
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
@@ -11407,7 +11407,7 @@ MonoBehaviour:
   attackElementalType: 0
   animator: {fileID: 1749665464}
   healthBar: {fileID: 1749665466}
-  damageNumber: {fileID: 1749665467}
+  healthNumber: {fileID: 0}
   animationHandler: {fileID: 1749665463}
   hpPotionWeight: 20
   defPotionWeight: 20
@@ -11464,8 +11464,8 @@ Transform:
   - {fileID: 1093969588}
   - {fileID: 823114213}
   - {fileID: 7757988643303040528}
-  - {fileID: 1418330603}
   - {fileID: 185866477}
+  - {fileID: 1418330603}
   - {fileID: 337775725}
   - {fileID: 986208928}
   m_Father: {fileID: 0}
@@ -11493,14 +11493,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1749665461}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 137548ee912fe5441a46ffd5970b1b1a, type: 3}
+  m_Script: {fileID: 11500000, guid: 6ef1564216e822b4eb15c5023ebf0181, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  damageText: {fileID: 1285659754}
+  numberText: {fileID: 1285659754}
   canvasTransform: {fileID: 185866477}
-  defaultLocalPos: {x: 0, y: 2, z: 0}
-  travelDistance: 0.7
-  travelDuration: 0.5
+  defaultLocalPos: {x: 0, y: 1.5, z: 0}
+  travelDistance: 1
+  travelDuration: 0.75
 --- !u!1 &1791404167
 GameObject:
   m_ObjectHideFlags: 0

@@ -149,6 +149,7 @@ public class HO_PlayerAI : HO_EntityAI
             {
                 characterStats.Heal(item.ConsumableData.NumberValue);
                 healthBar.UpdateHP(characterStats.GetCurrentHPInPercent());
+                healthNumber.OnChangeHP(item.ConsumableData.NumberValue);
                 healingEffect.Play();
             }
             else if (item.ConsumableData.ConsumableType == EConsumableType.Defense_Potion)

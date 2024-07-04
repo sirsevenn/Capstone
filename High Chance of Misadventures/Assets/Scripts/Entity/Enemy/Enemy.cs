@@ -17,6 +17,9 @@ public class Enemy : Entity
     public GameObject highlight;
     public Health hp;
     public Collider col;
+    public UIHover hover;
+
+    [SerializeField] private bool firstSelected = false;
 
     private void Start()
     {
@@ -26,6 +29,12 @@ public class Enemy : Entity
     public void SelectEnemy()
     {
         highlight.SetActive(true);
+        if (!firstSelected)
+        {
+
+            hover.StopHover();
+            firstSelected = true;
+        }
     }
 
     public void DeselectEnemy()
@@ -55,6 +64,16 @@ public class Enemy : Entity
     public virtual EnemyData GetEnemyData()
     {
         return data;
+    }
+
+    public void ResetEnemy()
+    {
+        transform.position = new Vector3(0, -10, 0);
+        transform.rotation = Quaternion.identity;
+        gameObject.SetActive(false);
+
+        hover.ResetHover();
+        firstSelected = false;
     }
 
 }

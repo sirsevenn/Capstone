@@ -88,7 +88,7 @@ public class BaseGameFlow : MonoBehaviour
                 Debug.Log("Hit Object: " + hit.transform.name);
                 selectedEnemy = hit.transform.gameObject;
                 Enemy enemy = selectedEnemy.GetComponent<Enemy>();
-
+              
                 OnSelectedEnemy(enemy);
             }
         }
@@ -248,6 +248,7 @@ public class BaseGameFlow : MonoBehaviour
         ObjectPool.Instance.ResetObjectPools();
         OnResetRoom();
 
+        StartCoroutine(GameUtilities.DelayFunction(() => LO_UIManager_PVP.Instance.DisplayRoundCount(roomCounter, rooms), 1));
         StartCoroutine(GameUtilities.DelayFunction(PlayerReset, 3.0f));
         StartCoroutine(GameUtilities.DelayFunction(StartRoom, 5.0f));
 
@@ -255,7 +256,7 @@ public class BaseGameFlow : MonoBehaviour
 
     protected virtual void OnResetRoom()
     {
-
+        
     }
 
     private void PlayerReset()

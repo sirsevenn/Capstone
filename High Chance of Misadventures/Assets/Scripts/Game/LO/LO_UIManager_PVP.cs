@@ -24,6 +24,11 @@ public class LO_UIManager_PVP : UIManager
     }
     #endregion
 
+    [Header("Round Display")]
+    [SerializeField] private GameObject roundDisplay;
+    [SerializeField] private TMP_Text currentRoomText;
+    [SerializeField] private TMP_Text maxRoomText;
+
     [Header("SideUI")]
     [SerializeField] private SideBarManager sideBar;
 
@@ -60,9 +65,16 @@ public class LO_UIManager_PVP : UIManager
     [SerializeField] protected EventSystem m_EventSystem;
     [SerializeField] protected SpinnerPiece pieceDisplay;
     [SerializeField] protected SpinnerPiece swapPiece;
-    protected SpinnerPiece inventoryPiece;
+    [SerializeField] protected SpinnerPiece inventoryPiece;
+
+    [Header("LockMode")]
+    [SerializeField] private Image lockIcon;
+    public bool lockMode = false;
+    [SerializeField] private Color lockedColor;
+    [SerializeField] private Color defaultColor;
 
     [Header("Touch Controls")]
+
     [SerializeField] protected Vector2 touchStartPos;
     [SerializeField] protected Vector2 touchEndPos;
     [Space(10)]
@@ -74,20 +86,113 @@ public class LO_UIManager_PVP : UIManager
     [SerializeField] protected bool triggerHold = false;
     [SerializeField] protected bool swapped = false;
 
+    public void ToggleLockMode()
+    {
+        //Add Visuals
+        if (lockMode)
+        {
+            lockMode = false;
+            lockIcon.color = defaultColor;
+        }
+        else if (!lockMode)
+        {
+            if (inventoryPiece != null)
+            {
+                inventoryPiece.DeselectPiece();
+                inventoryPiece = null;
+            }
+            lockMode = true;
+            lockIcon.color = lockedColor;
+        }
+    }
+
+    public void DisplayRoundCount(int currentRoom, int maxRoom)
+    {
+        int room = currentRoom + 1;
+        currentRoomText.text = room.ToString();
+        maxRoomText.text = maxRoom.ToString();
+        roundDisplay.SetActive(true);
+
+        StartCoroutine(GameUtilities.DelayFunction(CloseDisplayRoundCount, 3));
+    }
+
+    private void CloseDisplayRoundCount()
+    {
+        roundDisplay.SetActive(false);
+    }
+
     protected virtual void Tap(Vector2 position)
     {
-        //Lock Piece
         //Debug.Log("Tap!");
+        SpinnerPiece spinnerPiece = RaycastUI();
 
-        SpinnerPiece inventoryPiece = RaycastUI();
-        if (inventoryPiece != null)
+        if (spinnerPiece == null)
         {
-            if (inventoryPiece.isActive && inventoryPiece.CompareTag("InventoryPiece"))
+            return;
+        }
+
+        //Lock Pieces
+        if (lockMode)
+        {
+            if (spinnerPiece.isActive && spinnerPiece.CompareTag("InventoryPiece"))
             {
-                inventoryPiece.ToggleLock();
+                spinnerPiece.ToggleLock();
+            }
+        }
+        //Select Pieces
+        else if (!lockMode)
+        {
+            if (spinnerPiece.isActive && spinnerPiece.CompareTag("InventoryPiece") && !spinnerPiece.isLocked)
+            {
+                if (inventoryPiece != null)
+                {
+                    inventoryPiece.DeselectPiece();
+                }
+
+                inventoryPiece = spinnerPiece;
+                inventoryPiece.SelectPiece();
+            }
+            else if (spinnerPiece.isActive && spinnerPiece.CompareTag("PlayerPiece"))
+            {
+                if (swapPiece != null)
+                {
+                    swapPiece.DeselectPiece();
+                }
+
+                swapPiece = spinnerPiece;
+                swapPiece.SelectPiece();
+            }
+
+            if (swapPiece != null && inventoryPiece != null)
+            {
+                switch (inventoryPiece.actionType)
+                {
+                    case ActionType.Fire:
+                        InventoryManager.Instance.DeductItem(0);
+                        break;
+                    case ActionType.Earth:
+                        InventoryManager.Instance.DeductItem(1);
+                        break;
+                    case ActionType.Water:
+                        InventoryManager.Instance.DeductItem(2);
+                        break;
+                }
+
+                sideBar.UpdateInventory();
+
+                swapPiece.actionType = inventoryPiece.actionType;
+                swapPiece.icon.sprite = inventoryPiece.icon.sprite;
+                swapPiece.pieceImage.color = inventoryPiece.pieceImage.color;
+                swapPiece.DeselectPiece();
+
+                inventoryPiece.DeactivatePiece();
+                inventoryPiece = null;
+                swapPiece = null;
+                swapped = true;
             }
             
         }
+       
 
     }
 
@@ -96,6 +201,11 @@ public class LO_UIManager_PVP : UIManager
         //Debug.Log("Hold!");
 
         // Draggable Piece
+        if (inventoryPiece != null)
+        {
+            inventoryPiece.DeselectPiece();
+        }
+
         inventoryPiece = RaycastUI();
         if (inventoryPiece != null)
         {
@@ -137,6 +247,10 @@ public class LO_UIManager_PVP : UIManager
                 swapPiece.icon.sprite = inventoryPiece.icon.sprite;
                 swapPiece.pieceImage.color = inventoryPiece.pieceImage.color;
                 swapPiece.DeselectPiece();
+
+                inventoryPiece = null;
+                swapPiece = null;
+
                 swapped = true;
             }
             
@@ -201,8 +315,8 @@ public class LO_UIManager_PVP : UIManager
         if (Input.GetMouseButtonDown(0))
         {
             startedTouch = true;
-            inventoryPiece = null;
-            swapPiece = null;
+            //inventoryPiece = null;
+            //swapPiece = null;
         }
         else if (Input.GetMouseButtonUp(0))
         {
@@ -233,8 +347,8 @@ public class LO_UIManager_PVP : UIManager
             swapped = false;
             triggerHold = false;
             isDragging = false;
-            inventoryPiece = null;
-            swapPiece = null;
+            //inventoryPiece = null;
+            //swapPiece = null;
             
         }
 
@@ -460,5 +574,7 @@ public class LO_UIManager_PVP : UIManager
         selectedPieceFromInventory = null;
         selectedPieceFromSpinner = null;
     }
+
+   
 
 }

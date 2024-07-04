@@ -207,9 +207,26 @@ public class BaseCombatManager : MonoBehaviour
                 break;
 
             case MatchResult.Draw:
-                player.transform.DOJump(playerStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
+                //Player Damage
+                health = gameFlow.health;
+                damage = Math.Max(0, currentEnemy.GetEnemyData().attackDamage - playerDefenseValue);
+                health.ApplyDamage((int)(damage * 0.5f));
+
+                if (health.GetHP() <= 0)
+                {
+                    player.gameObject.GetComponent<AnimationHandler>().PlayDeathAnimation();
+                    OnPlayerDeath();
+                    //LO_UIManager_PVP.Instance.EndGame(false);
+                }
+                else
+                {
+                    player.transform.DOJump(playerStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
+
+                }
+
+                //Enemy Damage
                 health = currentEnemy.GetComponent<Health>();
-                health.ApplyDamage((int)(testDamage * 1.5f));
+                health.ApplyDamage((int)(testDamage * 0.5f));
 
                 if (health.GetHP() <= 0)
                 {
@@ -223,6 +240,7 @@ public class BaseCombatManager : MonoBehaviour
                 {
                     currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
                 }
+
                 break;
             default:
                 break;

@@ -28,6 +28,15 @@ public class SideBarManager : MonoBehaviour
     [SerializeField] private GameObject GuidePage;
     [SerializeField] private GameObject SettingsPage;
 
+    [Header("Page Icons")]
+    [SerializeField] private Image inventoryIcon;
+    [SerializeField] private Image guideIcon;
+    [SerializeField] private Image settingsIcon;
+
+    [Header("Color Settings")]
+    [SerializeField] Color defaultColor;
+    [SerializeField] Color highlightedColor;
+
     private void Start()
     {
         UpdateInventory();
@@ -59,6 +68,10 @@ public class SideBarManager : MonoBehaviour
 
     private void CloseAllPages()
     {
+        inventoryIcon.color = defaultColor;
+        guideIcon.color = defaultColor;
+        settingsIcon.color = defaultColor;
+
         InventoryPage.SetActive(false);
         GuidePage.SetActive(false);
         SettingsPage.SetActive(false);
@@ -67,18 +80,21 @@ public class SideBarManager : MonoBehaviour
     public void OpenInventory()
     {
         CloseAllPages();
+        inventoryIcon.color = highlightedColor;
         InventoryPage.SetActive(true);
     }
 
     public void OpenGuide()
     {
         CloseAllPages();
+        guideIcon.color = highlightedColor;
         GuidePage.SetActive(true);
     }
 
     public void OpenSettings()
     {
         CloseAllPages();
+        settingsIcon.color = highlightedColor;
         SettingsPage.SetActive(true);
     }
 

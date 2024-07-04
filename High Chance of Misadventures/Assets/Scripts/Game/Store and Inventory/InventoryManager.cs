@@ -5,6 +5,9 @@ using UnityEngine.SceneManagement;
 
 public class InventoryManager : MonoBehaviour
 {
+    [Header("Checks")]
+    [SerializeField] private bool firstInit = false;
+
     [Header("Inventory Stats")]
     [SerializeField] private int gold;
     [SerializeField] private int helmetLevel;
@@ -80,16 +83,22 @@ public class InventoryManager : MonoBehaviour
 
     private void InitializeInventory()
     {
-        gold = PlayerPrefs.GetInt(goldKey, 10000);
+        if (!firstInit)
+        {
+            gold = PlayerPrefs.GetInt(goldKey, 10000);
 
-        helmetLevel = PlayerPrefs.GetInt(helmetKey, 0);
-        cuirassLevel = PlayerPrefs.GetInt(cuirassKey, 0);
-        greavesLevel = PlayerPrefs.GetInt(greavesKey, 0);
+            helmetLevel = PlayerPrefs.GetInt(helmetKey, 0);
+            cuirassLevel = PlayerPrefs.GetInt(cuirassKey, 0);
+            greavesLevel = PlayerPrefs.GetInt(greavesKey, 0);
 
-        redPieces = PlayerPrefs.GetInt(redKey, 10);
-        greenPieces = PlayerPrefs.GetInt(greenKey, 10);
-        bluePieces = PlayerPrefs.GetInt(blueKey, 10);
-        healthPotions = PlayerPrefs.GetInt(healthPotionKey, 0);
+            redPieces = PlayerPrefs.GetInt(redKey, 10);
+            greenPieces = PlayerPrefs.GetInt(greenKey, 10);
+            bluePieces = PlayerPrefs.GetInt(blueKey, 10);
+            healthPotions = PlayerPrefs.GetInt(healthPotionKey, 0);
+
+            firstInit = true;
+        }
+        
     }
 
     public void SaveInventory()

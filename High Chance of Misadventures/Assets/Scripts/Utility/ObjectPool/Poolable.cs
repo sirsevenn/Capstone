@@ -14,9 +14,11 @@ public class Poolable : MonoBehaviour
 
    public void ResetPoolableObject()
     {
-        transform.position = new Vector3(0, -10, 0);
-        transform.rotation = Quaternion.identity;
-        gameObject.SetActive(false);
+        Enemy enemy = GetComponent<Enemy>();
+        if (enemy)
+        {
+            enemy.ResetEnemy();
+        }
 
         AnimationHandler animHandler = GetComponent<AnimationHandler>();
         if (animHandler)
@@ -36,6 +38,7 @@ public class Poolable : MonoBehaviour
         {
             col.enabled = true;
         }
+
     }
 
 }

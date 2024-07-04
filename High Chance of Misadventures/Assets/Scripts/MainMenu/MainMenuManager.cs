@@ -21,13 +21,34 @@ public class MainMenuManager : MonoBehaviour
     [SerializeField] private int[] LevelUnlocked;
     [SerializeField] private LevelSelectButton[] levelButtons;
 
+    
+
     private void Start()
     {
-        mainMenuUI.SetActive(true);
-        levelSelectUI.SetActive(false);
+        int levelSelect = PlayerPrefs.GetInt("LevelSelect", 0);
+        if (levelSelect == 1)
+        {
+            Debug.Log("From Level");
+            mainMenuUI.SetActive(false);
+            levelSelectUI.SetActive(true);
+            mainMenuCamera.Priority = 0;
+            levelSelectCamera.Priority = 1;
+        }
+        else
+        {
+            Debug.Log("Not from Level");
+            mainMenuUI.SetActive(true);
+            levelSelectUI.SetActive(false);
+            mainMenuCamera.Priority = 1;
+            levelSelectCamera.Priority = 0;
+        }
+
+        PlayerPrefs.SetInt("LevelSelect", 0);
+        PlayerPrefs.Save();
 
         InitializeLevels();
     }
+
 
     public void OnPlay()
     {

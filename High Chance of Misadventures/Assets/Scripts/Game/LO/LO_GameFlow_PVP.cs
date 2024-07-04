@@ -114,6 +114,7 @@ public class LO_GameFlow_PVP : BaseGameFlow
         string level = "Level" + sceneIndex;
         Debug.Log(level);
         PlayerPrefs.SetInt(level, 1);
+        PlayerPrefs.SetInt("LevelSelect", 1);
         PlayerPrefs.Save();
 
     }

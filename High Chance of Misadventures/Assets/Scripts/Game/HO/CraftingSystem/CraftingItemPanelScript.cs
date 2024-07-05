@@ -15,7 +15,7 @@ public class CraftingItemPanelScript : MonoBehaviour
     [Space(10)]
     [Header("Weight Details Properties")]
     [SerializeField] private List<Sprite> effectSpitesList;
-    [SerializeField] private List<Image> effectIconUIList;
+    [SerializeField] private List<CraftingEffectPanelScript> effectPanelsList;
 
     [Header("Item Properties")]
     [SerializeField] private ItemSO itemSO;
@@ -28,10 +28,28 @@ public class CraftingItemPanelScript : MonoBehaviour
         itemNameText.text = material.GetItemName();
         itemDescriptionText.text = material.MaterialDescription;
 
-        for (int i = 0; i < effectIconUIList.Count; i++)
+        for (int i = 0; i < material.ConsumableWeightsList.Count; i++)
         {
-            int index = (int)material.ConsumableWeightsList[i].CraftingEffect - 1;
-            effectIconUIList[i].sprite = effectSpitesList[index];
+            ECraftingEffect effect = material.ConsumableWeightsList[i].CraftingEffect;
+            int spriteIndex = (int)effect - 1;
+
+            switch (effect)
+            {
+                case ECraftingEffect.Worst_Effect:
+                case ECraftingEffect.Bad_Effect:
+                    effectPanelsList[i].SetNegativeEffectIcon(effectSpitesList[spriteIndex]);
+                    break;
+                case ECraftingEffect.Good_Effect:
+                case ECraftingEffect.Great_Effect:
+                    effectPanelsList[i].SetPositiveEffectIcon(effectSpitesList[spriteIndex]);
+                    break;
+                //case ECraftingEffect.No_Effect:
+                //    effectPanelsList[i].SetNegativeEffectIcon(effectSpitesList[spriteIndex]);
+                //    effectPanelsList[i].SetPositiveEffectIcon(effectSpitesList[spriteIndex]);
+                //    break;
+                default:
+                    break;
+            }
         }
 
         itemSO = material;

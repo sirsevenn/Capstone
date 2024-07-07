@@ -45,6 +45,11 @@ public class LO_GameFlow_PVP : BaseGameFlow
         base.Update();
     }
 
+    public void UpdateEnemySpinnerWheel(Enemy enemy)
+    {
+        OnSelectedEnemy(enemy);
+    }
+
     protected override void OnSelectedEnemy(Enemy enemy)
     {
         if (combatManager.currentEnemy != null)

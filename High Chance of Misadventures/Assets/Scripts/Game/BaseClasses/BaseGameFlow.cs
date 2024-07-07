@@ -24,6 +24,7 @@ public class BaseGameFlow : MonoBehaviour
 
     [Header("Quest Settings")]
     [SerializeField] private int rooms = 0;
+    [SerializeField] private bool hasBoss = true;
     private int roomCounter = 0;
 
     [Header("Important Entities")]
@@ -113,7 +114,14 @@ public class BaseGameFlow : MonoBehaviour
 
         roomCounter++;
 
-        if (roomCounter < rooms)
+        if (roomCounter == rooms && hasBoss)
+        {
+            //Boss room
+            GameObject clone = ObjectPool.Instance.GetObject(EnemyType.Boss, spawnPoints[0].transform);
+            AddEnemyToCombatManager(clone);
+
+        }
+        else 
         {
             int enemyCount = Random.Range(1, maxEnemyCountPerRoom + 1);
 
@@ -166,14 +174,6 @@ public class BaseGameFlow : MonoBehaviour
             }
 
         }
-        else if(roomCounter == rooms)
-        {
-            //Boss room
-            GameObject clone = ObjectPool.Instance.GetObject(EnemyType.Boss, spawnPoints[0].transform);
-            AddEnemyToCombatManager(clone);
-
-        }
-       
 
         player.transform.DOMove(playerPosition.position, 2).OnComplete(StartCombatState);
 
@@ -267,7 +267,8 @@ public class BaseGameFlow : MonoBehaviour
 
     public void ReturnToGuild(int sceneIndex)
     {
-        SceneLoader.ChangeScene(sceneIndex);
-        SceneManager.LoadScene("MainMenu");
+        PlayerPrefs.SetInt("LevelSelect", 1);
+        PlayerPrefs.Save();
+        SceneManager.LoadScene(0);
     }
 }

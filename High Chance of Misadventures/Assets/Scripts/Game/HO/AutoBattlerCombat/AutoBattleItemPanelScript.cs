@@ -1,5 +1,3 @@
-using DG.Tweening;
-using System.Collections;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,26 +5,36 @@ using UnityEngine.UI;
 public class AutoBattleItemPanelScript : MonoBehaviour
 {
     [Header("UI Properties")]
-    [SerializeField] private Image itemIcon;
+    [SerializeField] private RectTransform itemMaskFill;
     [SerializeField] private TMP_Text itemNum;
+    [SerializeField] private float fillHeight;
+    [SerializeField] private float maxAmount;
 
     [Header("Item Properties")]
     [SerializeField] private ConsumableSO itemSO;
 
 
-    public void SetItemSO(ConsumableSO itemData)
+    private void Start()
     {
-        itemSO = itemData;
-        itemIcon.sprite = itemSO.ItemIcon;
+        maxAmount = 0;
+        UpdateItemAmount(0);
     }
 
-    public void UpdateItemNum(int num)
+    public void SetItemMaxAmount(int max)
     {
-        itemNum.text = num.ToString();
+        maxAmount = max;
     }
 
-    public bool IsSameItem(ItemSO item)
+    public void UpdateItemAmount(int amount)
     {
-        return itemSO.GetItemName() == item.GetItemName();
+        itemNum.text = amount.ToString();
+
+        float percent = (maxAmount == 0) ? 0f : (float)amount / (float)maxAmount;
+        itemMaskFill.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, fillHeight * percent);
+    }
+
+    public bool IsSameItem(EConsumableType consumableType)
+    {
+        return itemSO.ConsumableType == consumableType;
     }
 }

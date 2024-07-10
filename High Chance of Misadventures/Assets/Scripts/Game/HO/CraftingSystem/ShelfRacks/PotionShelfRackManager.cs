@@ -20,13 +20,13 @@ public class PotionShelfRackManager : MonoBehaviour
     [SerializeField] private float leverRotationAngle;
     [SerializeField] private Transform leverHandleTransform;
 
-    [Space(10)] [Header("Shelf Racks Dynamic Properties")]
+    [Space(10)][Header("Shelf Racks Dynamic Properties")]
     [SerializeField] private int middleShelfRackIndex;
     [SerializeField] private List<PotionShelfRack> shelfRacksList;
     [SerializeField] private PotionShelfRack shelfRackToDestroy;
 
 
-    #region Initialization and Events
+    #region Initialization
     private void Start()
     {
         InitializeInitialSetup();
@@ -39,30 +39,32 @@ public class PotionShelfRackManager : MonoBehaviour
     {
         shelfRacksPool.Initialize();
 
-        Util_APoolable middleRack = shelfRacksPool.RequestPoolable();
-        shelfRacksList.Add((PotionShelfRack)middleRack);
+        Util_APoolable middlePoolable = shelfRacksPool.RequestPoolable();
+        PotionShelfRack middleRack = (PotionShelfRack)middlePoolable;
+        middleRack.UpdateShelfRackSign("For Delivery");
+        shelfRacksList.Add(middleRack);
         middleShelfRackIndex = 0;
 
-        Util_APoolable rightRack = shelfRacksPool.RequestPoolable();
-        rightRack.transform.localPosition += new Vector3(shelfMoveDistance, 0, 0);
-        shelfRacksList.Add((PotionShelfRack)rightRack);
+        Util_APoolable rightPoolable = shelfRacksPool.RequestPoolable();
+        rightPoolable.transform.localPosition += new Vector3(shelfMoveDistance, 0, 0);
+        shelfRacksList.Add((PotionShelfRack)rightPoolable);
     }
     #endregion
 
     #region Movement Methods
-    public bool CanMoveShelfRacksToTheRight(bool isGoingLeft)
+    public bool CanMoveShelfRacksToTheRight()
     {
         PotionShelfRack farthestRackToTheLeft = (shelfRacksList.Count > 0) ? shelfRacksList[0] : null;
-        return (!isGoingLeft && farthestRackToTheLeft != shelfRacksList[middleShelfRackIndex]);
+        return (farthestRackToTheLeft != shelfRacksList[middleShelfRackIndex]);
     }
 
     public void MoveShelfRacks(bool isGoingLeft)
     {
         // Check if the movement is valid
-        CanMoveShelfRacksToTheRight(isGoingLeft);
+        if (!isGoingLeft && !CanMoveShelfRacksToTheRight()) return;
 
         // Create new shelf if going left
-        if (isGoingLeft && !(middleShelfRackIndex == 0 && shelfRacksList.Count >= 3))
+        if (isGoingLeft && (middleShelfRackIndex != 0 || shelfRacksList.Count < 3))
         {
             Util_APoolable newRack = shelfRacksPool.RequestPoolable();
             newRack.transform.localPosition += spawnLocalPos;
@@ -72,14 +74,11 @@ public class PotionShelfRackManager : MonoBehaviour
         // Simulate movement
         PotionShelfRack farthestRackToTheLeft = (shelfRacksList.Count > 0) ? shelfRacksList[0] : null;
 
-        if (farthestRackToTheLeft != shelfRacksList[middleShelfRackIndex] || isGoingLeft)
+        foreach (var shelfRack in shelfRacksList)
         {
-            foreach (var shelfRack in shelfRacksList)
-            {
-                Vector3 endPos = shelfRack.transform.localPosition;
-                endPos.x += (isGoingLeft) ? -shelfMoveDistance : shelfMoveDistance;
-                shelfRack.transform.DOLocalMove(endPos, shelfMoveDuration);
-            }
+            Vector3 endPos = shelfRack.transform.localPosition;
+            endPos.x += (isGoingLeft) ? -shelfMoveDistance : shelfMoveDistance;
+            shelfRack.transform.DOLocalMove(endPos, shelfMoveDuration);
         }
 
         // Update middle index
@@ -99,14 +98,31 @@ public class PotionShelfRackManager : MonoBehaviour
             middleShelfRackIndex--;
         }
 
+        // Update the signs above the shelf racks
+        for (int i = 0; i < shelfRacksList.Count; i++)
+        {
+            if (i == middleShelfRackIndex)
+            {
+                shelfRacksList[i].UpdateShelfRackSign("For Delivery");
+            }
+            else if (i < middleShelfRackIndex)
+            {
+                shelfRacksList[i].UpdateShelfRackSign("For Disposal");
+            }
+            else
+            {
+                shelfRacksList[i].UpdateShelfRackSign("On Standby");
+            }
+        }
+
         // Animate lever
         Vector3 origEulerAngles = leverHandleTransform.rotation.eulerAngles;
         Vector3 endRotation = origEulerAngles;
         endRotation.x += (isGoingLeft) ? -leverRotationAngle : leverRotationAngle;
 
-        leverHandleTransform.DORotate(endRotation, shelfMoveDuration / 3f).onComplete += () => {
+        leverHandleTransform.DORotate(endRotation, shelfMoveDuration / 3f).OnComplete(() => {
             leverHandleTransform.DORotate(origEulerAngles, shelfMoveDuration / 3f);
-        };
+        });
 
         // Cleanup after the movement animation
         StartCoroutine(WaitForMovementToFinish());
@@ -120,23 +136,17 @@ public class PotionShelfRackManager : MonoBehaviour
         {
             Vector3 posAwayFromCam = shelfRackToDestroy.transform.localPosition;
             posAwayFromCam.x -= shelfMoveDistance / 2f;
-            shelfRackToDestroy.transform.DOLocalMove(posAwayFromCam, 0.35f);
+            yield return shelfRackToDestroy.transform.DOLocalMove(posAwayFromCam, 0.35f).WaitForCompletion();
 
-            yield return new WaitForSeconds(0.35f);
             shelfRacksPool.ReleasePoolable(shelfRackToDestroy);
             shelfRackToDestroy = null;
         }
 
-        CraftingSystem.Instance.EnableInputs(true);
+        CraftingSystem.Instance.EnableInputs();
     }
     #endregion
 
-    #region Fill Up Methods
-    public bool IsMiddleShelfRackEmmpty()
-    {
-        return shelfRacksList[middleShelfRackIndex].IsShelfRackEmpty();
-    }
-
+    #region Middle Shelf Rack Methods
     public void FillUpMiddleShelfRack(Dictionary<EConsumableType, int> numPotions)
     {
         PotionShelfRack middleShelfRack = shelfRacksList[middleShelfRackIndex];
@@ -145,7 +155,33 @@ public class PotionShelfRackManager : MonoBehaviour
 
         middleShelfRack.AddPotionsToShelfRack(numPotions, potionRevealDelay);
     }
-    #endregion
+
+    public void UpdateUsedMaterialsForMiddleShelfRack(List<CraftingMaterialSO> usedMaterials)
+    {
+        PotionShelfRack middleShelfRack = shelfRacksList[middleShelfRackIndex];
+
+        if (!middleShelfRack.IsShelfRackEmpty()) return;
+
+        for (int i = usedMaterials.Count - 1; i >= 0; i--)
+        {
+            if (usedMaterials[i] == null)
+            {
+                usedMaterials.RemoveAt(i);
+            }
+        }
+
+        middleShelfRack.UpdateUsedMaterials(usedMaterials);
+    }
+
+    public bool IsMiddleShelfRackEmmpty() => shelfRacksList[middleShelfRackIndex].IsShelfRackEmpty();
 
     public Dictionary<EConsumableType, int> GetNumPotionsFromMiddleShelfRack() => shelfRacksList[middleShelfRackIndex].GetNumActivePotions();
+
+    public List<CraftingMaterialSO> GetUsedMaterialsFromMiddleShelfRack() => shelfRacksList[middleShelfRackIndex].GetUsedMaterialsList();
+
+    public IEnumerator AnimateGivingPotions(Vector3 receivePos, float receiveDuration)
+    {
+        yield return shelfRacksList[middleShelfRackIndex].AnimateGivingPotions(receivePos, receiveDuration);
+    }
+    #endregion
 }

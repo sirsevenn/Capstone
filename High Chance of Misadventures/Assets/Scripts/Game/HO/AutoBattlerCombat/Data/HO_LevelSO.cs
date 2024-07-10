@@ -6,15 +6,17 @@ public class HO_LevelSO : ScriptableObject
 {
     [Header("General Properties")]
     [SerializeField] private uint levelID;
+    [SerializeField] private GameObject environment;
     [TextArea(4, 10)]
     [SerializeField] private List<string> speechList;
-    [SerializeField] private GameObject environment;
+    [TextArea(4, 10)]
+    [SerializeField] private string reminderText;
 
-    [Space(10)] [Header("Player Properties")] 
+    [Space(20)][Header("Player Properties")]
     [SerializeField] private HO_CharacterStat playerStats;
     [SerializeField] private List<CraftingMaterialSO> materialsList;
 
-    [Space(10)] [Header("Enemy Properties")] 
+    [Space(20)][Header("Enemy Properties")]
     [SerializeField] private HO_CharacterStat enemyStats;
     [SerializeField] private HO_EnemyDataSO enemyData;
 
@@ -25,17 +27,23 @@ public class HO_LevelSO : ScriptableObject
         private set { levelID = value; }
     }
 
+    public GameObject Environment
+    {
+        get { return environment; }
+        private set { environment = value; }
+    }
+
     public List<string> SpeechList
     {
         get { return speechList; }
         private set { }
     }
 
-    public GameObject Environment
+    public string ReminderText
     {
-        get { return environment; }
-        private set { environment = value; }
-    }
+        get { return reminderText; }
+        private set {  reminderText = value; }
+    } 
 
     public HO_CharacterStat PlayerStats
     {

@@ -1,12 +1,10 @@
-using Cinemachine;
 using DG.Tweening;
 using System.Collections;
 using UnityEngine;
-using UnityEngine.Playables;
 
 public class HO_AutoBattleManager : MonoBehaviour
 {
-    [Header("Entity Properties")]
+    [Header("Battle Properties")]
     [SerializeField] private HO_PlayerAI playerScript;
     [SerializeField] private HO_EnemyAI enemyScript;
 
@@ -16,29 +14,24 @@ public class HO_AutoBattleManager : MonoBehaviour
     [SerializeField] private float meleeDistanceOffset;
     [SerializeField] private float turnDuration;
 
-    [Space(10)] [Header("Cutscene Properties")]
-    [SerializeField] private PlayableDirector cutsceneDirector;
-    [SerializeField] private CinemachineVirtualCamera dollyCamera;
-    [SerializeField] private int currentSpeechIndex;
-
-    [Space(10)] [Header("Other Properties")]
-    [SerializeField] private HO_AutoBattleUI UI;
-    [Space(10)]
-    [SerializeField] private HO_LevelSO currentLevel;
-    [SerializeField] private GameObject environmentModel;
     [Space(10)]
     [SerializeField] private bool isBattleSimulationFinished;
     [SerializeField] private bool didPlayerWin;
     [SerializeField] private bool isGameOver;
 
+    [Space(20)] [Header("Other References")]
+    [SerializeField] private HO_AutoBattleUI UI;
+    [SerializeField] private HO_CutsceneManager cutsceneScript;
+    [Space(10)]
+    [SerializeField] private HO_LevelSO currentLevel;
+    [SerializeField] private GameObject environmentModel;
+
+    private WaitForSeconds halfTurnDurationInSeconds;
+    private WaitForSeconds shortDelayInSeconds;
+    private WaitForSeconds delayAfterBattleInSeconds;
+
 
     #region Initialization
-    private void Awake()
-    {
-        dollyCamera.enabled = false;
-        cutsceneDirector.enabled = false;
-    }
-
     private void Start()
     {
         // Initialize environment and enemy
@@ -51,23 +44,25 @@ public class HO_AutoBattleManager : MonoBehaviour
         enemyScript.CopyStats(currentLevel.EnemyStats);
 
         // Set default values
-        currentSpeechIndex = 0;
+        turnDuration = (turnDuration == 0) ? 0.55f : turnDuration;
         isBattleSimulationFinished = false;
         didPlayerWin = false;
-        turnDuration = (turnDuration == 0) ? 0.55f : turnDuration;
+
+        halfTurnDurationInSeconds = new WaitForSeconds(turnDuration / 2f);
+        shortDelayInSeconds = new WaitForSeconds(0.1f); 
+        delayAfterBattleInSeconds = new WaitForSeconds(2f);
 
         // Check phase to determine what happens next
         ELevelPhase currentPhase = HO_GameManager.Instance.GetCurrenetLevelPhase();
 
         if (currentPhase == ELevelPhase.Cutscene)
         {
-            UI.DisableUI();
             InventorySystem.Instance.ResetConsumables();
             currentLevel.AddMaterialsToInventory();
+            UI.DisableUI();
 
+            cutsceneScript.EnableCutscene();
             playerScript.transform.position = playerBattlePos;
-            dollyCamera.enabled = true;
-            cutsceneDirector.enabled = true;
         }
         else if (currentPhase == ELevelPhase.Battle)
         {
@@ -97,28 +92,15 @@ public class HO_AutoBattleManager : MonoBehaviour
     }
     #endregion
 
-    #region Cutscene Methods
-    public void OnUpdateSpeechBubble()
-    {
-        UI.UpdateSpeechBubble(currentLevel.SpeechList[currentSpeechIndex]);
-        currentSpeechIndex++;
-    }
-
-    public void OnCutsceneEnd()
-    {
-        HO_GameManager.Instance.TransitionToCraftingScene();
-    }
-    #endregion
-
     #region Battle Logic
     private IEnumerator PlayerEnterAnimation()
     {
-        playerScript.EnterRoom();
-        playerScript.transform.DOMove(playerBattlePos, 3f);
-
-        yield return new WaitForSeconds(3f);
+        playerScript.PlayerMove();
+        yield return playerScript.transform.DOMove(playerBattlePos, 3f).WaitForCompletion();
 
         playerScript.StopMove();
+        yield return UI.AnimateAddPotionsToInventory(playerBattlePos);
+
         StartCoroutine(SimulateBattle());
     }
 
@@ -139,7 +121,7 @@ public class HO_AutoBattleManager : MonoBehaviour
 
             entityWithTurn.OnEntityTurn(opposingEntity.WeakToElement, opposingEntity.ResistantToElement);
             entityWithTurn.TriggerAttackAnimation(attackPos, meleeDistanceOffset, halfTurnDuration);
-            yield return new WaitForSeconds(halfTurnDuration);
+            yield return halfTurnDurationInSeconds;
 
             
             opposingEntity.EntityTakeDamage(entityWithTurn.GetCurrentAttackDamage(), entityWithTurn.GetAttackElementalType());
@@ -153,18 +135,18 @@ public class HO_AutoBattleManager : MonoBehaviour
             {
                 opposingEntity.TriggerHurtAnimation();
             }
-            yield return new WaitForSeconds(0.1f);
+            yield return shortDelayInSeconds;
 
 
             entityWithTurn.TriggerEndAttackAnimation(startPos, halfTurnDuration);
-            yield return new WaitForSeconds(halfTurnDuration);
+            yield return halfTurnDurationInSeconds;
 
 
             isPlayersTurn = !isPlayersTurn;
-            yield return new WaitForSeconds(0.1f);
+            yield return shortDelayInSeconds;
         }
 
-        yield return new WaitForSeconds(2f);
+        yield return delayAfterBattleInSeconds;
 
 
         isGameOver = HO_GameManager.Instance.DecreasePlayerLife();

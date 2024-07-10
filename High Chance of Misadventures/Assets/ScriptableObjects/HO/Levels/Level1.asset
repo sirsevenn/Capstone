@@ -13,12 +13,13 @@ MonoBehaviour:
   m_Name: Level1
   m_EditorClassIdentifier: 
   levelID: 1
+  environment: {fileID: 8414035521889582487, guid: b9131f5922b2b5b45aa19119376a2a50,
+    type: 3}
   speechList:
   - "This battle is harder \nthan I thought!"
   - "I didn't bring enough \n<b><color=#0EAD00>Health Potions</color></b> with me"
   - "I must retreat for now \nor I'll lose"
-  environment: {fileID: 8414035521889582487, guid: b9131f5922b2b5b45aa19119376a2a50,
-    type: 3}
+  reminderText: I am in need of some <b><color=#0EAD00>Health Potions</color></b>!
   playerStats:
     baseHP: 100
     changeInHP: 0

@@ -43,10 +43,6 @@ public class CraftingItemPanelScript : MonoBehaviour
                 case ECraftingEffect.Great_Effect:
                     effectPanelsList[i].SetPositiveEffectIcon(effectSpitesList[spriteIndex]);
                     break;
-                //case ECraftingEffect.No_Effect:
-                //    effectPanelsList[i].SetNegativeEffectIcon(effectSpitesList[spriteIndex]);
-                //    effectPanelsList[i].SetPositiveEffectIcon(effectSpitesList[spriteIndex]);
-                //    break;
                 default:
                     break;
             }

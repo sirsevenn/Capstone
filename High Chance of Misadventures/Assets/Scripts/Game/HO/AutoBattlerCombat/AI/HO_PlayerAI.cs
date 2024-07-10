@@ -33,7 +33,7 @@ public class HO_PlayerAI : HO_EntityAI
         defenseForceField.SetActive(false);
     }
 
-    public void EnterRoom()
+    public void PlayerMove()
     {
         if (animationHandler == null) animationHandler = GetComponent<AnimationHandler>();
 
@@ -92,11 +92,11 @@ public class HO_PlayerAI : HO_EntityAI
         attackElementalType = EElementalAttackType.Unknown;
 
         // Get the number of each potions
-        int numHealthPotions = InventorySystem.Instance.GetConsumableAmount(EConsumableType.Health_Potion);
-        int numDefensePotions = InventorySystem.Instance.GetConsumableAmount(EConsumableType.Defense_Potion);
-        int numSpellPotions = InventorySystem.Instance.GetConsumableAmount(EConsumableType.Fire_Potion) +
-            InventorySystem.Instance.GetConsumableAmount(EConsumableType.Water_Potion) +
-            InventorySystem.Instance.GetConsumableAmount(EConsumableType.Earth_Potion);
+        int numHealthPotions = InventorySystem.Instance.GetConsumableAmountOfType(EConsumableType.Health_Potion);
+        int numDefensePotions = InventorySystem.Instance.GetConsumableAmountOfType(EConsumableType.Defense_Potion);
+        int numSpellPotions = InventorySystem.Instance.GetConsumableAmountOfType(EConsumableType.Fire_Potion) +
+            InventorySystem.Instance.GetConsumableAmountOfType(EConsumableType.Water_Potion) +
+            InventorySystem.Instance.GetConsumableAmountOfType(EConsumableType.Earth_Potion);
 
         // Decide what item to use,if there are any available consumables
         Consumable item = null;

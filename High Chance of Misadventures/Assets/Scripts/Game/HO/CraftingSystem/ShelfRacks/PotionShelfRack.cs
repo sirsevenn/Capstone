@@ -1,14 +1,17 @@
+using DG.Tweening;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using TMPro;
 using UnityEngine;
 
 public class PotionShelfRack : Util_APoolable
 {
+    [Header("General Properties")]
     [SerializeField] private bool isShelfEmpty;
     [SerializeField] private bool isDisplayDisabled;
 
-    [Space(10)]
+    [Space(10)] [Header("Potion Model Properties")]
     [SerializeField] private List<PotionShelf> potionShelvesList;
 
     [Space(10)] 
@@ -17,8 +20,14 @@ public class PotionShelfRack : Util_APoolable
     [Space(10)]
     [SerializeField] private List<int> numActivePotionsList;
 
+    [Space(20)] [Header("Crafting Properties")]
+    [SerializeField] private List<CraftingMaterialSO> usedMaterialsList;
 
-    private void Start()
+    [Space(20)] [Header("Other Properties")]
+    [SerializeField] TMP_Text headerSignText;
+
+
+    private void Awake()
     {
         numActivePotionsList = new();
         ResetShelfRack();
@@ -57,9 +66,23 @@ public class PotionShelfRack : Util_APoolable
                 }
             }
 
-            yield return new WaitForSeconds(potionRevealDelay);
+            WaitForSeconds potionRevealDelayInSeconds = new WaitForSeconds(potionRevealDelay);
+            yield return potionRevealDelayInSeconds;
         }
-        CraftingSystem.Instance.EnableInputs(true);
+
+        CraftingSystem.Instance.EnableInputs();
+    }
+
+    public void UpdateUsedMaterials(List<CraftingMaterialSO> list)
+    {
+        if (!isShelfEmpty) return;
+
+        usedMaterialsList = new(list);
+    }
+
+    public List<CraftingMaterialSO> GetUsedMaterialsList()
+    {
+        return usedMaterialsList;
     }
 
     public Dictionary<EConsumableType, int> GetNumActivePotions()
@@ -102,6 +125,7 @@ public class PotionShelfRack : Util_APoolable
 
         isShelfEmpty = true;
         isDisplayDisabled = (potionShelvesList.Count != potionTypesForEachShelf.Count);
+        headerSignText.text = "";
     }
     #endregion
 
@@ -123,4 +147,43 @@ public class PotionShelfRack : Util_APoolable
         transform.localPosition = Vector3.zero;
     }
     #endregion
+
+
+    public void UpdateShelfRackSign(string text)
+    {
+        headerSignText.text = text;
+    }
+
+    public IEnumerator AnimateGivingPotions(Vector3 receivePos, float receiveDuration)
+    {
+        if (isShelfEmpty || isDisplayDisabled) yield break;
+
+        int highestAmount = numActivePotionsList.Max();
+        float giveDelay = 0.15f;
+        float giveDuration = (receiveDuration - (highestAmount) * giveDelay);
+        WaitForSeconds giveDelayInSeconds = new WaitForSeconds(giveDelay);
+
+        receivePos.y += 2f;
+
+        for (int i = 0; i < highestAmount; i++)
+        {
+            for (int j = 0; j < potionShelvesList.Count; j++)
+            {
+                List<GameObject> shelf = potionShelvesList[j].PotionsList;
+
+                if (i < numActivePotionsList[j])
+                {
+                    GameObject shelfObj = shelf[i];
+                    shelfObj.transform.DOJump(receivePos, 4.5f, 1, giveDuration).SetEase(Ease.OutCubic).OnComplete(() => {
+                        shelfObj.SetActive(false);
+                    });
+                }
+            }
+
+            yield return giveDelayInSeconds;
+        }
+
+        WaitForSeconds afterGiveDelayInSeconds = new WaitForSeconds(giveDuration - giveDelay);
+        yield return afterGiveDelayInSeconds;
+    }
 }

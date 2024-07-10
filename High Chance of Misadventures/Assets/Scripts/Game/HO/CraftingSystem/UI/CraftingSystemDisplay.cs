@@ -1,4 +1,6 @@
+using DG.Tweening;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -9,21 +11,32 @@ public class CraftingSystemDisplay : MonoBehaviour
     [SerializeField] private List<Image> dropSlotHighlights;
     [SerializeField] private List<Image> dropSlotIcons;
     [SerializeField] private Sprite defaultSlotIcon;
+    [SerializeField] private GameObject blockSelectionPanel;
 
     [Space(10)] [Header("Dragged Material Properties")]
     [SerializeField] private Image draggedIcon;
     [SerializeField] private RectTransform draggedIconTransform;
 
-    [Space(10)] [Header("Other UI Properties")]
+    [Space(10)] [Header("Crafting Material Properties")]
     [SerializeField] private Transform materialsListParent;
     [SerializeField] private List<CraftingItemPanelScript> materialPanelsList;
     [SerializeField] private GameObject itemPanelPrefab;
+
+    [Space(10)] [Header("Reminder Properties")]
+    [SerializeField] private bool isReminderOpen;
+    [SerializeField] private float reminderScaleDuration;
+    [SerializeField] private GameObject reminderSpeechBubble;
+    [SerializeField] private GameObject reminderAlertIcon;
+    [SerializeField] private TMP_Text reminderText;
 
     [Space(10)] [Header("Camera Settings")]
     [SerializeField] private Camera mainCam;
     [SerializeField] private float defaultScreenRatio;
     [SerializeField] private float minmaxRatioDiff;
     [SerializeField] private float changeInFOV;
+
+    [Space(10)] [Header("Canvas")]
+    [SerializeField] private GameObject craftingCanvas;
 
 
     #region Initialization
@@ -34,12 +47,12 @@ public class CraftingSystemDisplay : MonoBehaviour
         AdjustCameraFOV();
         draggedIcon.gameObject.SetActive(false);
 
-        InventorySystem.Instance.OnUpdateMaterialsEvent += UpdateMaterialPanel;
-    }
+        UpdateReminderText();
+        isReminderOpen = false;
+        reminderAlertIcon.SetActive(true);
+        reminderSpeechBubble.transform.localScale = Vector3.zero;
 
-    private void OnDestroy()
-    {
-        InventorySystem.Instance.OnUpdateMaterialsEvent -= UpdateMaterialPanel;
+        craftingCanvas.SetActive(true);
     }
 
     private void InitializeItemPanels()
@@ -116,12 +129,22 @@ public class CraftingSystemDisplay : MonoBehaviour
 
         return -1;
     }
-    #endregion
 
-    #region Public UI Methods
+    public void DisplayUsedMaterials(List<CraftingMaterialSO> usedMaterials)
+    {
+        ResetCraftingUI();
+        blockSelectionPanel.SetActive(true);
+
+        for (int i = 0;i < usedMaterials.Count;i++)
+        {
+            dropSlotIcons[i].sprite = usedMaterials[i].ItemIcon;
+        }
+    }
+
     public void ResetCraftingUI()
     {
         currentHighlightedSlotIndex = -1;
+        blockSelectionPanel.SetActive(false);
 
         foreach (var highlight in dropSlotHighlights)
         {
@@ -136,29 +159,32 @@ public class CraftingSystemDisplay : MonoBehaviour
     }
     #endregion
 
-    #region Inventory Event Methods
-    private void UpdateMaterialPanel(CraftingMaterialSO materialToCheck, bool hasAddedNewMaterial) 
+    #region Reminder Methods
+    private void UpdateReminderText()
     {
-        if (materialToCheck == null) return;
+        HO_LevelSO currentLevel = HO_GameManager.Instance.GetCurrentLevel();
+        reminderText.text = currentLevel.ReminderText;
+    }
 
-        foreach (var materialPanel in materialPanelsList)
+    public void OnReminderClick()
+    {
+        isReminderOpen = !isReminderOpen;
+
+        if (isReminderOpen)
         {
-            if (!hasAddedNewMaterial && materialPanel.IsTheSameMaterialInPanel(materialToCheck))
-            {
-                //materialPanel.gameObject.SetActive(false);
-                DestroyImmediate(materialPanel.gameObject);
-                return;
-            }
+            reminderSpeechBubble.transform.DOScale(1, reminderScaleDuration);
+            reminderAlertIcon.SetActive(false);
         }
-
-        if (hasAddedNewMaterial)
+        else
         {
-            GameObject newMaterialPanel = GameObject.Instantiate(itemPanelPrefab, materialsListParent);
-            CraftingItemPanelScript script = newMaterialPanel.GetComponent<CraftingItemPanelScript>();
-            script.UpdatePanelInfo(materialToCheck);
-            materialPanelsList.Add(script);
-            return;
+            reminderSpeechBubble.transform.DOScale(0, reminderScaleDuration);
+            reminderAlertIcon.SetActive(true);
         }
     }
     #endregion
+
+    public void DisableUI()
+    {
+        craftingCanvas.SetActive(false);
+    }
 }

@@ -1,4 +1,3 @@
-using DG.Tweening;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,6 +26,7 @@ public class CraftingSystem : MonoBehaviour
     [SerializeField] private CraftingParticles particlesScript;
     [SerializeField] private PotionShelfRackManager shelfRackManager;
     [SerializeField] private Collider leverCollider;
+    [SerializeField] private CraftingExitHandler exitHandler;
 
 
     #region Singleton
@@ -78,9 +78,57 @@ public class CraftingSystem : MonoBehaviour
 
 
     #region Touch Input Event Methods
+    private void OnSwipe(object send, SwipeEventArgs args)
+    {
+        if (!areInputsEnabled) return;
+
+        if (args.SwipeDirection != SwipeEventArgs.SwipeDirections.LEFT && args.SwipeDirection != SwipeEventArgs.SwipeDirections.RIGHT) return;
+
+        Ray ray = Camera.main.ScreenPointToRay(args.SwipePos);
+        RaycastHit hit;
+
+        if (leverCollider.Raycast(ray, out hit, 100f))
+        {
+            // Check for valid movement
+            if (args.SwipeDirection == SwipeEventArgs.SwipeDirections.LEFT)
+            {
+                areInputsEnabled = false;
+                shelfRackManager.MoveShelfRacks(true);
+            }
+            else if (args.SwipeDirection == SwipeEventArgs.SwipeDirections.RIGHT && shelfRackManager.CanMoveShelfRacksToTheRight())
+            {
+                areInputsEnabled = false;
+                shelfRackManager.MoveShelfRacks(false);
+            }
+
+            // Update some UI based on the movement
+            if (!shelfRackManager.IsMiddleShelfRackEmmpty())
+            {
+                ResetCraftingTrackers();
+                particlesScript.ResetAllParticles();
+
+                List<CraftingMaterialSO> usedMaterials = shelfRackManager.GetUsedMaterialsFromMiddleShelfRack();
+                UpdateUsedMaterials(usedMaterials);
+                craftingDisplay.DisplayUsedMaterials(usedMaterials);
+            }
+            else if (!isCauldronFiredUp)
+            {
+                ResetCraftingTrackers();
+                craftingDisplay.ResetCraftingUI();
+            }
+        }
+    }
+
+    public void EnableInputs()
+    {
+        areInputsEnabled = true;
+    }
+
     public void OnBeginDragMaterial(CraftingMaterialSO draggedMaterial)
     {
-        if (!areInputsEnabled || isDraggingMaterial || currentDraggedMaterial != null) return;
+        if (!areInputsEnabled || 
+            !shelfRackManager.IsMiddleShelfRackEmmpty() || 
+            isDraggingMaterial || currentDraggedMaterial != null) return;
 
         isDraggingMaterial = true;
         currentDraggedMaterial = draggedMaterial;
@@ -89,7 +137,9 @@ public class CraftingSystem : MonoBehaviour
 
     public void OnDragMaterial(CraftingMaterialSO draggedMaterial, Vector2 materialPos)
     {
-        if (!areInputsEnabled || !isDraggingMaterial || currentDraggedMaterial != draggedMaterial) return;
+        if (!areInputsEnabled || 
+            !shelfRackManager.IsMiddleShelfRackEmmpty() || 
+            !isDraggingMaterial || currentDraggedMaterial != draggedMaterial) return;
 
         int index = craftingDisplay.GetSlotIndexFromHoveredMaterial(materialPos);
         bool isHighlighted = (index != -1) && (droppedMaterials[index] == null);
@@ -99,7 +149,9 @@ public class CraftingSystem : MonoBehaviour
 
     public void OnEndDragMaterial(CraftingMaterialSO draggedMaterial, Vector2 materialPos)
     {
-        if (!areInputsEnabled || !isDraggingMaterial || currentDraggedMaterial != draggedMaterial) return;
+        if (!areInputsEnabled || 
+            !shelfRackManager.IsMiddleShelfRackEmmpty() || 
+            !isDraggingMaterial || currentDraggedMaterial != draggedMaterial) return;
 
         // Determine if it is on top of an open slot
         int slotIndex = craftingDisplay.GetSlotIndexFromHoveredMaterial(materialPos);
@@ -163,19 +215,12 @@ public class CraftingSystem : MonoBehaviour
             newPotionDisplay.Add(consumablesToCraftList[i].ConsumableType, amountForEachConsumableList[i]);
         }
 
+        shelfRackManager.UpdateUsedMaterialsForMiddleShelfRack(new List<CraftingMaterialSO>(droppedMaterials));
         shelfRackManager.FillUpMiddleShelfRack(newPotionDisplay);
 
-        // Reset selection slots and other trackers for crafting
-        for (int i = 0; i < droppedMaterials.Length; i++)
-        {
-            droppedMaterials[i] = null;
-        }
-
-        ResetCraftingTrackers();
-
-        // Reset properties from other scripts
-        craftingDisplay.ResetCraftingUI();
+        // Reset particles
         particlesScript.ResetAllParticles();
+        isCauldronFiredUp = false;
     }
 
     private List<int> CalculateAmountOfConsumablesToCraft()
@@ -228,6 +273,11 @@ public class CraftingSystem : MonoBehaviour
 
     private void ResetCraftingTrackers()
     {
+        for (int i = 0; i < droppedMaterials.Length; i++)
+        {
+            droppedMaterials[i] = null;
+        }
+
         weightsOnEachConsumableList.Clear();
         for (int i = 0; i < consumablesToCraftList.Count; i++)
         {
@@ -237,34 +287,15 @@ public class CraftingSystem : MonoBehaviour
         totalWeight = 250f;
         isCauldronFiredUp = false;
     }
-    #endregion
 
-    private void OnSwipe(object send, SwipeEventArgs args)
+    private void UpdateUsedMaterials(List<CraftingMaterialSO> usedConsumables)
     {
-        if (!areInputsEnabled) return;
-
-        Ray ray = Camera.main.ScreenPointToRay(args.SwipePos);
-        RaycastHit hit;
-
-        if (leverCollider.Raycast(ray, out hit, 100f))
+        for(int i = 0; i < usedConsumables.Count; i++)
         {
-            if (args.SwipeDirection == SwipeEventArgs.SwipeDirections.LEFT)
-            {
-                areInputsEnabled = false;
-                shelfRackManager.MoveShelfRacks(true);
-            }
-            else if (args.SwipeDirection == SwipeEventArgs.SwipeDirections.RIGHT && shelfRackManager.CanMoveShelfRacksToTheRight(false))
-            {
-                areInputsEnabled = false;
-                shelfRackManager.MoveShelfRacks(false);
-            }
+            droppedMaterials[i] = usedConsumables[i];
         }
     }
-
-    public void EnableInputs(bool isEnabled)
-    {
-        areInputsEnabled = isEnabled;
-    }
+    #endregion
 
     public void TransitionToBattleScene()
     {
@@ -285,7 +316,7 @@ public class CraftingSystem : MonoBehaviour
             }
         }
 
-        // Trasition to next scene
-        HO_GameManager.Instance.TransitionToBattleScene();
+        craftingDisplay.DisableUI();
+        exitHandler.OnBeginExitFromCraftingScene();
     }
 }

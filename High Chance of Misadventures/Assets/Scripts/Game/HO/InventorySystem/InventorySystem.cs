@@ -41,29 +41,18 @@ public class InventorySystem : MonoBehaviour
     #endregion
 
 
-    //public void RemoveAllBadItems()
-    //{
-    //    for (int i = 0; i < potionsList.Count; i++)
-    //    {
-    //        var potion = potionsList[i];
-
-    //        if (potion.AppliedModifierType == ECraftingEffect.Bad_Effect || potion.AppliedModifierType == ECraftingEffect.Poor_Effect)
-    //        {
-    //            potionsList.Remove(potion);
-    //            OnUpdatePotionsEvent?.Invoke(potion, false);
-    //            i--;
-    //        }
-    //    }
-    //}
-
-
     #region Consumable Methods
     public bool HasConsumable(EConsumableType type)
     {
         return consumablesList.Exists(x => x.ConsumableData.ConsumableType == type);
     }
 
-    public int GetConsumableAmount(EConsumableType type)
+    public int GetConsumablesTotalAmount()
+    {
+        return consumablesList.Count;
+    }
+
+    public int GetConsumableAmountOfType(EConsumableType type)
     {
         int numConsumables = 0;
         foreach (var consumable in consumablesList)
@@ -71,11 +60,6 @@ public class InventorySystem : MonoBehaviour
             if (consumable.ConsumableData.ConsumableType == type) numConsumables++;
         }
         return numConsumables;
-    }
-
-    public int GetConsumablesTotalAmount()
-    {
-        return consumablesList.Count;
     }
 
     public Consumable GetOneConsumableOfType(EConsumableType type)

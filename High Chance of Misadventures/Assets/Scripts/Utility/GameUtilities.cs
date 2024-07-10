@@ -27,4 +27,16 @@ public class GameUtilities : MonoBehaviour
         function();
     }
 
+    public static IEnumerator WaitForPlayerInput()
+    {
+        bool inputReceived = false;
+        while (!inputReceived)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                inputReceived = true;
+            }
+            yield return null;
+        }
+    }
 }

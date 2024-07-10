@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 99c9b76b81a0025439315f4a7fdbc3a3, type: 3}
+  m_Name: TreeMan
+  m_EditorClassIdentifier: 
+  type: 3
+  maxHealth: 5
+  attackDamage: 15
+  heavyAttackProbability: 0
+  lightAttackProbability: 5
+  parryAttackProbability: 5
+  attackSoundEffect: {fileID: 8300000, guid: 15812c984a3bc8e4ea19eb8d54c181cc, type: 3}
+  dieSoundEffect: {fileID: 0}

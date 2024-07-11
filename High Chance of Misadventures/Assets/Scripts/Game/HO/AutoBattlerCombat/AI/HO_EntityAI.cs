@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
@@ -8,6 +9,9 @@ public abstract class HO_EntityAI : MonoBehaviour
     [Space(10)] [Header("Attack Properties")]
     [SerializeField] protected int currentAttackDMG;
     [SerializeField] protected EElementalAttackType attackElementalType;
+
+    [Space(10)] [Header("Audio Properties")]
+    [SerializeField] protected List<AudioClip> attackSoundsList;
 
     [Space(10)] [Header("Component References")]
     [SerializeField] protected Animator animator;

@@ -25,6 +25,7 @@ public class PotionShelfRack : Util_APoolable
 
     [Space(20)] [Header("Other Properties")]
     [SerializeField] TMP_Text headerSignText;
+    [SerializeField] private AudioClip clinkingSound;
 
 
     private void Awake()
@@ -66,6 +67,7 @@ public class PotionShelfRack : Util_APoolable
                 }
             }
 
+            SoundEffectManager.Instance.PlaySoundEffect(clinkingSound);
             WaitForSeconds potionRevealDelayInSeconds = new WaitForSeconds(potionRevealDelay);
             yield return potionRevealDelayInSeconds;
         }

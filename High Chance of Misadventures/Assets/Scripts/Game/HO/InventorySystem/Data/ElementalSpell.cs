@@ -7,6 +7,7 @@ public class ElementalSpell : MonoBehaviour
     [SerializeField] private ParticleSystem orbParticle;
     [SerializeField] private ParticleSystem trailParticle;
     [SerializeField] private float delayBeforeDestroy;
+    [SerializeField] private AudioClip whooshSound;
 
 
     private void Awake()
@@ -19,6 +20,7 @@ public class ElementalSpell : MonoBehaviour
     {
         orbParticle.Play();
         trailParticle.Play();
+        SoundEffectManager.Instance.PlaySoundEffect(whooshSound);
 
         transform.DOMove(endPos, duration).SetEase(Ease.Linear);
         yield return new WaitForSeconds(duration);

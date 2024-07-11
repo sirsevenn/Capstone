@@ -54,7 +54,10 @@ public class HO_PlayerAI : HO_EntityAI
 
             animationHandler.PlayAnimation(ActionType.Heavy);
             animator.SetFloat("Speed", attackAnimDuration / animDuration);
-            transform.DOJump(opponentPos + offsetDir * meleeDistanceOffset, 1, 1, animDuration).SetEase(Ease.Linear);
+            transform.DOJump(opponentPos + offsetDir * meleeDistanceOffset, 1, 1, animDuration).SetEase(Ease.Linear).OnComplete(() => {
+                int rand = UnityEngine.Random.Range(0, attackSoundsList.Count);
+                SoundEffectManager.Instance.PlaySoundEffect(attackSoundsList[rand]);
+            });
         }
         else
         {
@@ -76,7 +79,7 @@ public class HO_PlayerAI : HO_EntityAI
 
     public override void TriggerHurtAnimation()
     {
-        
+
     }
 
     public override void TriggerDeathAnimation()

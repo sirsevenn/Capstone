@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [CreateAssetMenu(fileName = "New Enemy Data", menuName = "ScriptableObjects/HO/EnemyData")]
@@ -16,6 +17,9 @@ public class HO_EnemyDataSO : ScriptableObject
     [SerializeField] private int enemyDEF;
     [SerializeField] private EElementalAttackType weakToElement;
     [SerializeField] private EElementalAttackType resistantToElement;
+
+    [Space(10)] [Header("Audio Properties")]
+    [SerializeField] private AudioClip attackSound;
 
 
     public EEnemyType EnemyType
@@ -76,6 +80,12 @@ public class HO_EnemyDataSO : ScriptableObject
     {
         get { return resistantToElement; }
         private set { }
+    }
+
+    public AudioClip AttackSound
+    {
+        get { return attackSound; }
+        private set { attackSound = value; }
     }
 
     public string GetEnemyName()

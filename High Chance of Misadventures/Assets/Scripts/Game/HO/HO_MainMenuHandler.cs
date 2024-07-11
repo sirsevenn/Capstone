@@ -20,10 +20,11 @@ public class HO_MainMenuHandler : MonoBehaviour
  
 
     private void Start()
-    {
-        OnReturnToMainMenu();
+    { 
+        levelSelectionMenu.SetActive(false);
         UpdateLevelSelectMenu();
 
+        settingsMenu.SetActive(false);
         secretOption.SetActive(false);
         confirmatoryMenu.SetActive(false);
 
@@ -47,21 +48,25 @@ public class HO_MainMenuHandler : MonoBehaviour
 
     public void OnPlayButton()
     {
+        SoundEffectManager.Instance.PlayClick();
         levelSelectionMenu.SetActive(true);
     }
 
     public void OnSettingsButton()
     {
+        SoundEffectManager.Instance.PlayClick();
         settingsMenu.SetActive(true);
     }
 
     public void OnQuitButton()
     {
+        SoundEffectManager.Instance.PlayClick();
         Application.Quit();
     }
 
     public void OnReturnToMainMenu()
     {
+        SoundEffectManager.Instance.PlayClick();
         levelSelectionMenu.SetActive(false);
         settingsMenu.SetActive(false);
     }
@@ -73,11 +78,13 @@ public class HO_MainMenuHandler : MonoBehaviour
 
     public void OnDeletePlayerData()
     {
+        SoundEffectManager.Instance.PlayClick();
         confirmatoryMenu.SetActive(true);
     }
 
     public void OnConfirmAction()
     {
+        SoundEffectManager.Instance.PlayClick();
         HO_GameManager.Instance.ResetPlayerData();
         UpdateLevelSelectMenu();
 
@@ -86,6 +93,7 @@ public class HO_MainMenuHandler : MonoBehaviour
 
     public void OnDeclineAction()
     {
+        SoundEffectManager.Instance.PlayClick();
         confirmatoryMenu.SetActive(false);
     }
 

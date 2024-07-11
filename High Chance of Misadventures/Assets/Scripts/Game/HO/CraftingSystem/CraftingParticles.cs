@@ -6,9 +6,17 @@ public class CraftingParticles : MonoBehaviour
     [SerializeField] private ParticleSystem fireParticles;
     [SerializeField] private List<ParticleSystem> materialParticlesList;
 
+    [Space(10)]
+    [SerializeField] private AudioSource audioSource;
+    [SerializeField] private AudioClip boilingSound;
+
 
     private void Start()
     {
+        audioSource = GetComponent<AudioSource>();
+        audioSource.loop = true;
+        audioSource.clip = boilingSound;
+
         ResetAllParticles();
     }
 
@@ -20,11 +28,14 @@ public class CraftingParticles : MonoBehaviour
         {
             particle.Stop();
         }
+
+        audioSource.Stop();
     }
 
     public void PlayFireParticle()
     { 
         fireParticles.Play();
+        audioSource.Play();
     }
 
     public void PlayMaterialParticle(int index, Color particleColor)

@@ -37,34 +37,22 @@ public class MusicManager : MonoBehaviour
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        switch (scene.buildIndex)
+        switch (scene.name)
         {
-            case 0:
+            case "HO_MainMenuScene":
                 PlayMusic(menuMusic);
                 break;
-            case 1:
-                
-                break;
-            case 2:
+            case "HO_ForestRegion":
                 StartCoroutine(FadeMusic(forestMusic));
                 break;
-            case 3:
-                StartCoroutine(FadeMusic(forestMusic));
-                break;
-            case 4:
+            case "HO_CaveRegion":
                 StartCoroutine(FadeMusic(caveMusic));
                 break;
-            case 5:
-                StartCoroutine(FadeMusic(caveMusic));
-                break;
-            case 6:
-                StartCoroutine(FadeMusic(castleMusic));
-                break;
-            case 7:
+            case "HO_CastleRegion":
                 StartCoroutine(FadeMusic(castleMusic));
                 break;
             default:
-                PlayMusic(null); // No music for undefined scenes
+                //PlayMusic(null); // No music for undefined scenes
                 break;
         }
     }

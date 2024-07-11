@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System.Linq;
 using UnityEngine;
 
 [RequireComponent(typeof(WorldSpaceHealthBar))]
@@ -11,6 +12,8 @@ public class HO_EnemyAI : HO_EntityAI
     public void SetEnemyData(HO_EnemyDataSO data)
     {
         enemyData = data;
+        attackSoundsList = new();
+        attackSoundsList.Add(enemyData.AttackSound);
     }
 
     public override void OnEntityTurn(EElementalAttackType weakToElement, EElementalAttackType resistantToElement)
@@ -26,7 +29,9 @@ public class HO_EnemyAI : HO_EntityAI
 
         animator.SetTrigger(enemyData.AttackAnimTrigger);
         animator.SetFloat("Speed", enemyData.AttackAnimDuration / animDuration);
-        transform.DOJump(opponentPos + offsetDir * meleeDistanceOffset, 1, 1, animDuration).SetEase(Ease.Linear);
+        transform.DOJump(opponentPos + offsetDir * meleeDistanceOffset, 1, 1, animDuration).SetEase(Ease.Linear).OnComplete(() => {
+            SoundEffectManager.Instance.PlaySoundEffect(attackSoundsList.First());
+        });
     }
 
     public override void TriggerEndAttackAnimation(Vector3 originalPos, float animDuration)

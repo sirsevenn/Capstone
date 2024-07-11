@@ -207,4 +207,10 @@ public class InventorySystem : MonoBehaviour
         }
     }
     #endregion
+
+    public void ResetInventory()
+    {
+        consumablesList.Clear();
+        craftingMaterialsList.Clear();
+    }
 }

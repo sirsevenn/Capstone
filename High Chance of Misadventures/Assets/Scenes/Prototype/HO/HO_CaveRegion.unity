@@ -3236,6 +3236,10 @@ MonoBehaviour:
     ResistantToElement: 2
   currentAttackDMG: 0
   attackElementalType: 0
+  attackSoundsList:
+  - {fileID: 8300000, guid: c765d48e2e122a348bc5a0ae19ce4723, type: 3}
+  - {fileID: 8300000, guid: db11883fdcd8f444598cbd163021083b, type: 3}
+  - {fileID: 8300000, guid: 0710dac124b380045be2711586453ec6, type: 3}
   animator: {fileID: 418365828}
   healthBar: {fileID: 418365832}
   healthNumber: {fileID: 418365831}
@@ -9070,7 +9074,6 @@ MonoBehaviour:
   UI: {fileID: 1281749138}
   cutsceneScript: {fileID: 1281749136}
   currentLevel: {fileID: 0}
-  environmentModel: {fileID: 0}
 --- !u!114 &1281749136
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -12381,10 +12384,14 @@ MonoBehaviour:
   currentLevel: {fileID: 0}
   currentLevelIndex: 0
   currentLevelPhase: 1
-  battleSceneName: AutoBattleScene
+  highestUnlockedLevelID: 0
+  mainMenuSceneName: 
   craftingSceneName: CraftingScene
   currentPlayerLives: 0
   maxPlayerLives: 2
+  hasFinishedTutorial: 0
+  highLevelIDKey: 
+  tutorialKey: 
 --- !u!4 &1398691931
 Transform:
   m_ObjectHideFlags: 0

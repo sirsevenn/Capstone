@@ -170,7 +170,7 @@ public class HO_AutoBattleManager : MonoBehaviour
             (!didPlayerWin && isGameOver))                               // player lost completely
         {
             HO_GameManager.Instance.TransitionToBattleScene();
-
+            InventorySystem.Instance.ResetInventory();
         }
     }
 

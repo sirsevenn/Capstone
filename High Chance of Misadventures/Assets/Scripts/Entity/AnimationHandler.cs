@@ -15,7 +15,7 @@ public class AnimationHandler : MonoBehaviour
         switch (action)
         {
             case ActionType.Heavy:
-                animator.SetTrigger("Heavy");
+                animator.SetTrigger("Attack");
                 break;
             case ActionType.Parry:
                 animator.SetTrigger("Parry");

@@ -48,11 +48,14 @@ public class GestureManager : MonoBehaviour
     // Methods for Checking Inputs
     private void DetectFingerInputs()
     {
+        //string t = "";
+
         for (int i = activeInputPropertiesList.Count - 1; i > -1; i--)
         {
             if (activeInputPropertiesList[i].finger.phase == TouchPhase.Ended)
             {
                 activeInputPropertiesList.RemoveAt(i);
+                //t += "remove   ";
             }
         }
 
@@ -62,6 +65,7 @@ public class GestureManager : MonoBehaviour
             {
                 GestureInputProperties newProperty = new(Input.GetTouch(i), new Vector2(-1f, -1f), new Vector2(-1f, -1f), 0f);
                 activeInputPropertiesList.Add(newProperty);
+                //t += "add   ";
             }
             else
             {
@@ -69,8 +73,12 @@ public class GestureManager : MonoBehaviour
                 property.finger = Input.GetTouch(i); //always reset struct values, theyre immutable with no references
             }
 
+            //t += "input   " + i.ToString();
+
             CheckSingleFingerGesture(activeInputPropertiesList[i].finger, activeInputPropertiesList[i]);
         }
+
+        //Debug.Log(t);
     }
 
     private void CheckSingleFingerGesture(Touch finger, GestureInputProperties property)

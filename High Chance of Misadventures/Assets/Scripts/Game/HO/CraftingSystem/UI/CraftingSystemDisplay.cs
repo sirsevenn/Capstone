@@ -35,8 +35,10 @@ public class CraftingSystemDisplay : MonoBehaviour
     [SerializeField] private float minmaxRatioDiff;
     [SerializeField] private float changeInFOV;
 
-    [Space(10)] [Header("Canvas")]
+    [Space(10)] [Header("Other UI")]
     [SerializeField] private GameObject craftingCanvas;
+    [SerializeField] private Button brewButton;
+    [SerializeField] private Button deliverButton;
 
 
     #region Initialization
@@ -76,7 +78,7 @@ public class CraftingSystemDisplay : MonoBehaviour
     }
     #endregion
 
-    #region Dragging Event Methods
+    #region Crafting Methods
     public void OnBeginDragMaterial(Sprite icon)
     {
         draggedIcon.gameObject.SetActive(true);
@@ -141,6 +143,11 @@ public class CraftingSystemDisplay : MonoBehaviour
         }
     }
 
+    public void EnableBlockSelectionPanel()
+    {
+        blockSelectionPanel.SetActive(true);
+    }
+
     public void ResetCraftingUI()
     {
         currentHighlightedSlotIndex = -1;
@@ -182,6 +189,12 @@ public class CraftingSystemDisplay : MonoBehaviour
         }
     }
     #endregion
+
+    public void OnEnableInputs(bool isEnabled)
+    {
+        brewButton.interactable = isEnabled;
+        deliverButton.interactable = isEnabled;
+    }
 
     public void DisableUI()
     {

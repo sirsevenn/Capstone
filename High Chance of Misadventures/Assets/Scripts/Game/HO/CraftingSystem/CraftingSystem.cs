@@ -27,6 +27,7 @@ public class CraftingSystem : MonoBehaviour
     [SerializeField] private PotionShelfRackManager shelfRackManager;
     [SerializeField] private Collider leverCollider;
     [SerializeField] private CraftingExitHandler exitHandler;
+    [SerializeField] private HO_TutorialHandler tutorialHandler;
 
 
     #region Singleton
@@ -68,10 +69,19 @@ public class CraftingSystem : MonoBehaviour
             null, null, null
         };
 
-        areInputsEnabled = true;
-
         weightsOnEachConsumableList = new();
         ResetCraftingTrackers();
+
+        if (!HO_GameManager.Instance.HasFinishedTutorial())
+        {
+            areInputsEnabled = false;
+            craftingDisplay.OnEnableInputs(false);
+            tutorialHandler.InitiateTutorial();
+        }
+        else
+        {
+            areInputsEnabled = true;
+        }
 
         GestureManager.Instance.OnSwipeEvent += OnSwipe;
     }
@@ -93,11 +103,13 @@ public class CraftingSystem : MonoBehaviour
             if (args.SwipeDirection == SwipeEventArgs.SwipeDirections.LEFT)
             {
                 areInputsEnabled = false;
+                craftingDisplay.OnEnableInputs(false);
                 shelfRackManager.MoveShelfRacks(true);
             }
             else if (args.SwipeDirection == SwipeEventArgs.SwipeDirections.RIGHT && shelfRackManager.CanMoveShelfRacksToTheRight())
             {
                 areInputsEnabled = false;
+                craftingDisplay.OnEnableInputs(false);
                 shelfRackManager.MoveShelfRacks(false);
             }
 
@@ -122,6 +134,7 @@ public class CraftingSystem : MonoBehaviour
     public void EnableInputs()
     {
         areInputsEnabled = true;
+        craftingDisplay.OnEnableInputs(true);
     }
 
     public void OnBeginDragMaterial(CraftingMaterialSO draggedMaterial)
@@ -205,6 +218,8 @@ public class CraftingSystem : MonoBehaviour
         // Reset inventory and disable inputs
         InventorySystem.Instance.ResetConsumables();
         areInputsEnabled = false;
+        craftingDisplay.OnEnableInputs(false);
+        craftingDisplay.EnableBlockSelectionPanel();
 
         // Determine the amount of all potions, then add the to middle shelf rack
         List<int> amountForEachConsumableList = CalculateAmountOfConsumablesToCraft();

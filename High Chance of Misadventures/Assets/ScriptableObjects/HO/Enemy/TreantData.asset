@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0daf151e13dc9424aa1319fbc8abdc5d, type: 3}
+  m_Name: TreantData
+  m_EditorClassIdentifier: 
+  enemyType: 6
+  model: {fileID: 3003212470116598028, guid: c6514e59169458746add9d7e722a2f25, type: 3}
+  attackAnimDuration: 0.75
+  attackAnimTrigger: Attack
+  deathAnimTrigger: Death
+  enemyHP: 70
+  enemyATK: 14
+  enemyDEF: 10
+  weakToElement: 1
+  resistantToElement: 3

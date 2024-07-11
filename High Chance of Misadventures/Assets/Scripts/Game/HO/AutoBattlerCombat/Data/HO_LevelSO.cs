@@ -6,7 +6,9 @@ public class HO_LevelSO : ScriptableObject
 {
     [Header("General Properties")]
     [SerializeField] private uint levelID;
-    [SerializeField] private GameObject environment;
+    [SerializeField] private string regionName;
+
+    [Space(20)]
     [TextArea(4, 10)]
     [SerializeField] private List<string> speechList;
     [TextArea(4, 10)]
@@ -27,10 +29,10 @@ public class HO_LevelSO : ScriptableObject
         private set { levelID = value; }
     }
 
-    public GameObject Environment
+    public string RegionName
     {
-        get { return environment; }
-        private set { environment = value; }
+        get { return regionName; }
+        private set { regionName = value; }
     }
 
     public List<string> SpeechList

@@ -13,17 +13,21 @@ MonoBehaviour:
   m_Name: Level3
   m_EditorClassIdentifier: 
   levelID: 3
-  environment: {fileID: 8414035521889582487, guid: b9131f5922b2b5b45aa19119376a2a50,
-    type: 3}
+  regionName: HO_CastleRegion
   speechList:
-  - 
-  - 
-  - 
-  reminderText: 
+  - "I have ran out \nof potions!"
+  - 'I need more <b><color=#A2D413>spells</color></b> to
+
+    be able to beat Modred!'
+  - "I must retreat for now \nor I'll lose"
+  reminderText: 'Give more <b><color=#A2D413>elemental spells</color></b>
+
+    to
+    beat Mordred'
   playerStats:
     baseHP: 100
     changeInHP: 0
-    currentHP: 100
+    currentHP: 80
     baseATK: 15
     changeInATK: 0
     totalATK: 15
@@ -33,21 +37,21 @@ MonoBehaviour:
     WeakToElement: 1
     ResistantToElement: 2
   materialsList:
-  - {fileID: 11400000, guid: fee477a7cbe6cef43a2efe53ceeff30f, type: 2}
-  - {fileID: 11400000, guid: e3f77875c6c05444cbce66ca83c552f4, type: 2}
+  - {fileID: 11400000, guid: cbe80c59a16310241af19c158e931853, type: 2}
+  - {fileID: 11400000, guid: aeabb6b8f17880741bb434f1fec6a245, type: 2}
   - {fileID: 11400000, guid: 053028975a891c34dbc5059f54e49460, type: 2}
-  - {fileID: 11400000, guid: 97d2fb6c4c97d9042844ea1c6382d4dc, type: 2}
-  - {fileID: 11400000, guid: 552d461c2db647a489bac2a2b6fea6b1, type: 2}
+  - {fileID: 11400000, guid: 65f96b37b186c8a498d8f8ef59590a68, type: 2}
+  - {fileID: 11400000, guid: 039f9a42acc0ab0478a2809e3485082c, type: 2}
   enemyStats:
-    baseHP: 150
+    baseHP: 175
     changeInHP: 0
-    currentHP: 150
-    baseATK: 15
+    currentHP: 175
+    baseATK: 17
     changeInATK: 0
-    totalATK: 15
-    baseDEF: 8
+    totalATK: 17
+    baseDEF: 6
     changeInDEF: 0
-    totalDEF: 8
-    WeakToElement: 2
+    totalDEF: 6
+    WeakToElement: 3
     ResistantToElement: 1
-  enemyData: {fileID: 11400000, guid: dd84d127e69f95d4383242fdd7dc0803, type: 2}
+  enemyData: {fileID: 11400000, guid: 1ce42c59a365eaf479014e5c790a1ad1, type: 2}

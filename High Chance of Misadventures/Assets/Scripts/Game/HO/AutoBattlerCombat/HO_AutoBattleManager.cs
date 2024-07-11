@@ -24,7 +24,6 @@ public class HO_AutoBattleManager : MonoBehaviour
     [SerializeField] private HO_CutsceneManager cutsceneScript;
     [Space(10)]
     [SerializeField] private HO_LevelSO currentLevel;
-    [SerializeField] private GameObject environmentModel;
 
     private WaitForSeconds halfTurnDurationInSeconds;
     private WaitForSeconds shortDelayInSeconds;
@@ -34,9 +33,8 @@ public class HO_AutoBattleManager : MonoBehaviour
     #region Initialization
     private void Start()
     {
-        // Initialize environment and enemy
+        // Initialize enemy
         currentLevel = HO_GameManager.Instance.GetCurrentLevel();
-        environmentModel = GameObject.Instantiate(currentLevel.Environment, Vector3.zero, Quaternion.identity);
         InitializeEnemy(currentLevel);
 
         // Initialize character stats
@@ -53,7 +51,7 @@ public class HO_AutoBattleManager : MonoBehaviour
         delayAfterBattleInSeconds = new WaitForSeconds(2f);
 
         // Check phase to determine what happens next
-        ELevelPhase currentPhase = HO_GameManager.Instance.GetCurrenetLevelPhase();
+        ELevelPhase currentPhase = HO_GameManager.Instance.GetCurrentLevelPhase();
 
         if (currentPhase == ELevelPhase.Cutscene)
         {
@@ -178,7 +176,7 @@ public class HO_AutoBattleManager : MonoBehaviour
 
     public void TransitionToMainMenu()
     {
-
+        HO_GameManager.Instance.TransitionToMainMenuScene();
     }
     #endregion
 }

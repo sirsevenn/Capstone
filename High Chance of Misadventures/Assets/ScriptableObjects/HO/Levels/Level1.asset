@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Level1
   m_EditorClassIdentifier: 
   levelID: 1
-  environment: {fileID: 8414035521889582487, guid: b9131f5922b2b5b45aa19119376a2a50,
-    type: 3}
+  regionName: HO_ForestRegion
   speechList:
   - "This battle is harder \nthan I thought!"
   - "I didn't bring enough \n<b><color=#0EAD00>Health Potions</color></b> with me"
@@ -23,7 +22,7 @@ MonoBehaviour:
   playerStats:
     baseHP: 100
     changeInHP: 0
-    currentHP: 30
+    currentHP: 40
     baseATK: 15
     changeInATK: 0
     totalATK: 15
@@ -36,16 +35,18 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fee477a7cbe6cef43a2efe53ceeff30f, type: 2}
   - {fileID: 11400000, guid: e3f77875c6c05444cbce66ca83c552f4, type: 2}
   - {fileID: 11400000, guid: 053028975a891c34dbc5059f54e49460, type: 2}
+  - {fileID: 11400000, guid: 97d2fb6c4c97d9042844ea1c6382d4dc, type: 2}
+  - {fileID: 11400000, guid: 552d461c2db647a489bac2a2b6fea6b1, type: 2}
   enemyStats:
-    baseHP: 70
+    baseHP: 75
     changeInHP: 0
-    currentHP: 70
-    baseATK: 14
+    currentHP: 75
+    baseATK: 12
     changeInATK: 0
-    totalATK: 14
-    baseDEF: 10
+    totalATK: 12
+    baseDEF: 6
     changeInDEF: 0
-    totalDEF: 10
+    totalDEF: 6
     WeakToElement: 2
-    ResistantToElement: 3
-  enemyData: {fileID: 11400000, guid: ef1fb8c2a1f32f7439ba494af37b2f6f, type: 2}
+    ResistantToElement: 1
+  enemyData: {fileID: 11400000, guid: 643143aa9c05c274d8eed644c835b1fe, type: 2}

@@ -1,5 +1,7 @@
+using System;
 using UnityEngine;
 
+[Serializable]
 public class GestureInputProperties
 {
     public Touch finger;

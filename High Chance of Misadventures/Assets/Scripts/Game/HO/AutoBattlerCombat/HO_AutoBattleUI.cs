@@ -111,7 +111,9 @@ public class HO_AutoBattleUI : MonoBehaviour
         addPotionsDelayToSeconds = new WaitForSeconds(addPotionsDelay);
         int id = 1;
 
+        int totalAmount = InventorySystem.Instance.GetConsumablesTotalAmount();
         float remainingDuration = (addPotionsDuration - (InventorySystem.Instance.GetConsumablesTotalAmount()) * addPotionsDelay);
+        remainingDuration = (totalAmount == 0) ? 0f : remainingDuration;
 
         foreach (var type in Enum.GetValues(typeof(EConsumableType)))
         {
@@ -119,17 +121,17 @@ public class HO_AutoBattleUI : MonoBehaviour
             EConsumableType consumableType = (EConsumableType)type;
             if (consumableType == EConsumableType.Unknown) continue;
 
-            int totalAmount = InventorySystem.Instance.GetConsumableAmountOfType(consumableType);
+            int consumableAmount = InventorySystem.Instance.GetConsumableAmountOfType(consumableType);
             Consumable consumable = InventorySystem.Instance.GetOneConsumableOfType(consumableType);
 
             // Get reference to consumable UI then initialize; also determine the screen position of the knight
             AutoBattleItemPanelScript itemPanel = consumablesUIList.Find(x => x.IsSameItem(consumableType));
-            itemPanel.SetItemMaxAmount(totalAmount);
+            itemPanel.SetItemMaxAmount(consumableAmount);
 
             Vector2 knightScreenPos = Camera.main.WorldToScreenPoint(knightPos);
 
             // Create empty objects with images to animate
-            for (int i = 1; i <= totalAmount; i++) 
+            for (int i = 1; i <= consumableAmount; i++) 
             {
                 GameObject newObj = new GameObject("PotionImage" + id);
                 newObj.layer = LayerMask.NameToLayer("UI");

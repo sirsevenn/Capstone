@@ -9,5 +9,8 @@ public enum ECraftingMaterialType
     Shark_Tooth,
     Treant_Bark,
     Infected_Blood,
-    Turtle_Shell
+    Turtle_Shell,
+    Fire_Feather,
+    Water_Gem,
+    Herb
 }

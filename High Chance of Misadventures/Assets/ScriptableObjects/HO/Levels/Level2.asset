@@ -13,8 +13,7 @@ MonoBehaviour:
   m_Name: Level2
   m_EditorClassIdentifier: 
   levelID: 2
-  environment: {fileID: 8414035521889582487, guid: b9131f5922b2b5b45aa19119376a2a50,
-    type: 3}
+  regionName: HO_CaveRegion
   speechList:
   - 'Oh no! This seems to
 
@@ -27,7 +26,7 @@ MonoBehaviour:
   playerStats:
     baseHP: 100
     changeInHP: 0
-    currentHP: 100
+    currentHP: 30
     baseATK: 15
     changeInATK: 0
     totalATK: 15
@@ -38,20 +37,20 @@ MonoBehaviour:
     ResistantToElement: 2
   materialsList:
   - {fileID: 11400000, guid: fee477a7cbe6cef43a2efe53ceeff30f, type: 2}
-  - {fileID: 11400000, guid: e3f77875c6c05444cbce66ca83c552f4, type: 2}
-  - {fileID: 11400000, guid: 053028975a891c34dbc5059f54e49460, type: 2}
-  - {fileID: 11400000, guid: 97d2fb6c4c97d9042844ea1c6382d4dc, type: 2}
-  - {fileID: 11400000, guid: 552d461c2db647a489bac2a2b6fea6b1, type: 2}
+  - {fileID: 11400000, guid: edfd4f63f6fcd3046958c7f3461f344f, type: 2}
+  - {fileID: 11400000, guid: f295ec1064255124589a6e110b30d726, type: 2}
+  - {fileID: 11400000, guid: cb89f0d343a61f84ab8dfadcce469315, type: 2}
+  - {fileID: 11400000, guid: 039f9a42acc0ab0478a2809e3485082c, type: 2}
   enemyStats:
-    baseHP: 150
+    baseHP: 120
     changeInHP: 0
-    currentHP: 150
-    baseATK: 15
+    currentHP: 120
+    baseATK: 14
     changeInATK: 0
-    totalATK: 15
-    baseDEF: 8
+    totalATK: 14
+    baseDEF: 10
     changeInDEF: 0
-    totalDEF: 8
+    totalDEF: 10
     WeakToElement: 2
-    ResistantToElement: 1
+    ResistantToElement: 3
   enemyData: {fileID: 11400000, guid: dd84d127e69f95d4383242fdd7dc0803, type: 2}

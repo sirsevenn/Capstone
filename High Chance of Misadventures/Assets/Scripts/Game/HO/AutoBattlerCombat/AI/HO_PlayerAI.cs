@@ -1,5 +1,6 @@
 using DG.Tweening;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(AnimationHandler))]
@@ -87,7 +88,7 @@ public class HO_PlayerAI : HO_EntityAI
         animationHandler.PlayDeathAnimation();
     }
 
-    public override void OnEntityTurn(EElementalAttackType weakToElement, EElementalAttackType resistantToElement)
+    public override void OnEntityTurn(HO_ElementalEffects elementalEffects)
     {
         // Reset DEF stat and attack valuues before each turn
         characterStats.ResetDEFToBase();
@@ -109,13 +110,13 @@ public class HO_PlayerAI : HO_EntityAI
         {
             item = InventorySystem.Instance.GetOneConsumableOfType(EConsumableType.Health_Potion);
         }
-        else if (hpInPercent < 0.3 && numDefensePotions > 0)
+        else if (hpInPercent < 0.7 && numDefensePotions > 0)
         {
             item = InventorySystem.Instance.GetOneConsumableOfType(EConsumableType.Defense_Potion);
         }
         else if (hpInPercent > 0.7 && numSpellPotions > 0)
         {
-            item = PickSpellPotion(weakToElement, resistantToElement);
+            item = PickSpellPotion(elementalEffects.WeakToElementsList, elementalEffects.ResistantToElementsList);
         }
         else
         {
@@ -138,7 +139,7 @@ public class HO_PlayerAI : HO_EntityAI
                 }
                 else
                 {
-                    item = PickSpellPotion(weakToElement, resistantToElement);
+                    item = PickSpellPotion(elementalEffects.WeakToElementsList, elementalEffects.ResistantToElementsList);
                 }
             }
         }
@@ -168,33 +169,46 @@ public class HO_PlayerAI : HO_EntityAI
         attackElementalType = (currentSpellSO != null) ? currentSpellSO.ElementalType : EElementalAttackType.Unknown;
     }
 
-    private Consumable PickSpellPotion(EElementalAttackType weakToElement, EElementalAttackType resistantToElement)
+    private Consumable PickSpellPotion(List<EElementalAttackType> weakToElementsList, List<EElementalAttackType> resistantToElementsList)
     {
         // Determine the third element that will have no damage modifiers
-        EElementalAttackType normalElement = EElementalAttackType.Unknown;
-        foreach (EElementalAttackType elememnt in Enum.GetValues(typeof(EElementalAttackType)))
+        List<EElementalAttackType> normalElementsList = new();
+        foreach (EElementalAttackType element in Enum.GetValues(typeof(EElementalAttackType)))
         {
-            if (elememnt != EElementalAttackType.Unknown && elememnt != weakToElement && elememnt != resistantToElement)
+            if (element != EElementalAttackType.Unknown && !weakToElementsList.Contains(element) && !resistantToElementsList.Contains(element))
             {
-                normalElement = elememnt;
+                normalElementsList.Add(element);
                 break;
             }
         }
 
         // Return one spell based on priority
-        Consumable returnSpell = InventorySystem.Instance.GetOneSpellOfType(weakToElement);
-        if (returnSpell != null) return returnSpell;
+        Consumable returnSpell = null;
+        
+        foreach (var weakElement in weakToElementsList)
+        {
+            returnSpell = InventorySystem.Instance.GetOneSpellOfType(weakElement);
+            if (returnSpell != null) return returnSpell;
+        }
+        
+        foreach (var normalElement in normalElementsList)
+        {
+            returnSpell = InventorySystem.Instance.GetOneSpellOfType(normalElement);
+            if (returnSpell != null) return returnSpell;
+        }
 
-        returnSpell = InventorySystem.Instance.GetOneSpellOfType(normalElement);
-        if (returnSpell != null) return returnSpell;
+        foreach (var resistantElement in resistantToElementsList)
+        {
+            returnSpell = InventorySystem.Instance.GetOneSpellOfType(resistantElement);
+            if (returnSpell != null) return returnSpell;
+        }
 
-        returnSpell = InventorySystem.Instance.GetOneSpellOfType(resistantToElement);
         return returnSpell;
     }
 
-    public override void EntityTakeDamage(int damage, EElementalAttackType attackElementalType)
+    public override void EntityTakeDamage(int damage, EElementalAttackType attackElementalType = EElementalAttackType.Unknown, bool hasArmorPierce = false)
     {
-        base.EntityTakeDamage(damage, attackElementalType);
+        base.EntityTakeDamage(damage, attackElementalType, hasArmorPierce);
         defenseForceField.SetActive(false);
     }
 }

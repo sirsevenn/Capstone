@@ -59,8 +59,15 @@ public class HO_AutoBattleManager : MonoBehaviour
             currentLevel.AddMaterialsToInventory();
             UI.DisableUI();
 
-            cutsceneScript.EnableCutscene();
-            playerScript.transform.position = playerBattlePos;
+            if (HO_GameManager.Instance.ShouldSkipCutscenes())
+            {
+                HO_GameManager.Instance.TransitionToCraftingScene();
+            }
+            else
+            {
+                cutsceneScript.EnableCutscene();
+                playerScript.transform.position = playerBattlePos;
+            }
         }
         else if (currentPhase == ELevelPhase.Battle)
         {
@@ -117,12 +124,14 @@ public class HO_AutoBattleManager : MonoBehaviour
             float halfTurnDuration = turnDuration / 2f;
 
 
-            entityWithTurn.OnEntityTurn(opposingEntity.WeakToElement, opposingEntity.ResistantToElement);
+            entityWithTurn.OnEntityTurn(opposingEntity.ElementalEffects);
             entityWithTurn.TriggerAttackAnimation(attackPos, meleeDistanceOffset, halfTurnDuration);
             yield return halfTurnDurationInSeconds;
 
-            
-            opposingEntity.EntityTakeDamage(entityWithTurn.GetCurrentAttackDamage(), entityWithTurn.GetAttackElementalType());
+
+            bool hasArmorPierce = (entityWithTurn == enemyScript) ? currentLevel.EnemyHasArmorPierce : false;
+            opposingEntity.EntityTakeDamage(entityWithTurn.GetCurrentAttackDamage(), entityWithTurn.GetAttackElementalType(), hasArmorPierce);
+
             if (opposingEntity.IsEntityKilled())
             {
                 opposingEntity.TriggerDeathAnimation();
@@ -151,6 +160,8 @@ public class HO_AutoBattleManager : MonoBehaviour
 
         if (didPlayerWin || isGameOver)
         {
+            if (didPlayerWin) HO_GameManager.Instance.TryUnlockNextLevel();
+
             UI.EnableEndLevelPanel(didPlayerWin, HO_GameManager.Instance.IsLastLevel());
         }
         else // if lost but not yet game over

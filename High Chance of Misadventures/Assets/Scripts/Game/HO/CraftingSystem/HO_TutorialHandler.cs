@@ -1,11 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class HO_TutorialHandler : MonoBehaviour
 {
     [SerializeField] private GameObject tutorialPanel;
     [SerializeField] private List<GameObject> infoPanelsList;
+    [SerializeField] private float infoDelay;
+    private WaitForSeconds infoDelayInSeconds;
 
 
     private void Awake()
@@ -16,6 +19,9 @@ public class HO_TutorialHandler : MonoBehaviour
         {
             infoPanel.SetActive(false);
         }
+
+        infoDelay = (infoDelay == 0) ? 8f : infoDelay;
+        infoDelayInSeconds = new WaitForSeconds(infoDelay);
     }
 
     public void InitiateTutorial()
@@ -35,9 +41,10 @@ public class HO_TutorialHandler : MonoBehaviour
                 infoPanelsList[i - 1].SetActive(false);
             }
 
-            yield return GameUtilities.WaitForPlayerInput();
+            yield return infoDelayInSeconds;
         }
 
+        infoPanelsList.Last().SetActive(false);
         tutorialPanel.SetActive(false);
         HO_GameManager.Instance.OnFinishedTutorial();
         CraftingSystem.Instance.EnableInputs();

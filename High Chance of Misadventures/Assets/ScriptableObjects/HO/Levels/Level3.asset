@@ -13,45 +13,48 @@ MonoBehaviour:
   m_Name: Level3
   m_EditorClassIdentifier: 
   levelID: 3
-  regionName: HO_CastleRegion
+  levelIcon: {fileID: 21300000, guid: fe9eaa96073d1b9449c8711cd053e4bb, type: 3}
+  regionName: HO_CaveRegion
   speechList:
-  - "I have ran out \nof potions!"
-  - 'I need more <b><color=#A2D413>spells</color></b> to
+  - "Kailangan ko ng \n<color=#D1C507><b>DEF</b></color> Potion! "
+  - "Walang epekto yung mga \natake ko sa Ogre!"
+  - 'Kailangan ko tumakas bago
 
-    be able to beat Modred!'
-  - "I must retreat for now \nor I'll lose"
-  reminderText: 'Give more <b><color=#A2D413>elemental spells</color></b>
-
-    to
-    beat Mordred'
+    ako ay matalo'
+  reminderText: "Kailangan ko ng \n<color=#D1C507><b>DEF</b></color> Potion! "
   playerStats:
-    baseHP: 100
+    baseHP: 50
+    changeInHP: 0
+    currentHP: 50
+    baseATK: 10
+    changeInATK: 0
+    totalATK: 10
+    baseDEF: 0
+    changeInDEF: 0
+    totalDEF: 0
+    ElementalEffects:
+      WeakToElementsList: 
+      ResistantToElementsList: 
+      ImmuneToElementsList: 
+  materialsList:
+  - {fileID: 11400000, guid: 87ae9f7fd64d445478376f524c1a5068, type: 2}
+  - {fileID: 11400000, guid: fce1afba30bfac945b37de9830d80e85, type: 2}
+  - {fileID: 11400000, guid: a49508bdbf7c133429da3b2209f835ce, type: 2}
+  - {fileID: 11400000, guid: 13e3f83e221c2f843b4a46bb8fa4b055, type: 2}
+  - {fileID: 11400000, guid: be3ff3ce2e0572f4dab3bae2432e7ece, type: 2}
+  enemyStats:
+    baseHP: 80
     changeInHP: 0
     currentHP: 80
-    baseATK: 15
+    baseATK: 20
     changeInATK: 0
-    totalATK: 15
-    baseDEF: 5
+    totalATK: 20
+    baseDEF: 0
     changeInDEF: 0
-    totalDEF: 5
-    WeakToElement: 1
-    ResistantToElement: 2
-  materialsList:
-  - {fileID: 11400000, guid: cbe80c59a16310241af19c158e931853, type: 2}
-  - {fileID: 11400000, guid: aeabb6b8f17880741bb434f1fec6a245, type: 2}
-  - {fileID: 11400000, guid: 053028975a891c34dbc5059f54e49460, type: 2}
-  - {fileID: 11400000, guid: 65f96b37b186c8a498d8f8ef59590a68, type: 2}
-  - {fileID: 11400000, guid: 039f9a42acc0ab0478a2809e3485082c, type: 2}
-  enemyStats:
-    baseHP: 175
-    changeInHP: 0
-    currentHP: 175
-    baseATK: 17
-    changeInATK: 0
-    totalATK: 17
-    baseDEF: 6
-    changeInDEF: 0
-    totalDEF: 6
-    WeakToElement: 3
-    ResistantToElement: 1
-  enemyData: {fileID: 11400000, guid: 1ce42c59a365eaf479014e5c790a1ad1, type: 2}
+    totalDEF: 0
+    ElementalEffects:
+      WeakToElementsList: 
+      ResistantToElementsList: 
+      ImmuneToElementsList: 
+  enemyData: {fileID: 11400000, guid: e04847d8d2c5fce46b915eb32e3229e4, type: 2}
+  enemyHasArmorPierce: 0

@@ -13,44 +13,48 @@ MonoBehaviour:
   m_Name: Level2
   m_EditorClassIdentifier: 
   levelID: 2
-  regionName: HO_CaveRegion
+  levelIcon: {fileID: 21300000, guid: 75ecf5132bda6c148b1db894185232bb, type: 3}
+  regionName: HO_ForestRegion
   speechList:
-  - 'Oh no! This seems to
+  - "Kailangan ko ng \n<color=#0EAD00><b>Health</b></color> potions! "
+  - "Hindi nagana yung ibang \npotions ko laban ki Witch!"
+  - 'Kailangan ko tumakas bago
 
-    be the boss room!'
-  - "I didn't prepare enough \n<b><color=#0F39D1>offensive</color></b> and <b><color=#D1C507>defensive</color></b>\nitems
-    against the boss"
-  - "I must retreat for now \nor I'll lose"
-  reminderText: Prepare me some <b><color=#0F39D1>offensive</color></b> and <b><color=#D1C507>defensive</color></b>
-    potions
+    ako ay matalo'
+  reminderText: 'Kailangan ko ng <color=#0EAD00><b>Health</b></color> potions! '
   playerStats:
-    baseHP: 100
+    baseHP: 50
     changeInHP: 0
-    currentHP: 100
+    currentHP: 25
+    baseATK: 10
+    changeInATK: 0
+    totalATK: 10
+    baseDEF: 4
+    changeInDEF: 0
+    totalDEF: 4
+    ElementalEffects:
+      WeakToElementsList: 
+      ResistantToElementsList: 
+      ImmuneToElementsList: 
+  materialsList:
+  - {fileID: 11400000, guid: c53d110686c94914c84150025766a229, type: 2}
+  - {fileID: 11400000, guid: f541b2cae75d2804a92e476ffe4d7ba5, type: 2}
+  - {fileID: 11400000, guid: d7837bd261e6cbf44b0663ea32112514, type: 2}
+  - {fileID: 11400000, guid: 9bacbfe4d6b0e074e853b40e18cde23c, type: 2}
+  - {fileID: 11400000, guid: 962988e5f37370a4eb3e5329409927fe, type: 2}
+  enemyStats:
+    baseHP: 70
+    changeInHP: 0
+    currentHP: 70
     baseATK: 15
     changeInATK: 0
     totalATK: 15
-    baseDEF: 5
+    baseDEF: 0
     changeInDEF: 0
-    totalDEF: 5
-    WeakToElement: 1
-    ResistantToElement: 2
-  materialsList:
-  - {fileID: 11400000, guid: fee477a7cbe6cef43a2efe53ceeff30f, type: 2}
-  - {fileID: 11400000, guid: edfd4f63f6fcd3046958c7f3461f344f, type: 2}
-  - {fileID: 11400000, guid: f295ec1064255124589a6e110b30d726, type: 2}
-  - {fileID: 11400000, guid: cb89f0d343a61f84ab8dfadcce469315, type: 2}
-  - {fileID: 11400000, guid: 039f9a42acc0ab0478a2809e3485082c, type: 2}
-  enemyStats:
-    baseHP: 120
-    changeInHP: 0
-    currentHP: 120
-    baseATK: 14
-    changeInATK: 0
-    totalATK: 14
-    baseDEF: 10
-    changeInDEF: 0
-    totalDEF: 10
-    WeakToElement: 2
-    ResistantToElement: 3
-  enemyData: {fileID: 11400000, guid: dd84d127e69f95d4383242fdd7dc0803, type: 2}
+    totalDEF: 0
+    ElementalEffects:
+      WeakToElementsList: 
+      ResistantToElementsList: 
+      ImmuneToElementsList: 
+  enemyData: {fileID: 11400000, guid: 643143aa9c05c274d8eed644c835b1fe, type: 2}
+  enemyHasArmorPierce: 1

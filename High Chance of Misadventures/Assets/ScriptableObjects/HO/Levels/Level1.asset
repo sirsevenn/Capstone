@@ -13,40 +13,47 @@ MonoBehaviour:
   m_Name: Level1
   m_EditorClassIdentifier: 
   levelID: 1
+  levelIcon: {fileID: 21300000, guid: bdd7296aa86f7c44fa34e62f9e673b3d, type: 3}
   regionName: HO_ForestRegion
   speechList:
-  - "This battle is harder \nthan I thought!"
-  - "I didn't bring enough \n<b><color=#0EAD00>Health Potions</color></b> with me"
-  - "I must retreat for now \nor I'll lose"
-  reminderText: I am in need of some <b><color=#0EAD00>Health Potions</color></b>!
+  - "Walang epekto ang iba \nkong mga elemental potions!"
+  - "Kailangan ko lang ng mga \n<color=#D40006><b>Fire</b></color> Potions para ilaban
+    si puno! "
+  - "Kailangan ko rin tumakas \nbago ako ay matalo"
+  reminderText: "Kailangan ko lang ng mga \n<color=#D40006><b>Fire</b></color> Potion!"
   playerStats:
-    baseHP: 100
+    baseHP: 50
     changeInHP: 0
-    currentHP: 40
+    currentHP: 50
+    baseATK: 7
+    changeInATK: 0
+    totalATK: 7
+    baseDEF: 0
+    changeInDEF: 0
+    totalDEF: 0
+    ElementalEffects:
+      WeakToElementsList: 
+      ResistantToElementsList: 
+      ImmuneToElementsList: 
+  materialsList:
+  - {fileID: 11400000, guid: abe93845a4bb94d409cbb8cf62ce1dc7, type: 2}
+  - {fileID: 11400000, guid: 9efb57e34af316d439c578812c087869, type: 2}
+  - {fileID: 11400000, guid: 79c69334108b67140973227ca08a28c5, type: 2}
+  - {fileID: 11400000, guid: a3f161438fe7bdb4c8d082c874104245, type: 2}
+  - {fileID: 11400000, guid: 0fff7244e62b88a4dbcb084b96c202c6, type: 2}
+  enemyStats:
+    baseHP: 70
+    changeInHP: 0
+    currentHP: 70
     baseATK: 15
     changeInATK: 0
     totalATK: 15
-    baseDEF: 5
+    baseDEF: 0
     changeInDEF: 0
-    totalDEF: 5
-    WeakToElement: 1
-    ResistantToElement: 2
-  materialsList:
-  - {fileID: 11400000, guid: fee477a7cbe6cef43a2efe53ceeff30f, type: 2}
-  - {fileID: 11400000, guid: e3f77875c6c05444cbce66ca83c552f4, type: 2}
-  - {fileID: 11400000, guid: 053028975a891c34dbc5059f54e49460, type: 2}
-  - {fileID: 11400000, guid: 97d2fb6c4c97d9042844ea1c6382d4dc, type: 2}
-  - {fileID: 11400000, guid: 552d461c2db647a489bac2a2b6fea6b1, type: 2}
-  enemyStats:
-    baseHP: 75
-    changeInHP: 0
-    currentHP: 75
-    baseATK: 12
-    changeInATK: 0
-    totalATK: 12
-    baseDEF: 6
-    changeInDEF: 0
-    totalDEF: 6
-    WeakToElement: 2
-    ResistantToElement: 1
-  enemyData: {fileID: 11400000, guid: 643143aa9c05c274d8eed644c835b1fe, type: 2}
+    totalDEF: 0
+    ElementalEffects:
+      WeakToElementsList: 01000000
+      ResistantToElementsList: 
+      ImmuneToElementsList: 0200000003000000
+  enemyData: {fileID: 11400000, guid: 7fb28502e53b6e140b34b6168774d5a7, type: 2}
+  enemyHasArmorPierce: 0

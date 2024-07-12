@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -14,6 +15,7 @@ public class CraftingSystem : MonoBehaviour
 
     [Space(10)]
     [SerializeField] private CraftingMaterialSO[] droppedMaterials;
+    [SerializeField] private int currentNumDroppedMaterials;
 
     [Space(20)]
     [SerializeField] private List<ConsumableSO> consumablesToCraftList;
@@ -68,15 +70,14 @@ public class CraftingSystem : MonoBehaviour
         {
             null, null, null
         };
+        currentNumDroppedMaterials = 0;
 
         weightsOnEachConsumableList = new();
         ResetCraftingTrackers();
 
         if (!HO_GameManager.Instance.HasFinishedTutorial())
         {
-            areInputsEnabled = false;
-            craftingDisplay.OnEnableInputs(false);
-            tutorialHandler.InitiateTutorial();
+            InitiateTutorial();
         }
         else
         {
@@ -139,9 +140,14 @@ public class CraftingSystem : MonoBehaviour
 
     public void OnBeginDragMaterial(CraftingMaterialSO draggedMaterial)
     {
-        if (!areInputsEnabled || 
-            !shelfRackManager.IsMiddleShelfRackEmmpty() || 
-            isDraggingMaterial || currentDraggedMaterial != null) return;
+        if (!areInputsEnabled) return;
+
+        if (!shelfRackManager.IsMiddleShelfRackEmmpty()) return; 
+        
+        if (isDraggingMaterial || currentDraggedMaterial != null) return;
+
+        int index = Array.IndexOf(droppedMaterials, draggedMaterial);
+        if (index != -1) return;
 
         isDraggingMaterial = true;
         currentDraggedMaterial = draggedMaterial;
@@ -173,6 +179,7 @@ public class CraftingSystem : MonoBehaviour
         if (isValidDropMaterial)
         {
             droppedMaterials[slotIndex] = draggedMaterial;
+            currentNumDroppedMaterials++;
 
             // Enable certain particles on the cauldron
             particlesScript.PlayMaterialParticle(slotIndex, draggedMaterial.ParticleMaterialColor);
@@ -213,7 +220,10 @@ public class CraftingSystem : MonoBehaviour
     #region Crafting Methods
     public void OnCraft()
     {
-        if (!areInputsEnabled || !isCauldronFiredUp || !shelfRackManager.IsMiddleShelfRackEmmpty()) return;
+        if (!areInputsEnabled || 
+            !isCauldronFiredUp || 
+            !shelfRackManager.IsMiddleShelfRackEmmpty() ||
+            currentNumDroppedMaterials < 3) return;
 
         // Reset inventory and disable inputs
         InventorySystem.Instance.ResetConsumables();
@@ -236,6 +246,9 @@ public class CraftingSystem : MonoBehaviour
         // Reset particles
         particlesScript.ResetAllParticles();
         isCauldronFiredUp = false;
+
+        // Reset some trackers
+        currentNumDroppedMaterials = 0;
     }
 
     private List<int> CalculateAmountOfConsumablesToCraft()
@@ -251,8 +264,13 @@ public class CraftingSystem : MonoBehaviour
             // Determine amount of the same item to craft based on its weight percentage
             float percentage = (float)weightsOnEachConsumableList[i] / totalWeight;
             int amount = Mathf.RoundToInt(percentage / percentOfOneAmount);
-            totalAmount += amount;
 
+            if (amount > maxNumberPerConsumable)
+            {
+                amount -= amount - maxNumberPerConsumable; // remove excess
+            }
+
+            totalAmount += amount;
             returnList.Add(amount);
 
             if (indexWithHighestAmount == -1 || amount > returnList[indexWithHighestAmount])
@@ -301,6 +319,7 @@ public class CraftingSystem : MonoBehaviour
 
         totalWeight = 250f;
         isCauldronFiredUp = false;
+        currentNumDroppedMaterials = 0;
     }
 
     private void UpdateUsedMaterials(List<CraftingMaterialSO> usedConsumables)
@@ -311,6 +330,13 @@ public class CraftingSystem : MonoBehaviour
         }
     }
     #endregion
+
+    public void InitiateTutorial()
+    {
+        areInputsEnabled = false;
+        craftingDisplay.OnEnableInputs(false);
+        tutorialHandler.InitiateTutorial();
+    }
 
     public void TransitionToBattleScene()
     {

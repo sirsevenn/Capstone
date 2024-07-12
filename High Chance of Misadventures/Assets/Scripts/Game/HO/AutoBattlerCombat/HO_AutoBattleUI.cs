@@ -18,6 +18,7 @@ public class HO_AutoBattleUI : MonoBehaviour
     [SerializeField] private float addPotionsDuration;
     [SerializeField] private float addPotionsDelay;
     private WaitForSeconds addPotionsDelayToSeconds;
+    [SerializeField] private AudioClip popSound;
 
     [Space(20)] [Header("Disintegrating Effect")]
     [SerializeField] private Image disintegratingIcon;
@@ -151,6 +152,7 @@ public class HO_AutoBattleUI : MonoBehaviour
                 newObjTransform.DOMove(itemPanel.transform.position, remainingDuration).SetEase(Ease.Linear).OnComplete(() => { 
                     newObj.SetActive(false); 
                     itemPanel.UpdateItemAmount(currentAmount);
+                    SoundEffectManager.Instance.PlaySoundEffect(popSound);
                 });
                 newObjTransform.DOScale(Vector2.one, remainingDuration * 0.45f);
 
@@ -212,7 +214,7 @@ public class HO_AutoBattleUI : MonoBehaviour
     {
         endLevelPanel.SetActive(true);
 
-        if (isGameBeaten)
+        if (isGameBeaten && didPlayerWin)
         {
             endLevelMainText.text = "Congratulations!\nYou have beaten the game!";
             loadLevelButtonObj.SetActive(false);

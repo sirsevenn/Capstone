@@ -6,11 +6,14 @@ public class HO_MainMenuHandler : MonoBehaviour
 {
     [Header("Levels")]
     [SerializeField] private GameObject levelSelectionMenu;
+    [SerializeField] private GameObject levelPanelPrefab;
+    [SerializeField] private RectTransform levelSelectionWindowParent;
     [SerializeField] private List<GameObject> levelPanelsList;
 
     [Header("Settings")]
     [SerializeField] private GameObject settingsMenu;
-    [SerializeField] private GameObject secretOption;
+    [SerializeField] private GameObject unlockLevelsOption;
+    [SerializeField] private GameObject skipCutsceneOption;
     [SerializeField] private GameObject confirmatoryMenu;
 
     [Space(10)]
@@ -22,10 +25,12 @@ public class HO_MainMenuHandler : MonoBehaviour
     private void Start()
     { 
         levelSelectionMenu.SetActive(false);
+        InitializeLevelPanels();
         UpdateLevelSelectMenu();
 
         settingsMenu.SetActive(false);
-        secretOption.SetActive(false);
+        unlockLevelsOption.SetActive(false);
+        skipCutsceneOption.SetActive(false);
         confirmatoryMenu.SetActive(false);
 
         correctSwipesNum = 0;
@@ -35,6 +40,17 @@ public class HO_MainMenuHandler : MonoBehaviour
     private void OnDestroy()
     {
         GestureManager.Instance.OnSwipeEvent -= OnSwipe;
+    }
+
+    private void InitializeLevelPanels()
+    {
+        levelPanelsList = new();
+        foreach (var levelData in HO_GameManager.Instance.GetAllLevels())
+        {
+            GameObject levelPanel = GameObject.Instantiate(levelPanelPrefab, levelSelectionWindowParent);
+            levelPanel.GetComponent<HO_LevelPanel>().InitiailizeLevelPanel(levelData, OnLevelSelect);
+            levelPanelsList.Add(levelPanel);
+        }
     }
 
     private void UpdateLevelSelectMenu()
@@ -71,7 +87,7 @@ public class HO_MainMenuHandler : MonoBehaviour
         settingsMenu.SetActive(false);
     }
 
-    public void OnLevelSelect(int levelID)
+    private void OnLevelSelect(int levelID)
     {
         HO_GameManager.Instance.StartLevel(levelID);
     }
@@ -99,7 +115,7 @@ public class HO_MainMenuHandler : MonoBehaviour
 
     private void OnSwipe(object send, SwipeEventArgs args)
     {
-        if (secretOption.activeSelf) return;
+        if (unlockLevelsOption.activeSelf && skipCutsceneOption.activeSelf) return;
 
         if (!RectTransformUtility.RectangleContainsScreenPoint(secretInputRectTranform, args.SwipePos)) return;
 
@@ -110,7 +126,8 @@ public class HO_MainMenuHandler : MonoBehaviour
             correctSwipesNum++;
             if (correctSwipesNum == swipesCheatList.Count)
             {
-                secretOption.SetActive(true);
+                unlockLevelsOption.SetActive(true);
+                skipCutsceneOption.SetActive(true);
             }
         }
         else
@@ -123,5 +140,10 @@ public class HO_MainMenuHandler : MonoBehaviour
     {
         HO_GameManager.Instance.SetUnlockLevelsCheat(isUnlocked);
         UpdateLevelSelectMenu();
+    }
+
+    public void OnSkipCutscenes(bool willSkip)
+    {
+        HO_GameManager.Instance.SetSkipCutscenese(willSkip);
     }
 }

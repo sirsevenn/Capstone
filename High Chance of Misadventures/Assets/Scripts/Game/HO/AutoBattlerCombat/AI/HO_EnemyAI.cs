@@ -1,4 +1,5 @@
 using DG.Tweening;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
@@ -16,7 +17,7 @@ public class HO_EnemyAI : HO_EntityAI
         attackSoundsList.Add(enemyData.AttackSound);
     }
 
-    public override void OnEntityTurn(EElementalAttackType weakToElement, EElementalAttackType resistantToElement)
+    public override void OnEntityTurn(HO_ElementalEffects elementalEffects)
     {
         currentAttackDMG = characterStats.GetTotalATK();
         attackElementalType = EElementalAttackType.Unknown;

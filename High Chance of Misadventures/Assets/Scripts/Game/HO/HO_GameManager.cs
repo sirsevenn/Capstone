@@ -21,6 +21,7 @@ public class HO_GameManager : MonoBehaviour
     [SerializeField] private int currentPlayerLives;
     [SerializeField] private int maxPlayerLives;
     [SerializeField] private bool hasFinishedTutorial;
+    [SerializeField] private bool shouldSkipCutscenes;
 
     [Space(10)] [Header("Player Data")]
     [SerializeField] private string highLevelIDKey;
@@ -63,6 +64,7 @@ public class HO_GameManager : MonoBehaviour
         highestUnlockedLevelID = (highestUnlockedLevelID == 0) ? levelsList.First().LevelID : highestUnlockedLevelID;
 
         areAllLevelsUnlocked = false;
+        shouldSkipCutscenes = false;
         hasFinishedTutorial = (PlayerPrefs.GetInt(tutorialKey) == 1);
     }
 
@@ -96,6 +98,11 @@ public class HO_GameManager : MonoBehaviour
         areAllLevelsUnlocked = isUnlocked;
     }
 
+    public List<HO_LevelSO> GetAllLevels()
+    {
+        return levelsList;
+    }
+
     public void StartLevel(int levelID)
     {
         if (levelID > highestUnlockedLevelID && !areAllLevelsUnlocked) return;
@@ -122,6 +129,23 @@ public class HO_GameManager : MonoBehaviour
     {
         hasFinishedTutorial = true;
         PlayerPrefs.SetInt(tutorialKey, 1);
+    }
+
+    public void SetSkipCutscenese(bool willSkip)
+    {
+        shouldSkipCutscenes = willSkip;
+    }
+
+    public bool ShouldSkipCutscenes()
+    {
+        return shouldSkipCutscenes;
+    }
+
+    public void TryUnlockNextLevel()
+    {
+        if (currentLevelIndex + 1 >= levelsList.Count) return;
+
+        highestUnlockedLevelID = levelsList[currentLevelIndex + 1].LevelID;
     }
 
     public void TransitionToBattleScene()

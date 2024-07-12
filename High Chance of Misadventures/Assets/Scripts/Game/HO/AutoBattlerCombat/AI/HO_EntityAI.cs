@@ -29,7 +29,7 @@ public abstract class HO_EntityAI : MonoBehaviour
         healthNumber = GetComponent<WorldSpaceHealthNumber>();
     }
 
-    public abstract void OnEntityTurn(EElementalAttackType weakToElement, EElementalAttackType resistantToElement);
+    public abstract void OnEntityTurn(HO_ElementalEffects elementalEffects);
 
     public abstract void TriggerAttackAnimation(Vector3 opponentPos, float meleeDistanceOffset, float animDuration);
 
@@ -39,9 +39,7 @@ public abstract class HO_EntityAI : MonoBehaviour
 
     public abstract void TriggerDeathAnimation();
 
-    public EElementalAttackType WeakToElement => characterStats.WeakToElement;
-
-    public EElementalAttackType ResistantToElement => characterStats.ResistantToElement;
+    public HO_ElementalEffects ElementalEffects => characterStats.ElementalEffects;
 
     public void CopyStats(HO_CharacterStat newStat)
     {
@@ -60,9 +58,9 @@ public abstract class HO_EntityAI : MonoBehaviour
         return attackElementalType;
     }
 
-    public virtual void EntityTakeDamage(int damage, EElementalAttackType attackElementalType)
+    public virtual void EntityTakeDamage(int damage, EElementalAttackType attackElementalType = EElementalAttackType.Unknown, bool hasArmorPierce = false)
     {
-        int dmg = characterStats.TakeDamage(damage, attackElementalType);
+        int dmg = characterStats.TakeDamage(damage, attackElementalType, hasArmorPierce);
         healthBar.UpdateHP(characterStats.GetCurrentHPInPercent());
         healthNumber.OnChangeHP(-dmg);
     }

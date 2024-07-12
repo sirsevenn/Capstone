@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [Serializable]
@@ -20,8 +21,7 @@ public class HO_CharacterStat
     [SerializeField] private int totalDEF;
 
     [Space(10)] [Header("Other Properties")]
-    public EElementalAttackType WeakToElement;
-    public EElementalAttackType ResistantToElement;
+    public HO_ElementalEffects ElementalEffects;
 
 
     public void CopyStats(HO_CharacterStat newStats)
@@ -38,8 +38,7 @@ public class HO_CharacterStat
         changeInDEF = newStats.changeInDEF;
         totalDEF = newStats.totalDEF;
 
-        WeakToElement = newStats.WeakToElement;
-        ResistantToElement = newStats.ResistantToElement;
+        ElementalEffects = newStats.ElementalEffects;
     }
 
     public void InitializeCharacterStats()
@@ -91,20 +90,22 @@ public class HO_CharacterStat
         
     }
 
-    public int TakeDamage(int damage, EElementalAttackType attackElementalType)
+    public int TakeDamage(int damage, EElementalAttackType attackElementalType = EElementalAttackType.Unknown, bool hasArmorPierce = false)
     {
         if (damage <= 0) return - 1;
 
+        if (attackElementalType != EElementalAttackType.Unknown && ElementalEffects.ImmuneToElementsList.Contains(attackElementalType)) return 0;
+
         int modifiedDMG = 0;
 
-        if (attackElementalType == WeakToElement)
+        if (attackElementalType != EElementalAttackType.Unknown && ElementalEffects.WeakToElementsList.Contains(attackElementalType))
         {
             modifiedDMG = Mathf.FloorToInt(damage * 1.5f);
             //Debug.Log("weak");
         }
-        else if (attackElementalType == ResistantToElement)
+        else if (attackElementalType != EElementalAttackType.Unknown && ElementalEffects.ResistantToElementsList.Contains(attackElementalType))
         {
-            modifiedDMG = Mathf.FloorToInt(damage * 0.5f);
+            modifiedDMG = Mathf.FloorToInt(damage * 0.4f);
             //Debug.Log("resistant");
         }
         else if (attackElementalType != EElementalAttackType.Unknown)
@@ -112,12 +113,16 @@ public class HO_CharacterStat
             modifiedDMG = damage;
             //Debug.Log("just element");
         }
+        else if (hasArmorPierce)
+        {
+            modifiedDMG = (damage - baseDEF) <= 0 ? 0 : damage - baseDEF;
+            //Debug.Log("armor pierce ");
+        }
         else
         {
             modifiedDMG = (damage - totalDEF) <= 0 ? 0 : damage - totalDEF;
             //Debug.Log("normal ");
         }
-
 
         //Debug.Log("received " + modifiedDMG + "DMG   " + (attackElementalType == EElementalAttackType.Unknown ? "normal" : attackElementalType.ToString()));
 

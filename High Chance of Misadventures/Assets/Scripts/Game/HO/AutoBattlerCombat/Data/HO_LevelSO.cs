@@ -6,9 +6,10 @@ public class HO_LevelSO : ScriptableObject
 {
     [Header("General Properties")]
     [SerializeField] private uint levelID;
+    [SerializeField] private Sprite levelIcon;
     [SerializeField] private string regionName;
 
-    [Space(20)]
+    [Space(20)] [Header("Cutscene Properties")]
     [TextArea(4, 10)]
     [SerializeField] private List<string> speechList;
     [TextArea(4, 10)]
@@ -16,17 +17,26 @@ public class HO_LevelSO : ScriptableObject
 
     [Space(20)][Header("Player Properties")]
     [SerializeField] private HO_CharacterStat playerStats;
+    [Space(10)]
     [SerializeField] private List<CraftingMaterialSO> materialsList;
 
     [Space(20)][Header("Enemy Properties")]
     [SerializeField] private HO_CharacterStat enemyStats;
+    [Space(10)]
     [SerializeField] private HO_EnemyDataSO enemyData;
+    [SerializeField] private bool enemyHasArmorPierce;
 
 
     public uint LevelID
     {
         get { return levelID; }
         private set { levelID = value; }
+    }
+
+    public Sprite LevelIcon
+    {
+        get { return levelIcon; }
+        private set { levelIcon = value; }
     }
 
     public string RegionName
@@ -63,6 +73,12 @@ public class HO_LevelSO : ScriptableObject
     {
         get { return enemyData; }
         private set { enemyData = value; }
+    }
+
+    public bool EnemyHasArmorPierce
+    {
+        get { return enemyHasArmorPierce; }
+        private set { enemyHasArmorPierce = value; }
     }
 
     public void AddMaterialsToInventory()

@@ -59,7 +59,7 @@ public class HO_CutsceneManager : MonoBehaviour
 
         UI.DisableSpeechBubble();
         playerScript.PlayerMove();
-        playerTransform.DOMove(Vector3.zero, playerExitDuration).SetEase(Ease.Linear).OnComplete(OnCutsceneEnd);
+        playerTransform.DOMove(Vector3.zero, playerExitDuration).SetEase(Ease.Linear).OnComplete(HO_GameManager.Instance.TransitionToCraftingScene);
     }
 
     private IEnumerator HandleOneSpeechLine()
@@ -68,10 +68,5 @@ public class HO_CutsceneManager : MonoBehaviour
         currentSpeechIndex++;
 
         yield return GameUtilities.WaitForPlayerInput();
-    }
-
-    public void OnCutsceneEnd()
-    {
-        HO_GameManager.Instance.TransitionToCraftingScene();
     }
 }

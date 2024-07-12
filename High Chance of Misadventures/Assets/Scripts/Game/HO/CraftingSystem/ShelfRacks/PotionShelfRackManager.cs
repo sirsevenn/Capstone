@@ -9,6 +9,7 @@ public class PotionShelfRackManager : MonoBehaviour
     [SerializeField] private float shelfMoveDistance;
     [SerializeField] private float shelfMoveDuration;
     [SerializeField] private float potionRevealDelay;
+    [SerializeField] private AudioClip dragSound;
 
     [Space(10)]
     [SerializeField] private Vector3 spawnLocalPos;
@@ -71,7 +72,7 @@ public class PotionShelfRackManager : MonoBehaviour
             shelfRacksList.Add((PotionShelfRack)newRack);
         }
 
-        // Simulate movement
+        // Simulate movement and play sound
         PotionShelfRack farthestRackToTheLeft = (shelfRacksList.Count > 0) ? shelfRacksList[0] : null;
 
         foreach (var shelfRack in shelfRacksList)
@@ -80,6 +81,8 @@ public class PotionShelfRackManager : MonoBehaviour
             endPos.x += (isGoingLeft) ? -shelfMoveDistance : shelfMoveDistance;
             shelfRack.transform.DOLocalMove(endPos, shelfMoveDuration);
         }
+
+        SoundEffectManager.Instance.PlaySoundEffect(dragSound);
 
         // Update middle index
         if (isGoingLeft)

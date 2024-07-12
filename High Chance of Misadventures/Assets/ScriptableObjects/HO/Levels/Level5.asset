@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b6b085fb8720d049abcefee6a282f3e, type: 3}
+  m_Name: Level5
+  m_EditorClassIdentifier: 
+  levelID: 5
+  levelIcon: {fileID: 21300000, guid: 9455d08cdb29a9e478b1ac9b0eb1b6dd, type: 3}
+  regionName: HO_CastleRegion
+  speechList:
+  - "HIndi nagana ang normal \nkong atake sa kanya!"
+  - "Kailangan ko mag handa ng mga \n<color=#D40006><b>Fire</b></color> at <color=#0F39D1><b>Water</b></color>
+    Potion laban \nsa kanya!"
+  - 'Kailangan ko tumakas bago
+
+    ako ay matalo'
+  reminderText: "Kailangan ko ng \nmga <color=#D40006><b>Fire</b></color> at <color=#0F39D1><b>Water</b></color>
+    Potion"
+  playerStats:
+    baseHP: 50
+    changeInHP: 0
+    currentHP: 50
+    baseATK: 1
+    changeInATK: 0
+    totalATK: 1
+    baseDEF: 0
+    changeInDEF: 0
+    totalDEF: 0
+    ElementalEffects:
+      WeakToElementsList: 
+      ResistantToElementsList: 
+      ImmuneToElementsList: 
+  materialsList:
+  - {fileID: 11400000, guid: b17020c640bcc64459221e62a886f7d6, type: 2}
+  - {fileID: 11400000, guid: bcc1855ed24690141b6e0e04c7c72ada, type: 2}
+  - {fileID: 11400000, guid: 8d4676351e1d6aa42b6b29a369d05341, type: 2}
+  - {fileID: 11400000, guid: ef38cc7723985aa4a937ef18d23513c4, type: 2}
+  - {fileID: 11400000, guid: 03ae6ec93755afe409c68cf54f7ef398, type: 2}
+  enemyStats:
+    baseHP: 90
+    changeInHP: 0
+    currentHP: 90
+    baseATK: 8
+    changeInATK: 0
+    totalATK: 8
+    baseDEF: 0
+    changeInDEF: 0
+    totalDEF: 0
+    ElementalEffects:
+      WeakToElementsList: 0200000001000000
+      ResistantToElementsList: 
+      ImmuneToElementsList: 03000000
+  enemyData: {fileID: 11400000, guid: 1ce42c59a365eaf479014e5c790a1ad1, type: 2}
+  enemyHasArmorPierce: 1

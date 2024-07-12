@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7581ff5509f51b446bc1d992af6d253d, type: 3}
+  m_Name: Lvl4_Volcanic_Ash
+  m_EditorClassIdentifier: 
+  itemIcon: {fileID: 21300000, guid: ed64c2388b429d94194bfebfdc585f31, type: 3}
+  materialType: 1
+  materialDescription: 
+  consumableWeightsList:
+  - craftingEffect: 1
+    consumableToCraft: {fileID: 11400000, guid: 962b8cb5cbf259c4d92cf4abc087db7f,
+      type: 2}
+  - craftingEffect: 1
+    consumableToCraft: {fileID: 11400000, guid: 54f3c9fd6d0232744b1a22cf3e69c433,
+      type: 2}
+  - craftingEffect: 5
+    consumableToCraft: {fileID: 11400000, guid: 3abc708c862364340b9e2c1473a45681,
+      type: 2}
+  - craftingEffect: 2
+    consumableToCraft: {fileID: 11400000, guid: dd920fd3a9ea6574aa03cb0104cafba1,
+      type: 2}
+  - craftingEffect: 4
+    consumableToCraft: {fileID: 11400000, guid: 695c91de6c48ded4fb608daf86fd8b65,
+      type: 2}
+  particleMaterialColor: {r: 0.5698112, g: 0.5253989, b: 0.43327153, a: 1}

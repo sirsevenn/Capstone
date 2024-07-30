@@ -55,7 +55,7 @@ public class LO_CombatManager_PVP : BaseCombatManager
     protected override void OnPlayerDeath()
     {
         base.OnPlayerDeath();
-        LO_UIManager_PVP.Instance.EndGame(false);
+        LO_UIManager_PVP.Instance.EndGame(false, 0);
     }
 
 

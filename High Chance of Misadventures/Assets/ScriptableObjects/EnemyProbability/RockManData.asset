@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: RockManData
   m_EditorClassIdentifier: 
   type: 2
-  maxHealth: 5
-  attackDamage: 20
+  maxHealth: 20
+  attackDamage: 18
   heavyAttackProbability: 1
   lightAttackProbability: 7
   parryAttackProbability: 2
+  attackSoundEffect: {fileID: 8300000, guid: 9220b13d96a75214682e412d2fa2ab2a, type: 3}
+  dieSoundEffect: {fileID: 0}

@@ -25,6 +25,7 @@ public class BaseGameFlow : MonoBehaviour
     [Header("Quest Settings")]
     [SerializeField] private int rooms = 0;
     [SerializeField] private bool hasBoss = true;
+    [SerializeField] protected int goldReward = 2000;
     private int roomCounter = 0;
 
     [Header("Important Entities")]

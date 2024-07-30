@@ -25,6 +25,8 @@ public class LO_GameFlow_PVP : BaseGameFlow
     }
     #endregion
 
+
+
     [Header("Spinners")]
     [SerializeField] private Spinner enemySpinner;
 
@@ -113,7 +115,8 @@ public class LO_GameFlow_PVP : BaseGameFlow
     protected override void OnEndGame()
     {
         base.OnEndGame();
-        LO_UIManager_PVP.Instance.EndGame(true);
+        LO_UIManager_PVP.Instance.EndGame(true, goldReward);
+        InventoryManager.Instance.AddGold(goldReward);
 
         int sceneIndex = SceneManager.GetActiveScene().buildIndex;
         string level = "Level" + sceneIndex;

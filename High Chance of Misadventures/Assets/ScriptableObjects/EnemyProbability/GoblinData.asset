@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: GoblinData
   m_EditorClassIdentifier: 
   type: 1
-  maxHealth: 5
-  attackDamage: 7
+  maxHealth: 20
+  attackDamage: 20
   heavyAttackProbability: 2
   lightAttackProbability: 3
   parryAttackProbability: 5
+  attackSoundEffect: {fileID: 8300000, guid: 0710dac124b380045be2711586453ec6, type: 3}
+  dieSoundEffect: {fileID: 0}

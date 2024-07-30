@@ -52,6 +52,8 @@ public class SideBarManager : MonoBehaviour
 
     public void ToggleSideBar()
     {
+        PlaySoundEffect();
+
         if (!isOpen)
         {
             sideBar.transform.DOMoveX(openPos.position.x, travelDuration, true).SetEase(Ease.InSine);
@@ -82,6 +84,8 @@ public class SideBarManager : MonoBehaviour
         CloseAllPages();
         inventoryIcon.color = highlightedColor;
         InventoryPage.SetActive(true);
+
+        PlaySoundEffect();
     }
 
     public void OpenGuide()
@@ -89,6 +93,8 @@ public class SideBarManager : MonoBehaviour
         CloseAllPages();
         guideIcon.color = highlightedColor;
         GuidePage.SetActive(true);
+
+        PlaySoundEffect();
     }
 
     public void OpenSettings()
@@ -96,16 +102,25 @@ public class SideBarManager : MonoBehaviour
         CloseAllPages();
         settingsIcon.color = highlightedColor;
         SettingsPage.SetActive(true);
+
+        PlaySoundEffect();
     }
 
     public void UsePotion()
     {
+        PlaySoundEffect();
+
         if (InventoryManager.Instance.HealthPotions >= 1)
         {
             InventoryManager.Instance.DeductItem(3);
             LO_GameFlow_PVP.Instance.health.Heal(10);
             UpdateInventory();
         }
+    }
+
+    private void PlaySoundEffect()
+    {
+        SoundEffectManager.Instance.PlayClick();
     }
 
 }

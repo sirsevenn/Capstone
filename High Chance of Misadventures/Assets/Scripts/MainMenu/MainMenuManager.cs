@@ -49,6 +49,11 @@ public class MainMenuManager : MonoBehaviour
         InitializeLevels();
     }
 
+    private void PlaySoundEffect()
+    {
+        SoundEffectManager.Instance.PlayClick();
+    }
+
 
     public void OnPlay()
     {
@@ -57,6 +62,8 @@ public class MainMenuManager : MonoBehaviour
         levelSelectCamera.Priority = 1;
 
         StartCoroutine(GameUtilities.DelayFunction(ShowLevelSelectUI, 2));
+
+        PlaySoundEffect();
     }
 
     public void OnOptions()
@@ -71,12 +78,15 @@ public class MainMenuManager : MonoBehaviour
             optionsPanel.SetActive(true);
             normalButtons.SetActive(false);
         }
-     
+
+        PlaySoundEffect();
+
     }
 
     public void onExit()
     {
         //Exit Game
+        PlaySoundEffect();
         Application.Quit();
     }
 
@@ -88,6 +98,7 @@ public class MainMenuManager : MonoBehaviour
 
         levelSelectUI.SetActive(false);
         StartCoroutine(GameUtilities.DelayFunction(ShowMainMenuUI, 2));
+        PlaySoundEffect();
     }
 
     private void ShowMainMenuUI()

@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: TreeMan
   m_EditorClassIdentifier: 
   type: 3
-  maxHealth: 5
-  attackDamage: 15
+  maxHealth: 20
+  attackDamage: 18
   heavyAttackProbability: 0
   lightAttackProbability: 5
   parryAttackProbability: 5
+  attackSoundEffect: {fileID: 8300000, guid: 15812c984a3bc8e4ea19eb8d54c181cc, type: 3}
+  dieSoundEffect: {fileID: 0}

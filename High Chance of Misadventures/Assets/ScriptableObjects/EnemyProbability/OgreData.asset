@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: OgreData
   m_EditorClassIdentifier: 
   type: 3
-  maxHealth: 5
-  attackDamage: 10
+  maxHealth: 20
+  attackDamage: 20
   heavyAttackProbability: 2
   lightAttackProbability: 6
   parryAttackProbability: 2
+  attackSoundEffect: {fileID: 8300000, guid: db11883fdcd8f444598cbd163021083b, type: 3}
+  dieSoundEffect: {fileID: 0}

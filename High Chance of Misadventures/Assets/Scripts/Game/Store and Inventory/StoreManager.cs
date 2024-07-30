@@ -76,6 +76,7 @@ public class StoreManager : MonoBehaviour
 
     public void ProceedToFight()
     {
+        PlaySoundEffect();
         int sceneToLoad = PlayerPrefs.GetInt("CurrentLevel", -3);
         SceneManager.LoadScene(sceneToLoad + 1);
     }
@@ -128,6 +129,7 @@ public class StoreManager : MonoBehaviour
 
     public void BuyItem(int index)
     {
+        PlaySoundEffect();
 
         switch (index)
         {
@@ -177,7 +179,7 @@ public class StoreManager : MonoBehaviour
                 DeductGold(pieceCost);
                 break;
             case 3:
-                DeductGold(10);
+                DeductGold(100);
                 break;
         }
 
@@ -231,5 +233,10 @@ public class StoreManager : MonoBehaviour
     private void DeductGold(int value)
     {
         InventoryManager.Instance.DeductGold(value);
+    }
+
+    private void PlaySoundEffect()
+    {
+        SoundEffectManager.Instance.PlayClick();
     }
 }

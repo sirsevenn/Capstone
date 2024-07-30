@@ -23,6 +23,9 @@ public class BaseCombatManager : MonoBehaviour
     [SerializeField] private int playerAttackDamage = 0;
     [SerializeField] private int playerDefenseValue = 0;
 
+    [Header("Player Sound Effects")]
+    [SerializeField] protected AudioClip playerSwordSoundEffect;
+
     [Header("Actions")]
     public ActionType playerAction;
     public ActionType enemyAction;
@@ -41,6 +44,8 @@ public class BaseCombatManager : MonoBehaviour
 
     [Header("Scene Managers")]
     [SerializeField] private BaseGameFlow gameFlow;
+
+  
 
 
     //numbers
@@ -166,6 +171,8 @@ public class BaseCombatManager : MonoBehaviour
                 Debug.Log("Error on Match Result");
                 break;
             case MatchResult.Win:
+                SoundEffectManager.Instance.PlaySoundEffect(playerSwordSoundEffect);
+
                 player.transform.DOJump(playerStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
                 health = currentEnemy.GetComponent<Health>();
                 health.ApplyDamage(testDamage);
@@ -185,6 +192,7 @@ public class BaseCombatManager : MonoBehaviour
                 break;
 
             case MatchResult.Lose:
+                SoundEffectManager.Instance.PlaySoundEffect(currentEnemy.data.attackSoundEffect);
                 currentEnemy.transform.DOJump(enemyStartPos, 1, 1, 0.5f).SetEase(Ease.Linear).SetDelay(2);
 
                 //health = LO_GameFlow_PVP.Instance.health;
@@ -208,6 +216,8 @@ public class BaseCombatManager : MonoBehaviour
 
             case MatchResult.Draw:
                 //Player Damage
+                SoundEffectManager.Instance.PlaySoundEffect(playerSwordSoundEffect);
+                SoundEffectManager.Instance.PlaySoundEffect(currentEnemy.data.attackSoundEffect);
                 health = gameFlow.health;
                 damage = Math.Max(0, currentEnemy.GetEnemyData().attackDamage - playerDefenseValue);
                 health.ApplyDamage((int)(damage * 0.5f));

@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: GoblinKing
   m_EditorClassIdentifier: 
   type: 3
-  maxHealth: 5
-  attackDamage: 20
+  maxHealth: 60
+  attackDamage: 35
   heavyAttackProbability: 4
   lightAttackProbability: 4
   parryAttackProbability: 2
+  attackSoundEffect: {fileID: 8300000, guid: 762c8553306fbdb41b5596c8f6fd176b, type: 3}
+  dieSoundEffect: {fileID: 0}

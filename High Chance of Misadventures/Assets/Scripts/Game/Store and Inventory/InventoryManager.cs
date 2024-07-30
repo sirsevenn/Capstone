@@ -85,7 +85,7 @@ public class InventoryManager : MonoBehaviour
     {
         if (!firstInit)
         {
-            gold = PlayerPrefs.GetInt(goldKey, 10000);
+            gold = PlayerPrefs.GetInt(goldKey, 800);
 
             helmetLevel = PlayerPrefs.GetInt(helmetKey, 0);
             cuirassLevel = PlayerPrefs.GetInt(cuirassKey, 0);
@@ -119,6 +119,11 @@ public class InventoryManager : MonoBehaviour
     public void DeductGold(int value)
     {
         gold = Mathf.Max(gold - value, 0);
+    }
+
+    public void AddGold(int value)
+    {
+        gold += value;
     }
 
     public void AddItem(int index)
@@ -177,15 +182,15 @@ public class InventoryManager : MonoBehaviour
 
     public void ResetSavedValues()
     {
-        PlayerPrefs.SetInt(goldKey, 17000);
+        PlayerPrefs.SetInt(goldKey, 0);
 
         PlayerPrefs.SetInt(helmetKey, 0);
         PlayerPrefs.SetInt(cuirassKey, 0);
         PlayerPrefs.SetInt(greavesKey, 0);
 
-        PlayerPrefs.SetInt(redKey, 10);
-        PlayerPrefs.SetInt(greenKey, 10);
-        PlayerPrefs.SetInt(blueKey, 10);
-        PlayerPrefs.SetInt(healthPotionKey, 1);
+        PlayerPrefs.SetInt(redKey, 15);
+        PlayerPrefs.SetInt(greenKey, 15);
+        PlayerPrefs.SetInt(blueKey, 15);
+        PlayerPrefs.SetInt(healthPotionKey, 5);
     }
 }

@@ -24,6 +24,10 @@ public class LO_UIManager_PVP : UIManager
     }
     #endregion
 
+    [Header("Win/Lose Images")]
+    [SerializeField] private GameObject winScreen;
+    [SerializeField] private GameObject loseScreen;
+
     [Header("Round Display")]
     [SerializeField] private GameObject roundDisplay;
     [SerializeField] private TMP_Text currentRoomText;
@@ -58,6 +62,7 @@ public class LO_UIManager_PVP : UIManager
     [Header("End Screen Dialogue")]
     public List<string> endScreenDialogue = new List<string>();
     [SerializeField] private TMP_Text endScreenText;
+    [SerializeField] private TMP_Text goldRewardText;
 
     [Header("UI Raycast")]
     [SerializeField] protected GraphicRaycaster m_Raycaster;
@@ -378,21 +383,24 @@ public class LO_UIManager_PVP : UIManager
 
     }
 
-    public void EndGame(bool victory)
+    public void EndGame(bool victory, int gold)
     {
         playerUI.SetActive(false);
         enemyUI.SetActive(false);
         playerHPUI.SetActive(false);
 
         endScreen.SetActive(true);
+        goldRewardText.text = "+" + gold;
 
         if (victory)
         {
-            endScreenText.text = endScreenDialogue[0];
+            winScreen.SetActive(true);
+            loseScreen.SetActive(false);
         }
         else
         {
-            endScreenText.text = endScreenDialogue[1];
+            winScreen.SetActive(false);
+            loseScreen.SetActive(true);
         }
        
     }

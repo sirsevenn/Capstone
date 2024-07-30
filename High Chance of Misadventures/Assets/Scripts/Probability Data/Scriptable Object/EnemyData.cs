@@ -16,4 +16,8 @@ public class EnemyData : ScriptableObject
     public int heavyAttackProbability;
     public int lightAttackProbability;
     public int parryAttackProbability;
+
+    [Header("Sound Effects")]
+    public AudioClip attackSoundEffect;
+    public AudioClip dieSoundEffect;
 }

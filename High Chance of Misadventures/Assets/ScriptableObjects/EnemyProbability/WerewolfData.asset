@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: WerewolfData
   m_EditorClassIdentifier: 
   type: 1
-  maxHealth: 5
+  maxHealth: 15
   attackDamage: 12
   heavyAttackProbability: 5
   lightAttackProbability: 3
   parryAttackProbability: 2
+  attackSoundEffect: {fileID: 8300000, guid: 0710dac124b380045be2711586453ec6, type: 3}
+  dieSoundEffect: {fileID: 0}

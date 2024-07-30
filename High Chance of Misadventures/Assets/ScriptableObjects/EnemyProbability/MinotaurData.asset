@@ -13,8 +13,10 @@ MonoBehaviour:
   m_Name: MinotaurData
   m_EditorClassIdentifier: 
   type: 2
-  maxHealth: 5
-  attackDamage: 15
+  maxHealth: 25
+  attackDamage: 22
   heavyAttackProbability: 6
   lightAttackProbability: 2
   parryAttackProbability: 2
+  attackSoundEffect: {fileID: 8300000, guid: c765d48e2e122a348bc5a0ae19ce4723, type: 3}
+  dieSoundEffect: {fileID: 0}

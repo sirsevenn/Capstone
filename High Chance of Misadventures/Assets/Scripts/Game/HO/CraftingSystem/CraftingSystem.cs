@@ -103,32 +103,50 @@ public class CraftingSystem : MonoBehaviour
             // Check for valid movement
             if (args.SwipeDirection == SwipeEventArgs.SwipeDirections.LEFT)
             {
-                areInputsEnabled = false;
-                craftingDisplay.OnEnableInputs(false);
-                shelfRackManager.MoveShelfRacks(true);
+                MoveShelves(true);
             }
             else if (args.SwipeDirection == SwipeEventArgs.SwipeDirections.RIGHT && shelfRackManager.CanMoveShelfRacksToTheRight())
             {
-                areInputsEnabled = false;
-                craftingDisplay.OnEnableInputs(false);
-                shelfRackManager.MoveShelfRacks(false);
+                MoveShelves(false);
             }
+        }
+    }
 
-            // Update some UI based on the movement
-            if (!shelfRackManager.IsMiddleShelfRackEmmpty())
-            {
-                ResetCraftingTrackers();
-                particlesScript.ResetAllParticles();
+    private void Update()
+    {
+        if (Application.platform == RuntimePlatform.Android) return;
 
-                List<CraftingMaterialSO> usedMaterials = shelfRackManager.GetUsedMaterialsFromMiddleShelfRack();
-                UpdateUsedMaterials(usedMaterials);
-                craftingDisplay.DisplayUsedMaterials(usedMaterials);
-            }
-            else if (!isCauldronFiredUp)
-            {
-                ResetCraftingTrackers();
-                craftingDisplay.ResetCraftingUI();
-            }
+        if (!areInputsEnabled) return;
+
+        if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            MoveShelves(true);
+        }
+        else if (Input.GetKeyDown(KeyCode.RightArrow) && shelfRackManager.CanMoveShelfRacksToTheRight())
+        {
+            MoveShelves(false);
+        }
+    }
+
+    private void MoveShelves(bool isGoingLeft)
+    {
+        areInputsEnabled = false;
+        craftingDisplay.OnEnableInputs(false);
+        shelfRackManager.MoveShelfRacks(isGoingLeft);
+
+        if (!shelfRackManager.IsMiddleShelfRackEmmpty())
+        {
+            ResetCraftingTrackers();
+            particlesScript.ResetAllParticles();
+
+            List<CraftingMaterialSO> usedMaterials = shelfRackManager.GetUsedMaterialsFromMiddleShelfRack();
+            UpdateUsedMaterials(usedMaterials);
+            craftingDisplay.DisplayUsedMaterials(usedMaterials);
+        }
+        else if (!isCauldronFiredUp)
+        {
+            ResetCraftingTrackers();
+            craftingDisplay.ResetCraftingUI();
         }
     }
 

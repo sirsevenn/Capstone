@@ -27,6 +27,9 @@ public class HO_GameManager : MonoBehaviour
     [SerializeField] private string highLevelIDKey;
     [SerializeField] private string tutorialKey;
 
+    [Space(10)] [Header("Debug")]
+    [SerializeField] private bool isInDebug;
+
 
     #region Singleton
     public static HO_GameManager Instance;
@@ -63,9 +66,9 @@ public class HO_GameManager : MonoBehaviour
         highestUnlockedLevelID = (uint)PlayerPrefs.GetInt(highLevelIDKey);
         highestUnlockedLevelID = (highestUnlockedLevelID == 0) ? levelsList.First().LevelID : highestUnlockedLevelID;
 
-        areAllLevelsUnlocked = false;
-        shouldSkipCutscenes = false;
-        hasFinishedTutorial = (PlayerPrefs.GetInt(tutorialKey) == 1);
+        areAllLevelsUnlocked = !isInDebug ? false : areAllLevelsUnlocked;
+        shouldSkipCutscenes = !isInDebug ? false : shouldSkipCutscenes;
+        hasFinishedTutorial = !isInDebug ? (PlayerPrefs.GetInt(tutorialKey) == 1) : hasFinishedTutorial;
     }
 
     public HO_LevelSO GetCurrentLevel()

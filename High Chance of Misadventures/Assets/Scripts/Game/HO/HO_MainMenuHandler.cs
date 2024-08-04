@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class HO_MainMenuHandler : MonoBehaviour
@@ -121,7 +122,34 @@ public class HO_MainMenuHandler : MonoBehaviour
 
         //Debug.Log(args.SwipeDirection);
 
-        if (args.SwipeDirection == swipesCheatList[correctSwipesNum])
+        CheckCheatInput(args.SwipeDirection);
+    }
+
+    private void Update()
+    {
+        if (Application.platform == RuntimePlatform.Android) return;
+
+        if (Input.GetKeyDown(KeyCode.UpArrow))
+        {
+            CheckCheatInput(SwipeEventArgs.SwipeDirections.UP);
+        }
+        else if (Input.GetKeyDown(KeyCode.LeftArrow))
+        {
+            CheckCheatInput(SwipeEventArgs.SwipeDirections.LEFT);
+        }
+        else if (Input.GetKeyDown(KeyCode.DownArrow))
+        {
+            CheckCheatInput(SwipeEventArgs.SwipeDirections.DOWN);
+        }
+        else if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            CheckCheatInput(SwipeEventArgs.SwipeDirections.RIGHT);
+        }
+    }
+
+    private void CheckCheatInput(SwipeEventArgs.SwipeDirections dir)
+    {
+        if (dir == swipesCheatList[correctSwipesNum])
         {
             correctSwipesNum++;
             if (correctSwipesNum == swipesCheatList.Count)
@@ -132,7 +160,7 @@ public class HO_MainMenuHandler : MonoBehaviour
         }
         else
         {
-            correctSwipesNum = (args.SwipeDirection == swipesCheatList.First()) ? 1 : 0;
+            correctSwipesNum = (dir == swipesCheatList.First()) ? 1 : 0;
         }
     }
 
